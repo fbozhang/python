@@ -93,5 +93,5 @@ t_list = bs.find_all(text=re.compile("\d"))  # 应用正则表达式来查找包
 
 # print(t_list[0].get_text())  # 通过兄弟节点查找，get_text()拿到他的文本。
 
-for item in t_list:
-       print(item)
+# for item in t_list:
+#        print(item)
