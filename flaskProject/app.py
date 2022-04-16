@@ -9,7 +9,7 @@ app = Flask(__name__)
 # @app.route('/')
 # def hello_world():
 #     return 'hello!'
-
+#
 # debug模式开启: 点击运行旁边的选择文件里的编辑配置，勾选Flask_DEBUG
 
 @app.route('/index')

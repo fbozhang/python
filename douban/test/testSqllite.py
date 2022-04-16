@@ -33,8 +33,8 @@ print("成功打开数据库")'''
 #
 # print("成功建表")
 
-# 插入数据
-
+# # 插入数据
+#
 # conn = sqlite3.connect("test.db")  # 打开或创建数据库文件
 # print("成功打开数据库")
 # c = conn.cursor()  # 获取游标

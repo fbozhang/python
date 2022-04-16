@@ -8,6 +8,7 @@ import re  # 正則表達式，進行文字匹配
 import urllib.request, urllib.error  # 制定URL，獲取網頁數據
 import xlwt  # 進行excel操作
 import sqlite3  # 進行SQLite數據庫操作
+import os
 
 
 def main():
@@ -19,7 +20,19 @@ def main():
     dbpath = "douban.db"
     # 保存數據
     # saveDataXls(datalist, savepath)
-    saveDataDB(datalist,dbpath)
+    saveDataDB(datalist, dbpath)
+
+    while True:  # 询问是否删除临时文件
+        rmdir = input("删除temp中html请输入(Y/N): ")
+        if rmdir == 'Y' or rmdir == 'y':
+            for i in range(1):
+                os.remove("./temp/第%d页.html" % (i + 1))
+            print("已删除")
+            break
+        elif rmdir == 'N' or rmdir == 'n':
+            break
+        else:
+            print("请重新输入")
 
 
 # 影片详情链接的规则
@@ -41,10 +54,22 @@ findBd = re.compile(r'<p class="">(.*?)</p>', re.S)
 # 爬取網頁
 def getData(baseurl):
     datalist = []
-    for i in range(1):
-        url = baseurl + str(i * 25)
-        html = askURL(url)  # 保存获取到的网页源码
-        print(html)
+    if os.path.exists("./temp"):
+        pass
+    else:
+        os.mkdir("temp")  # 新建一个目录
+
+    for i in range(10):
+        # url = baseurl + str(i * 25)
+        # html = askURL(url)  # 保存获取到的网页源码
+
+        if os.path.exists("./temp/第%d页.html" % (i + 1)):  # 判断html文件是否存在不存在则生成对应html
+            continue
+        else:
+            savaHTML(baseurl, i)
+
+        file = open("./temp/第%d页.html" % (i + 1), "rb")
+        html = file.read().decode("utf-8")
         # 逐一解析數據
         soup = BeautifulSoup(html, "html.parser")
         for item in soup.find_all("div", class_="item"):
@@ -86,7 +111,18 @@ def getData(baseurl):
 
             datalist.append(data)  # 把处理好的一部电影信息放入datalist
 
+        file.close()
+
     return datalist
+
+
+def savaHTML(baseurl, i):  # 保存为html文件
+    url = baseurl + str(i * 25)
+    html = askURL(url)  # 保存获取到的网页源码
+    # print(html)
+    filename = "./temp/第%d页.html" % (i + 1)
+    with open(filename, 'w', encoding="utf-8") as file:
+        file.write(html)
 
 
 # 得到指定一個URL的網頁内容
@@ -122,10 +158,9 @@ def saveDataXls(datalist, savepath):
     # 直接遍历
     for i in datalist:
         for j in i:
-            sheet.write(datalist.index(i)+1, i.index(j), j)  # 数据
+            sheet.write(datalist.index(i) + 1, i.index(j), j)  # 数据
 
     book.save(savepath)  # 保存数据表
-
 
 
 # 保存数据到数据库
@@ -144,7 +179,7 @@ def saveDataDB(datalist, dbpath):
                 insert into movie(
                     info_link,pic_link,cname,ename,score,rated,instroduction,info)
                     values (%s)
-        '''%",".join(data)
+        ''' % ",".join(data)
         # print(sql)    #测试得到的sql
         cursor.execute(sql)  # 执行sql语句
         conn.commit()  # 提交数据库操作
@@ -160,7 +195,7 @@ def init_db(dbpath):
     cursor = conn.cursor()  # 获取游标
 
     sql = '''
-            create table movie
+            create table if not exists movie
                 (
                 id integer primary key autoincrement,
                 info_link text,
