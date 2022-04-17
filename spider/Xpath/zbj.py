@@ -18,5 +18,4 @@ for div in divs:
     title = "saas".join(div.xpath("./div/div/a[2]/div[2]/div[2]/p/text()"))
     com_name = div.xpath("./div/div/a[1]/div[1]/p/text()")[1].strip("\n")
     location = div.xpath("./div/div/a[1]/div[1]/div/span/text()")[0]
-    print(price,title)
-
+    print(price, title, com_name, location)
