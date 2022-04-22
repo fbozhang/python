@@ -18,6 +18,28 @@ import aiofiles
 '''
 
 
+def Format(Str):
+    String = f'''{Str}'''
+    list_s = list(String)  # str -> list
+
+    num = 0
+    i = 0
+    for j in list_s:
+        if list_s[i] == "\n":
+            list_s[i] = "\n\n"
+            num = 0
+        if num == 46:
+            list_s.insert(i, '\n')
+            num = 0
+        num += 1
+        i += 1
+    # print(list_s)
+
+    String = ''.join(list_s)  # list -> str
+    # print(String)
+    return String
+
+
 async def aiodownload(title, cid, b_id):
     data = {
         "book_id": b_id,
@@ -30,8 +52,12 @@ async def aiodownload(title, cid, b_id):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             dic = await resp.json()
+            txt = dic['data']['novel']['content']
+            # print(txt)
+            txt = Format(txt)
+            print(title, "over")
             async with aiofiles.open("novel/" + title + ".txt", mode="w", encoding="utf-8") as f:
-                await f.write(dic['data']['novel']['content'])  # 把小说内容写出
+                await f.write(txt)  # 把小说内容写出
 
 
 async def getCatalog(url):
@@ -46,14 +72,16 @@ async def getCatalog(url):
         # print(title, cid)
         # 准备异步任务
         tasks.append(asyncio.create_task(aiodownload(title, cid, b_id)))
-        break
 
     await asyncio.wait(tasks)
 
 
 if __name__ == '__main__':
+    t1 = time.time()
     b_id = "4306063500"
     url = 'https://dushu.baidu.com/api/pc/getCatalog?data={"book_id":' + b_id + '}'
     # asyncio.run(getCatalog(url))
     loop = asyncio.get_event_loop()  # 可以防止报错
     loop.run_until_complete(getCatalog(url))
+    t2 = time.time()
+    print(t2 - t1)
