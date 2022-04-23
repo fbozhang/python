@@ -10,7 +10,7 @@ url = "https://www.dytt89.com/"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"
 }
-# resp = requests.get(url, verify=False)  # verify=False去掉安全验证
+# resp = requests.get(url, verify=False)  # verify=False去掉安全验证verify_ssl=False防止ssl验证
 # 发现不关安全验证传入header也可以
 resp = requests.get(url, headers)
 resp.encoding = "gb2312"  # 指定字符集
