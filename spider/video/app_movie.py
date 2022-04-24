@@ -4,8 +4,8 @@
 # @File : app_movie.py
 
 import json
+import os
 import time
-
 import requests
 import asyncio
 import aiohttp
@@ -55,6 +55,7 @@ async def aio_download(domain):  # https://cdn6.sxmzwl.com:65
                     continue
                 # line => xxx.ts
                 ts_url = line
+                # name = line.split("hls/")[1]
                 task = asyncio.create_task(download_ts(ts_url, f"{n}.ts", session))  # 创建任务
                 tasks.append(task)
                 n += 1
@@ -69,59 +70,91 @@ def get_key(url):
 
 
 async def dec_ts(name, key):
-    aes = AES.new(key=key, IV=b"0000000000000000", mode=AES.MODE_CBC)  # IV看key的长度
-    async with aiofiles.open(f"video/{name}", mode="rb") as f1,\
-        aiofiles.open(f"video/temp_{name}", mode="wb") as f2:
-        bs = await f1.read()    # 从源文件读取内容
-        await f2.write(aes.decrypt(bs))     # 把解密好的内容写入文件
+    aes = AES.new(key=key.encode("utf-8"), IV=b"0000000000000000", mode=AES.MODE_CBC)  # IV看key的长度
+    async with aiofiles.open(f"video/{name}", mode="rb") as f1, \
+            aiofiles.open(f"video/temp_{name}", mode="wb") as f2:
+        bs = await f1.read()  # 从源文件读取内容
+        await f2.write(aes.decrypt(bs))  # 把解密好的内容写入文件
     print(f"{name}处理完毕")
 
 
 async def aio_dec(key):
     # 解密
     tasks = []
+    n = 1
     async with aiofiles.open("second_m3u8.txt", mode="r", encoding="utf-8") as f:
         async for line in f:
             line = line.strip()
             if line.startswith("#"):
                 continue
             # 开始创建异步任务
-            name = line.split("hls/")[1] + ".ts"
-            task = asyncio.create_task(dec_ts(name, key))
+            # name = line.split("hls/")[1]
+            task = asyncio.create_task(dec_ts(f"{n}.ts", key))
             tasks.append(task)
+            n += 1
         await asyncio.wait(tasks)
 
 
-def main(url):
-    first_m3u8_url = get_m3u8(url)
-    # 得到域名
-    m3u8_domain = "https://" + first_m3u8_url.split("/")[2]
-    # print(m3u8_domain)
-    # 下载第一层m3u8
-    download_m3u8(first_m3u8_url, "first_m3u8.txt")
-    print("first_m3u8 Over")
-    # 下载第二层m3u8
-    with open("first_m3u8.txt", "r", encoding="utf-8") as f:
+def merge_ts():
+    # mac: cat 1.ts 2.ts 3.ts > xxx.mp4
+    # windows: copy /b 1.ts+2.ts+3.ts xxx.mp4
+    lst = []
+    with open("second_m3u8.txt", mode="r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()  # 去空白空格或者换行符
             if line.startswith("#"):
                 continue
-            # 拼接得到第二层m3u8的地址
-            second_m3u8_domain = m3u8_domain + line
-            # print(second_m3u8_domain)
-            download_m3u8(second_m3u8_domain, "second_m3u8.txt")
-            print("second_m3u8 Over")
+            name = line.split("hls/")[1]
+            lst.append(f"video/temp_{name}")
 
-    # 异步协程
-    # asyncio.run(aio_download(m3u8_domain))
-    loop = asyncio.get_event_loop()  # 可以防止报错
-    loop.run_until_complete(aio_download(m3u8_domain))
+    '''
+    # mac:
+    s = " ".join(lst)   # 1.ts 2.ts 3.ts
+    os.system(f"cat {s} > movie.mp4")
+    print("OVER!!")
+    '''
+    # windows:
+    s = "+".join(lst)  # 1.ts+2.ts+3.ts
+    # print(s, type(s))
+    os.system(f"copy /b {s} movie.ts")
+    # a = "copy /b video\temp_*.ts movie.mp4"
+    # os.system(a)
+    print("OVER!!")
 
-    # 拿到密钥
-    key_url = "https://iqiyi.shanshanku.com/20211015/oXpCawKB/1200kb/hls/key.key"
-    key = get_key(key_url)
-    # 解密
-    asyncio.run(aio_dec(key))
+
+def main(url):
+    # first_m3u8_url = get_m3u8(url)
+    # # 得到域名
+    # m3u8_domain = "https://" + first_m3u8_url.split("/")[2]
+    # # print(m3u8_domain)
+    # # 下载第一层m3u8
+    # download_m3u8(first_m3u8_url, "first_m3u8.txt")
+    # print("first_m3u8 Over")
+    # # 下载第二层m3u8
+    # with open("first_m3u8.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         line = line.strip()  # 去空白空格或者换行符
+    #         if line.startswith("#"):
+    #             continue
+    #         # 拼接得到第二层m3u8的地址
+    #         second_m3u8_domain = m3u8_domain + line
+    #         # print(second_m3u8_domain)
+    #         download_m3u8(second_m3u8_domain, "second_m3u8.txt")
+    #         print("second_m3u8 Over")
+    #
+    # # 异步协程
+    # # asyncio.run(aio_download(m3u8_domain))
+    # loop = asyncio.get_event_loop()  # 可以防止报错
+    # loop.run_until_complete(aio_download(m3u8_domain))
+    #
+    # # 拿到密钥
+    # key_url = "https://iqiyi.shanshanku.com/20211015/oXpCawKB/1200kb/hls/key.key"
+    # key = get_key(key_url)
+    # # 解密
+    # asyncio.run(aio_dec(key))
+
+    # 合并ts文件为mp4文件
+    merge_ts()
 
 
 if __name__ == '__main__':
