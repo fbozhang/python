@@ -123,35 +123,35 @@ def merge_ts():
 
 
 def main(url):
-    # first_m3u8_url = get_m3u8(url)
-    # # 得到域名
-    # m3u8_domain = "https://" + first_m3u8_url.split("/")[2]
-    # # print(m3u8_domain)
-    # # 下载第一层m3u8
-    # download_m3u8(first_m3u8_url, "first_m3u8.txt")
-    # print("first_m3u8 Over")
-    # # 下载第二层m3u8
-    # with open("first_m3u8.txt", "r", encoding="utf-8") as f:
-    #     for line in f:
-    #         line = line.strip()  # 去空白空格或者换行符
-    #         if line.startswith("#"):
-    #             continue
-    #         # 拼接得到第二层m3u8的地址
-    #         second_m3u8_domain = m3u8_domain + line
-    #         # print(second_m3u8_domain)
-    #         download_m3u8(second_m3u8_domain, "second_m3u8.txt")
-    #         print("second_m3u8 Over")
-    #
-    # # 异步协程
-    # # asyncio.run(aio_download(m3u8_domain))
-    # loop = asyncio.get_event_loop()  # 可以防止报错
-    # loop.run_until_complete(aio_download(m3u8_domain))
-    #
-    # # 拿到密钥
-    # key_url = "https://iqiyi.shanshanku.com/20211015/oXpCawKB/1200kb/hls/key.key"
-    # key = get_key(key_url)
-    # # 解密
-    # asyncio.run(aio_dec(key))
+    first_m3u8_url = get_m3u8(url)
+    # 得到域名
+    m3u8_domain = "https://" + first_m3u8_url.split("/")[2]
+    # print(m3u8_domain)
+    # 下载第一层m3u8
+    download_m3u8(first_m3u8_url, "first_m3u8.txt")
+    print("first_m3u8 Over")
+    # 下载第二层m3u8
+    with open("first_m3u8.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()  # 去空白空格或者换行符
+            if line.startswith("#"):
+                continue
+            # 拼接得到第二层m3u8的地址
+            second_m3u8_domain = m3u8_domain + line
+            # print(second_m3u8_domain)
+            download_m3u8(second_m3u8_domain, "second_m3u8.txt")
+            print("second_m3u8 Over")
+
+    # 异步协程
+    # asyncio.run(aio_download(m3u8_domain))
+    loop = asyncio.get_event_loop()  # 可以防止报错
+    loop.run_until_complete(aio_download(m3u8_domain))
+
+    # 拿到密钥
+    key_url = "https://iqiyi.shanshanku.com/20211015/oXpCawKB/1200kb/hls/key.key"
+    key = get_key(key_url)
+    # 解密
+    asyncio.run(aio_dec(key))
 
     # 合并ts文件为mp4文件
     merge_ts()
