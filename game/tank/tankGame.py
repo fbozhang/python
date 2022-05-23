@@ -1,41 +1,49 @@
 # -*- coding:utf-8 -*-
 # @Time : 2022/5/23 20:40
 # @Author: fbz
-# @File : tankTest1.py
+# @File : tankGame.py
 
 """
-1.主逻辑类
-    开始游戏
-    结束游戏
-2.坦克类（1.我方坦克   2.敌方坦克）
-    移动
-    射击
-    展示坦克
-3.子弹类
-    移动
-    展示子弹
-4.爆炸效果类
-    展示爆炸效果
-5.墙壁类
-    属性：是否可以通过
-6.音效类
-    播放音乐
+v1.02
+    新增功能:
+        创建游戏窗口
+        用到游戏引擎中的功能模块
+        官方开发文档
 """
 
 import pygame
 
+version = "v1.02"
+COLOR_BLACK = pygame.Color(0, 0, 0)
+
 
 class MainGame():
+    # 游戏主窗口
+    window = None
+    SCREEN_WIDTH = 700
+    SCREEN_HEIGHT = 400
+
     def __init__(self):
         pass
 
     # 开始游戏方法
     def startGame(self):
-        pass
+        # 创建窗口加载窗口
+        MainGame.window = pygame.display.set_mode([MainGame.SCREEN_WIDTH, MainGame.SCREEN_HEIGHT])
+        # 设置游戏标题
+        pygame.display.set_caption("坦克大战" + version)
+        # 让窗口持续刷新操作
+        while True:
+            # 给窗口填充颜色
+            MainGame.window.fill(COLOR_BLACK)
+            # 窗口的刷新
+            pygame.display.update()
 
     # 结束游戏方法
     def endGame(self):
-        pass
+        print("谢谢使用")
+        # 结束python解释器
+        exit()
 
 
 class Tank():
@@ -103,3 +111,6 @@ class Music():
     # 开始播放音乐
     def play(self):
         pass
+
+
+MainGame().startGame()
