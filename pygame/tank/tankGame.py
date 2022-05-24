@@ -4,13 +4,9 @@
 # @File : tankGame.py
 
 """
-v1.06
-    新增功能:
-        1.坦克类新增speed属性，用来控制坦克移动快慢
-        2.事件处理:
-            2.1 改变坦克方向
-            2.2 修改坦克的位置(left,top)
-                取决于坦克的速度
+v1.07
+    优化功能:
+        1.bug:坦克可以移出边界
 """
 
 import pygame
@@ -144,13 +140,17 @@ class Tank():
     # 坦克的移动方法
     def move(self):
         if self.direction == "L":
-            self.rect.left -= self.speed
+            if self.rect.left > 0:
+                self.rect.left -= self.speed
         elif self.direction == "R":
-            self.rect.left += self.speed
+            if self.rect.left + self.rect.width < MainGame.SCREEN_WIDTH:
+                self.rect.left += self.speed
         elif self.direction == "U":
-            self.rect.top -= self.speed
+            if self.rect.top > 0:
+                self.rect.top -= self.speed
         elif self.direction == "D":
-            self.rect.top += self.speed
+            if self.rect.top + self.rect.height < MainGame.SCREEN_HEIGHT:
+                self.rect.top += self.speed
 
     # 射击
     def shot(self):
