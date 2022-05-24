@@ -13,7 +13,7 @@ v1.03
 
 import pygame
 
-version = "v1.02"
+version = "v1.03"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 
 
