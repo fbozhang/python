@@ -4,15 +4,18 @@
 # @File : tankGame.py
 
 """
-v1.04
+v1.06
     新增功能:
-    实现左上角问题提示内容
-        font
+        1.坦克类新增speed属性，用来控制坦克移动快慢
+        2.事件处理:
+            2.1 改变坦克方向
+            2.2 修改坦克的位置(left,top)
+                取决于坦克的速度
 """
 
 import pygame
 
-version = "v1.04"
+version = "v1.06"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -22,6 +25,8 @@ class MainGame():
     window = None
     SCREEN_WIDTH = 700
     SCREEN_HEIGHT = 400
+    # 创建我方坦克
+    TANK_P1 = None
 
     def __init__(self):
         pass
@@ -30,6 +35,8 @@ class MainGame():
     def startGame(self):
         # 创建窗口加载窗口
         MainGame.window = pygame.display.set_mode([MainGame.SCREEN_WIDTH, MainGame.SCREEN_HEIGHT])
+        # 创建我方坦克
+        MainGame.TANK_P1 = Tank(200, 300)
         # 设置游戏标题
         pygame.display.set_caption("坦克大战" + version)
         # 让窗口持续刷新操作
@@ -39,7 +46,9 @@ class MainGame():
             # 在循环中持续完成事件的获取
             self.getEvent()
             # 将绘制文字得到的小画布粘贴到窗口中
-            MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆"%5), (5,5))
+            MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆" % 5), (5, 5))
+            # 将我方坦克加入到窗口中
+            MainGame.TANK_P1.displayTank()
             # 窗口的刷新
             pygame.display.update()
 
@@ -57,24 +66,42 @@ class MainGame():
                 # 具体是哪一个按键的处理
                 if event.key == pygame.K_LEFT:
                     print("坦克向左调头, 移动")
+                    # 修改坦克方向
+                    MainGame.TANK_P1.direction = "L"
+                    # 完成移动操作
+                    MainGame.TANK_P1.move()
                 elif event.key == pygame.K_RIGHT:
                     print("坦克向右调头, 移动")
+                    MainGame.TANK_P1.direction = "R"
+                    MainGame.TANK_P1.move()
                 elif event.key == pygame.K_UP:
                     print("坦克向上调头, 移动")
+                    MainGame.TANK_P1.direction = "U"
+                    MainGame.TANK_P1.move()
                 elif event.key == pygame.K_DOWN:
                     print("坦克向下调头, 移动")
+                    MainGame.TANK_P1.direction = "D"
+                    MainGame.TANK_P1.move()
                 elif event.key == pygame.K_SPACE:
                     print("发射子弹")
         # 获取键盘的第二种方法，后面再再决定用上面还是下面的方法
         key = pygame.key.get_pressed()
         if key[pygame.K_a]:
             print("坦克向左调头, 移动")
+            MainGame.TANK_P1.direction = "L"
+            MainGame.TANK_P1.move()
         elif key[pygame.K_w]:
             print("坦克向上调头, 移动")
+            MainGame.TANK_P1.direction = "U"
+            MainGame.TANK_P1.move()
         elif key[pygame.K_s]:
             print("坦克向下调头, 移动")
+            MainGame.TANK_P1.direction = "D"
+            MainGame.TANK_P1.move()
         elif key[pygame.K_d]:
             print("坦克向右调头, 移动")
+            MainGame.TANK_P1.direction = "R"
+            MainGame.TANK_P1.move()
 
     # 左上角文字绘制
     def getTextSurface(self, text):
@@ -84,9 +111,9 @@ class MainGame():
         # fontList = pygame.font.get_fonts()
         # print(fontList)
         # 选择一个合适的字体
-        font = pygame.font.SysFont("kaiti", 18)     # pygame.font.SysFont("字体名称", 字号, 默认不粗体, 默认不斜体)
+        font = pygame.font.SysFont("kaiti", 18)  # pygame.font.SysFont("字体名称", 字号, 默认不粗体, 默认不斜体)
         # 使用对应的字符完成相关内容的绘制
-        textSurface = font.render(text, True, COLOR_RED)    # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
+        textSurface = font.render(text, True, COLOR_RED)  # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
         return textSurface
 
     # 结束游戏方法
@@ -97,20 +124,44 @@ class MainGame():
 
 
 class Tank():
-    def __init__(self):
-        pass
+    def __init__(self, left, top):
+        self.images = {
+            "U":pygame.image.load("images/p1tankU.gif"),
+            "D":pygame.image.load("images/p1tankD.gif"),
+            "L":pygame.image.load("images/p1tankL.gif"),
+            "R":pygame.image.load("images/p1tankR.gif"),
+        }
+        self.direction = "U"
+        self.image = self.images[self.direction]
+        # 坦克所在的区域
+        self.rect = self.image.get_rect()
+        # 指定坦克初始化位置 分别距x，y轴的位置
+        self.rect.left = left
+        self.rect.top = top
+        # 新增速度属性
+        self.speed = 5
 
     # 坦克的移动方法
     def move(self):
-        pass
+        if self.direction == "L":
+            self.rect.left -= self.speed
+        elif self.direction == "R":
+            self.rect.left += self.speed
+        elif self.direction == "U":
+            self.rect.top -= self.speed
+        elif self.direction == "D":
+            self.rect.top += self.speed
 
     # 射击
     def shot(self):
         pass
 
-    # 展示
+    # 展示坦克(将坦克这个surface绘制到窗口中 blit())
     def displayTank(self):
-        pass
+        # 1.重新设置坦克的图片
+        self.image = self.images[self.direction]
+        # 2.将坦克加入到窗口中
+        MainGame.window.blit(self.image, self.rect)
 
 
 class MyTank(Tank):
