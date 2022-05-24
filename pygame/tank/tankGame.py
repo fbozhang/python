@@ -4,17 +4,17 @@
 # @File : tankGame.py
 
 """
-v1.03
+v1.04
     新增功能:
-    事件处理:
-        点击关闭按钮，推出程序的事件
-        方向控制，子弹发射
+    实现左上角问题提示内容
+        font
 """
 
 import pygame
 
-version = "v1.03"
+version = "v1.04"
 COLOR_BLACK = pygame.Color(0, 0, 0)
+COLOR_RED = pygame.Color(255, 0, 0)
 
 
 class MainGame():
@@ -38,6 +38,8 @@ class MainGame():
             MainGame.window.fill(COLOR_BLACK)
             # 在循环中持续完成事件的获取
             self.getEvent()
+            # 将绘制文字得到的小画布粘贴到窗口中
+            MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆"%5), (5,5))
             # 窗口的刷新
             pygame.display.update()
 
@@ -73,6 +75,19 @@ class MainGame():
             print("坦克向下调头, 移动")
         elif key[pygame.K_d]:
             print("坦克向右调头, 移动")
+
+    # 左上角文字绘制
+    def getTextSurface(self, text):
+        # 字体初始化
+        pygame.font.init()
+        # 查看系统支持的所有字体
+        # fontList = pygame.font.get_fonts()
+        # print(fontList)
+        # 选择一个合适的字体
+        font = pygame.font.SysFont("kaiti", 18)     # pygame.font.SysFont("字体名称", 字号, 默认不粗体, 默认不斜体)
+        # 使用对应的字符完成相关内容的绘制
+        textSurface = font.render(text, True, COLOR_RED)    # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
+        return textSurface
 
     # 结束游戏方法
     def endGame(self):
