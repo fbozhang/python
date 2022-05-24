@@ -43,7 +43,6 @@ class MainGame():
 
     # 获取程序运行期间所有事件(鼠标事件，键盘事件)
     def getEvent(self):
-        key = pygame.key.get_pressed()
         # 1.获取所有事件
         eventList = pygame.event.get()
         # 2.对事件进行判断处理(1. 点击关闭按钮  2.按下键盘上的某个键)
@@ -52,7 +51,7 @@ class MainGame():
             if event.type == pygame.QUIT:
                 self.endGame()
             # 判断事件类型是否为按键按下，如果是:继续判断按键是哪一个按键来进行对应的处理
-            if event.type == pygame.K_DOWN:
+            if event.type == pygame.KEYDOWN:
                 # 具体是哪一个按键的处理
                 if event.key == pygame.K_LEFT:
                     print("坦克向左调头, 移动")
@@ -64,6 +63,16 @@ class MainGame():
                     print("坦克向下调头, 移动")
                 elif event.key == pygame.K_SPACE:
                     print("发射子弹")
+        # 获取键盘的第二种方法，后面再再决定用上面还是下面的方法
+        key = pygame.key.get_pressed()
+        if key[pygame.K_a]:
+            print("坦克向左调头, 移动")
+        elif key[pygame.K_w]:
+            print("坦克向上调头, 移动")
+        elif key[pygame.K_s]:
+            print("坦克向下调头, 移动")
+        elif key[pygame.K_d]:
+            print("坦克向右调头, 移动")
 
     # 结束游戏方法
     def endGame(self):
