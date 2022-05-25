@@ -4,16 +4,15 @@
 # @File : tankGame.py
 
 """
-v1.12
-    完善子弹的发射功能
-        tank 发射子弹 -> 产生一颗子弹
+v1.13
+    实现子弹的移动
 """
 import random
 import time
 
 import pygame
 
-version = "v1.12"
+version = "v1.13"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -85,6 +84,8 @@ class MainGame():
     def blitBullet(self):
         for bullet in MainGame.Bullet_List:
             bullet.displayBullet()
+            # 让子弹移动
+            bullet.bulletMove()
 
     # 获取程序运行期间所有事件(鼠标事件，键盘事件)
     def getEvent(self):
@@ -294,8 +295,27 @@ class Bullet():
         self.speed = 7
 
     # 子弹的移动方法
-    def move(self):
-        pass
+    def bulletMove(self):
+        if self.direction == 'U':
+            if self.rect.top > 0:
+                self.rect.top -= self.speed
+            else:
+                pass
+        elif self.direction == 'D':
+            if self.rect.top < MainGame.SCREEN_HEIGHT - self.rect.height:
+                self.rect.top += self.speed
+            else:
+                pass
+        elif self.direction == 'L':
+            if self.rect.left > 0:
+                self.rect.left -= self.speed
+            else:
+                pass
+        elif self.direction == 'R':
+            if self.rect.left < MainGame.SCREEN_WIDTH - self.rect.width:
+                self.rect.left += self.speed
+            else:
+                pass
 
     # 展示子弹的方法
     def displayBullet(self):
