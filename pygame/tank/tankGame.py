@@ -4,16 +4,15 @@
 # @File : tankGame.py
 
 """
-v1.10
-    1.实现敌方坦克的移动
-        随机移动(在某一方向移动一定距离的时候，随机更改移动方向)
+v1.11
+    完善子弹类的封装
 """
 import random
 import time
 
 import pygame
 
-version = "v1.10"
+version = "v1.11"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -258,8 +257,27 @@ class EnemyTank(Tank):
 
 
 class Bullet():
-    def __init__(self):
-        pass
+    def __init__(self, tank):
+        # 图片
+        self.image = pygame.image.load("images/enemymissile.gif")
+        # 方向(坦克方向)
+        self.direction = tank.direction
+        # 位置
+        self.rect = self.image.get_rect()
+        if self.direction == 'U':
+            self.rect.left = tank.rect.left + tank.rect.width / 2 - self.rect.width / 2
+            self.rect.top = tank.rect.top - self.rect.height
+        elif self.direction == 'D':
+            self.rect.left = tank.rect.left + tank.rect.width / 2 - self.rect.width / 2
+            self.rect.top = tank.rect.top + tank.rect.height
+        elif self.direction == 'L':
+            self.rect.left = tank.rect.left - self.rect.width
+            self.rect.top = tank.rect.top + tank.rect.width / 2 - self.rect.height / 2
+        elif self.direction == 'R':
+            self.rect.left = tank.rect.left + tank.rect.width
+            self.rect.top = tank.rect.top + tank.rect.width / 2 - self.rect.height / 2
+        # 速度
+        self.speed = 7
 
     # 子弹的移动方法
     def move(self):
@@ -267,7 +285,7 @@ class Bullet():
 
     # 展示子弹的方法
     def displayBullet(self):
-        pass
+        MainGame.window.blit(self.image, self.rect)
 
 
 class Explode():
