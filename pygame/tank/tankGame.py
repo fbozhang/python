@@ -4,16 +4,18 @@
 # @File : tankGame.py
 
 """
-v1.15
+v1.16
     新增功能：
-        让敌方坦克可以发射子弹
+        1.实现我方子弹与敌方坦克碰撞
+         使用精灵类中的碰撞
+            使用Bullet，Tank 继承精灵类
 """
 import random
 import time
 
 import pygame
 
-version = "v1.15"
+version = "v1.16"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -37,7 +39,7 @@ class MainGame():
     def __init__(self):
         pass
 
-    # 开始游戏方法
+    # 开始游戏
     def startGame(self):
         # 创建窗口加载窗口
         MainGame.window = pygame.display.set_mode([MainGame.SCREEN_WIDTH, MainGame.SCREEN_HEIGHT])
@@ -82,15 +84,18 @@ class MainGame():
     # 将坦克加入到窗口中
     def blitEnemyTank(self):
         for eTank in MainGame.EnemyTank_List:
-            eTank.displayTank()  # 继承父类
-            # 坦克移动方法
-            eTank.randMove()
-            # 调用敌方坦克的射击
-            eBullet = eTank.shot()
-            # 如果子弹为None，不加入到列表
-            if eBullet:
-                # 将子弹存储敌方子弹列表
-                MainGame.Enemy_bullet_List.append(eBullet)
+            if eTank.live:
+                eTank.displayTank()  # 继承父类
+                # 坦克移动
+                eTank.randMove()
+                # 调用敌方坦克的射击
+                eBullet = eTank.shot()
+                # 如果子弹为None，不加入到列表
+                if eBullet:
+                    # 将子弹存储敌方子弹列表
+                    MainGame.Enemy_bullet_List.append(eBullet)
+            else:
+                MainGame.EnemyTank_List.remove(eTank)
 
     # 将我方子弹加入到窗口中
     def blitBullet(self):
@@ -100,6 +105,8 @@ class MainGame():
                 bullet.displayBullet()
                 # 让子弹移动
                 bullet.bulletMove()
+                # 调用我方子弹与敌方坦克的碰撞方法
+                bullet.hitEnemyTank()
             else:
                 MainGame.Bullet_List.remove(bullet)
 
@@ -200,14 +207,19 @@ class MainGame():
         textSurface = font.render(text, True, COLOR_RED)  # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
         return textSurface
 
-    # 结束游戏方法
+    # 结束游戏
     def endGame(self):
         print("谢谢使用")
         # 结束python解释器
         exit()
 
 
-class Tank():
+class BaseItem(pygame.sprite.Sprite):
+    def __int__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+
+class Tank(BaseItem):
     def __init__(self, left, top):
         self.images = {
             "U": pygame.image.load("images/p1tankU.gif"),
@@ -226,8 +238,10 @@ class Tank():
         self.speed = 5
         # 新增属性：坦克的移动开关
         self.stop = True
+        # 新增属性：live用来记录，坦克是否活着
+        self.live = True
 
-    # 坦克的移动方法
+    # 坦克的移动
     def move(self):
         if self.direction == "L":
             if self.rect.left > 0:
@@ -261,6 +275,8 @@ class MyTank(Tank):
 
 class EnemyTank(Tank):
     def __init__(self, left, top, speed):
+        super(EnemyTank, self).__init__(left, top)
+        # self.live = True
         self.images = {
             "U": pygame.image.load("images/enemy1U.gif"),
             "D": pygame.image.load("images/enemy1D.gif"),
@@ -311,7 +327,7 @@ class EnemyTank(Tank):
             return Bullet(self)
 
 
-class Bullet():
+class Bullet(BaseItem):
     def __init__(self, tank):
         # 图片
         self.image = pygame.image.load("images/enemymissile.gif")
@@ -336,7 +352,7 @@ class Bullet():
         # 用来记录子弹是否活着
         self.live = True
 
-    # 子弹的移动方法
+    # 子弹的移动
     def bulletMove(self):
         if self.direction == 'U':
             if self.rect.top > 0:
@@ -360,9 +376,17 @@ class Bullet():
             else:
                 self.live = False
 
-    # 展示子弹的方法
+    # 展示子弹
     def displayBullet(self):
         MainGame.window.blit(self.image, self.rect)
+
+    # 新增我方子弹碰撞敌方坦克
+    def hitEnemyTank(self):
+        for eTank in MainGame.EnemyTank_List:
+            if pygame.sprite.collide_rect(eTank, self):  # 监测两个精灵的矩形是否碰撞返回布尔值
+                # 如果打中坦克修改状态值
+                self.live = False
+                eTank.live = False
 
 
 class Explode():
