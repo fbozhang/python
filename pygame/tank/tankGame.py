@@ -4,15 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.13
-    实现子弹的移动
+v1.14
+    1.子弹打中墙壁的时候，直接消除而不是粘在墙上
+    2.解决我方坦克可以无限发射子弹的问题(最多3发子弹)
 """
 import random
 import time
 
 import pygame
 
-version = "v1.13"
+version = "v1.14"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -83,9 +84,13 @@ class MainGame():
     # 将子弹加入到窗口中
     def blitBullet(self):
         for bullet in MainGame.Bullet_List:
-            bullet.displayBullet()
-            # 让子弹移动
-            bullet.bulletMove()
+            # 如果子弹还活着绘制出来，否则直接从列表中移除该子弹
+            if bullet.live:
+                bullet.displayBullet()
+                # 让子弹移动
+                bullet.bulletMove()
+            else:
+                MainGame.Bullet_List.remove(bullet)
 
     # 获取程序运行期间所有事件(鼠标事件，键盘事件)
     def getEvent(self):
@@ -120,17 +125,21 @@ class MainGame():
                     MainGame.TANK_P1.stop = False
                 elif event.key == pygame.K_SPACE:
                     print("发射子弹")
-                    # 产生一颗子弹
-                    m = Bullet(MainGame.TANK_P1)
-                    # 将子弹加入到子弹列表
-                    MainGame.Bullet_List.append(m)
+                    if len(MainGame.Bullet_List) < 3:
+                        # 产生一颗子弹
+                        m = Bullet(MainGame.TANK_P1)
+                        # 将子弹加入到子弹列表
+                        MainGame.Bullet_List.append(m)
+                    else:
+                        print("子弹数量不足")
+                    print("当前屏幕中的子弹数量为：%d"%len(MainGame.Bullet_List))
             # 判断方向键是否弹起
             if event.type == pygame.KEYUP:
                 # 松开的如果是方向键，才更改移动开关状态
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     # 修改坦克的移动状态
                     MainGame.TANK_P1.stop = True
-        # 获取键盘的第二种方法，后面再再决定用上面还是下面的方法
+        # 获取键盘的第二种方法，考虑后面用该方法控制2P
         key = pygame.key.get_pressed()
         if key[pygame.K_a]:
             print("坦克向左调头, 移动")
@@ -151,6 +160,10 @@ class MainGame():
         # 这个方法暂未解决边移动边设计
         elif key[pygame.K_KP0]:
             print("射击")
+            # 产生一颗子弹
+            m = Bullet(MainGame.TANK_P1)
+            # 将子弹加入到子弹列表
+            MainGame.Bullet_List.append(m)
 
     # 左上角文字绘制
     def getTextSurface(self, text):
@@ -293,6 +306,8 @@ class Bullet():
             self.rect.top = tank.rect.top + tank.rect.width / 2 - self.rect.height / 2
         # 速度
         self.speed = 7
+        # 用来记录子弹是否活着
+        self.live = True
 
     # 子弹的移动方法
     def bulletMove(self):
@@ -300,22 +315,23 @@ class Bullet():
             if self.rect.top > 0:
                 self.rect.top -= self.speed
             else:
-                pass
+                # 如果碰壁，修改状态值
+                self.live = False
         elif self.direction == 'D':
             if self.rect.top < MainGame.SCREEN_HEIGHT - self.rect.height:
                 self.rect.top += self.speed
             else:
-                pass
+                self.live = False
         elif self.direction == 'L':
             if self.rect.left > 0:
                 self.rect.left -= self.speed
             else:
-                pass
+                self.live = False
         elif self.direction == 'R':
             if self.rect.left < MainGame.SCREEN_WIDTH - self.rect.width:
                 self.rect.left += self.speed
             else:
-                pass
+                self.live = False
 
     # 展示子弹的方法
     def displayBullet(self):
