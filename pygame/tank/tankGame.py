@@ -4,15 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.11
-    完善子弹类的封装
+v1.12
+    完善子弹的发射功能
+        tank 发射子弹 -> 产生一颗子弹
 """
 import random
 import time
 
 import pygame
 
-version = "v1.11"
+version = "v1.12"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -28,6 +29,8 @@ class MainGame():
     EnemyTank_List = []
     # 要创建的敌方坦克的数量
     EnemyTank_count = 5
+    # 存储我方子弹的列表
+    Bullet_List = []
 
     def __init__(self):
         pass
@@ -57,6 +60,7 @@ class MainGame():
             # 根据坦克的开关状态调用坦克的移动方法
             if MainGame.TANK_P1 and not MainGame.TANK_P1.stop:
                 MainGame.TANK_P1.move()
+            self.blitBullet()
             time.sleep(0.01)
             # 窗口的刷新
             pygame.display.update()
@@ -76,6 +80,11 @@ class MainGame():
             eTank.displayTank()  # 继承父类
             # 坦克移动方法
             eTank.randMove()
+
+    # 将子弹加入到窗口中
+    def blitBullet(self):
+        for bullet in MainGame.Bullet_List:
+            bullet.displayBullet()
 
     # 获取程序运行期间所有事件(鼠标事件，键盘事件)
     def getEvent(self):
@@ -110,6 +119,11 @@ class MainGame():
                     MainGame.TANK_P1.stop = False
                 elif event.key == pygame.K_SPACE:
                     print("发射子弹")
+                    # 产生一颗子弹
+                    m = Bullet(MainGame.TANK_P1)
+                    # 将子弹加入到子弹列表
+                    MainGame.Bullet_List.append(m)
+            # 判断方向键是否弹起
             if event.type == pygame.KEYUP:
                 # 松开的如果是方向键，才更改移动开关状态
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
@@ -194,7 +208,7 @@ class Tank():
 
     # 射击
     def shot(self):
-        pass
+        return Bullet(self)
 
     # 展示坦克(将坦克这个surface绘制到窗口中 blit())
     def displayTank(self):
