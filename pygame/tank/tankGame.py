@@ -4,16 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.14
-    1.子弹打中墙壁的时候，直接消除而不是粘在墙上
-    2.解决我方坦克可以无限发射子弹的问题(最多3发子弹)
+v1.15
+    新增功能：
+        让敌方坦克可以发射子弹
 """
 import random
 import time
 
 import pygame
 
-version = "v1.14"
+version = "v1.15"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -31,6 +31,8 @@ class MainGame():
     EnemyTank_count = 5
     # 存储我方子弹的列表
     Bullet_List = []
+    # 存储敌方子弹的列表
+    Enemy_bullet_List = []
 
     def __init__(self):
         pass
@@ -60,16 +62,19 @@ class MainGame():
             # 根据坦克的开关状态调用坦克的移动方法
             if MainGame.TANK_P1 and not MainGame.TANK_P1.stop:
                 MainGame.TANK_P1.move()
+            # 调用渲染我方子弹列表的一个方法
             self.blitBullet()
-            time.sleep(0.01)
+            # 调用渲染敌方子弹列表的一个方法
+            self.blitEnemyBullet()
+            time.sleep(0.02)
             # 窗口的刷新
             pygame.display.update()
 
     # 创建敌方坦克
     def creatEnemyTank(self):
         top = 100
-        speed = random.randint(3, 6)
         for i in range(MainGame.EnemyTank_count):
+            speed = random.randint(3, 6)
             left = random.randint(1, int(MainGame.SCREEN_WIDTH / 100 - 1))
             eTank = EnemyTank(left * 100, top, speed)
             MainGame.EnemyTank_List.append(eTank)
@@ -80,8 +85,14 @@ class MainGame():
             eTank.displayTank()  # 继承父类
             # 坦克移动方法
             eTank.randMove()
+            # 调用敌方坦克的射击
+            eBullet = eTank.shot()
+            # 如果子弹为None，不加入到列表
+            if eBullet:
+                # 将子弹存储敌方子弹列表
+                MainGame.Enemy_bullet_List.append(eBullet)
 
-    # 将子弹加入到窗口中
+    # 将我方子弹加入到窗口中
     def blitBullet(self):
         for bullet in MainGame.Bullet_List:
             # 如果子弹还活着绘制出来，否则直接从列表中移除该子弹
@@ -91,6 +102,17 @@ class MainGame():
                 bullet.bulletMove()
             else:
                 MainGame.Bullet_List.remove(bullet)
+
+    # 将敌方子弹加入到窗口中
+    def blitEnemyBullet(self):
+        for eBullet in MainGame.Enemy_bullet_List:
+            # 如果子弹还活着绘制出来，否则直接从列表中移除该子弹
+            if eBullet.live:
+                eBullet.displayBullet()
+                # 让子弹移动
+                eBullet.bulletMove()
+            else:
+                MainGame.Enemy_bullet_List.remove(eBullet)
 
     # 获取程序运行期间所有事件(鼠标事件，键盘事件)
     def getEvent(self):
@@ -127,12 +149,12 @@ class MainGame():
                     print("发射子弹")
                     if len(MainGame.Bullet_List) < 3:
                         # 产生一颗子弹
-                        m = Bullet(MainGame.TANK_P1)
+                        m = MainGame.TANK_P1.shot()
                         # 将子弹加入到子弹列表
                         MainGame.Bullet_List.append(m)
                     else:
                         print("子弹数量不足")
-                    print("当前屏幕中的子弹数量为：%d"%len(MainGame.Bullet_List))
+                    print("当前屏幕中的子弹数量为：%d" % len(MainGame.Bullet_List))
             # 判断方向键是否弹起
             if event.type == pygame.KEYUP:
                 # 松开的如果是方向键，才更改移动开关状态
@@ -282,6 +304,11 @@ class EnemyTank(Tank):
         else:
             self.move()
             self.step -= 1
+
+    def shot(self):
+        num = random.randint(1, 100)
+        if num <= 2:
+            return Bullet(self)
 
 
 class Bullet():
