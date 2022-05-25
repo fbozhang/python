@@ -4,17 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.09
-    新增敌方坦克:
-        1.完善敌方坦克类
-        2.创建敌方坦克，将敌方坦克展示到窗口中
+v1.10
+    1.实现敌方坦克的移动
+        随机移动(在某一方向移动一定距离的时候，随机更改移动方向)
 """
 import random
 import time
 
 import pygame
 
-version = "v1.09"
+version = "v1.10"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -51,7 +50,7 @@ class MainGame():
             # 在循环中持续完成事件的获取
             self.getEvent()
             # 将绘制文字得到的小画布粘贴到窗口中
-            MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆" % 5), (5, 5))
+            MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆" % len(MainGame.EnemyTank_List)), (5, 5))
             # 将我方坦克加入到窗口中
             MainGame.TANK_P1.displayTank()
             # 将敌方坦克加入到窗口中
@@ -75,7 +74,9 @@ class MainGame():
     # 将坦克加入到窗口中
     def blitEnemyTank(self):
         for eTank in MainGame.EnemyTank_List:
-            eTank.displayTank()     # 继承父类
+            eTank.displayTank()  # 继承父类
+            # 坦克移动方法
+            eTank.randMove()
 
     # 获取程序运行期间所有事件(鼠标事件，键盘事件)
     def getEvent(self):
@@ -228,6 +229,8 @@ class EnemyTank(Tank):
         self.speed = speed
         # 坦克的移动开关
         self.stop = True
+        # 新增步数属性，用来控制敌方坦克随机移动
+        self.step = 20
 
     def randDirection(self):
         num = random.randint(1, 4)
@@ -243,8 +246,15 @@ class EnemyTank(Tank):
         elif num == 4:
             # self.direction = 'R'
             return 'R'
-    # def displayEnemtTank(self):
-    #     super().displayTank()
+
+    # 随机移动
+    def randMove(self):
+        if self.step <= 0:
+            self.direction = self.randDirection()
+            self.step = 20
+        else:
+            self.move()
+            self.step -= 1
 
 
 class Bullet():
