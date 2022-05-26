@@ -4,17 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.18
+v1.19
     新增功能：
-        1.敌方子弹与我方坦克的碰撞
-        2.以及我方坦克爆炸效果的实现
+        1.死亡后点击ESC重生
 """
 import random
 import time
 
 import pygame
 
-version = "v1.18"
+version = "v1.19"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -47,7 +46,7 @@ class MainGame():
         # 创建窗口加载窗口
         MainGame.window = pygame.display.set_mode([MainGame.SCREEN_WIDTH, MainGame.SCREEN_HEIGHT])
         # 创建我方坦克
-        MainGame.TANK_P1 = Tank(200, 300)
+        self.creatMyTank()
         # 创建敌方坦克
         self.creatEnemyTank()
         # 设置游戏标题
@@ -80,6 +79,10 @@ class MainGame():
             time.sleep(0.02)
             # 窗口的刷新
             pygame.display.update()
+
+    # 创建我方坦克
+    def creatMyTank(self):
+        MainGame.TANK_P1 = Tank(200, 300)
 
     # 创建敌方坦克
     def creatEnemyTank(self):
@@ -151,6 +154,10 @@ class MainGame():
                 self.endGame()
             # 判断事件类型是否为按键按下，如果是:继续判断按键是哪一个按键来进行对应的处理
             if event.type == pygame.KEYDOWN:
+                # 点击ESC按键让我方坦克重生
+                if event.key == pygame.K_ESCAPE and not MainGame.TANK_P1:
+                    # 调用创建我方坦克方法
+                    self.creatMyTank()
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                     # 具体是哪一个按键的处理
                     if event.key == pygame.K_LEFT:
