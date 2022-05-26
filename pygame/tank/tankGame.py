@@ -4,17 +4,17 @@
 # @File : tankGame.py
 
 """
-v1.17
+v1.18
     新增功能：
-        1.爆炸效果类
-        2.在窗口中展示爆炸效果
+        1.敌方子弹与我方坦克的碰撞
+        2.以及我方坦克爆炸效果的实现
 """
 import random
 import time
 
 import pygame
 
-version = "v1.17"
+version = "v1.18"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -60,8 +60,12 @@ class MainGame():
             self.getEvent()
             # 将绘制文字得到的小画布粘贴到窗口中
             MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆" % len(MainGame.EnemyTank_List)), (5, 5))
-            # 将我方坦克加入到窗口中
-            MainGame.TANK_P1.displayTank()
+            if MainGame.TANK_P1 and MainGame.TANK_P1.live:
+                # 将我方坦克加入到窗口中
+                MainGame.TANK_P1.displayTank()
+            else:
+                del MainGame.TANK_P1
+                MainGame.TANK_P1 = None
             # 将敌方坦克加入到窗口中
             self.blitEnemyTank()
             # 根据坦克的开关状态调用坦克的移动方法
@@ -123,6 +127,8 @@ class MainGame():
                 eBullet.displayBullet()
                 # 让子弹移动
                 eBullet.bulletMove()
+                if MainGame.TANK_P1 and MainGame.TANK_P1.live:
+                    eBullet.hitMyTank()
             else:
                 MainGame.Enemy_bullet_List.remove(eBullet)
 
@@ -145,67 +151,70 @@ class MainGame():
                 self.endGame()
             # 判断事件类型是否为按键按下，如果是:继续判断按键是哪一个按键来进行对应的处理
             if event.type == pygame.KEYDOWN:
-                # 具体是哪一个按键的处理
-                if event.key == pygame.K_LEFT:
-                    print("坦克向左调头, 移动")
-                    # 修改坦克方向
-                    MainGame.TANK_P1.direction = "L"
-                    MainGame.TANK_P1.stop = False
-                    # 完成移动操作
-                    # MainGame.TANK_P1.move()
-                elif event.key == pygame.K_RIGHT:
-                    print("坦克向右调头, 移动")
-                    MainGame.TANK_P1.direction = "R"
-                    MainGame.TANK_P1.stop = False
-                elif event.key == pygame.K_UP:
-                    print("坦克向上调头, 移动")
-                    MainGame.TANK_P1.direction = "U"
-                    MainGame.TANK_P1.stop = False
-                elif event.key == pygame.K_DOWN:
-                    print("坦克向下调头, 移动")
-                    MainGame.TANK_P1.direction = "D"
-                    MainGame.TANK_P1.stop = False
-                elif event.key == pygame.K_SPACE:
-                    print("发射子弹")
-                    if len(MainGame.Bullet_List) < 3:
-                        # 产生一颗子弹
-                        m = MainGame.TANK_P1.shot()
-                        # 将子弹加入到子弹列表
-                        MainGame.Bullet_List.append(m)
-                    else:
-                        print("子弹数量不足")
-                    print("当前屏幕中的子弹数量为：%d" % len(MainGame.Bullet_List))
+                if MainGame.TANK_P1 and MainGame.TANK_P1.live:
+                    # 具体是哪一个按键的处理
+                    if event.key == pygame.K_LEFT:
+                        print("坦克向左调头, 移动")
+                        # 修改坦克方向
+                        MainGame.TANK_P1.direction = "L"
+                        MainGame.TANK_P1.stop = False
+                        # 完成移动操作
+                        # MainGame.TANK_P1.move()
+                    elif event.key == pygame.K_RIGHT:
+                        print("坦克向右调头, 移动")
+                        MainGame.TANK_P1.direction = "R"
+                        MainGame.TANK_P1.stop = False
+                    elif event.key == pygame.K_UP:
+                        print("坦克向上调头, 移动")
+                        MainGame.TANK_P1.direction = "U"
+                        MainGame.TANK_P1.stop = False
+                    elif event.key == pygame.K_DOWN:
+                        print("坦克向下调头, 移动")
+                        MainGame.TANK_P1.direction = "D"
+                        MainGame.TANK_P1.stop = False
+                    elif event.key == pygame.K_SPACE:
+                        print("发射子弹")
+                        if len(MainGame.Bullet_List) < 3:
+                            # 产生一颗子弹
+                            m = MainGame.TANK_P1.shot()
+                            # 将子弹加入到子弹列表
+                            MainGame.Bullet_List.append(m)
+                        else:
+                            print("子弹数量不足")
+                        print("当前屏幕中的子弹数量为：%d" % len(MainGame.Bullet_List))
             # 判断方向键是否弹起
             if event.type == pygame.KEYUP:
                 # 松开的如果是方向键，才更改移动开关状态
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    # 修改坦克的移动状态
-                    MainGame.TANK_P1.stop = True
+                    if MainGame.TANK_P1 and MainGame.TANK_P1.live:
+                        # 修改坦克的移动状态
+                        MainGame.TANK_P1.stop = True
         # 获取键盘的第二种方法，考虑后面用该方法控制2P
         key = pygame.key.get_pressed()
-        if key[pygame.K_a]:
-            print("坦克向左调头, 移动")
-            MainGame.TANK_P1.direction = "L"
-            MainGame.TANK_P1.move()
-        elif key[pygame.K_w]:
-            print("坦克向上调头, 移动")
-            MainGame.TANK_P1.direction = "U"
-            MainGame.TANK_P1.move()
-        elif key[pygame.K_s]:
-            print("坦克向下调头, 移动")
-            MainGame.TANK_P1.direction = "D"
-            MainGame.TANK_P1.move()
-        elif key[pygame.K_d]:
-            print("坦克向右调头, 移动")
-            MainGame.TANK_P1.direction = "R"
-            MainGame.TANK_P1.move()
-        # 这个方法暂未解决边移动边设计
-        elif key[pygame.K_KP0]:
-            print("射击")
-            # 产生一颗子弹
-            m = Bullet(MainGame.TANK_P1)
-            # 将子弹加入到子弹列表
-            MainGame.Bullet_List.append(m)
+        if MainGame.TANK_P1 and MainGame.TANK_P1.live:
+            if key[pygame.K_a]:
+                print("坦克向左调头, 移动")
+                MainGame.TANK_P1.direction = "L"
+                MainGame.TANK_P1.move()
+            elif key[pygame.K_w]:
+                print("坦克向上调头, 移动")
+                MainGame.TANK_P1.direction = "U"
+                MainGame.TANK_P1.move()
+            elif key[pygame.K_s]:
+                print("坦克向下调头, 移动")
+                MainGame.TANK_P1.direction = "D"
+                MainGame.TANK_P1.move()
+            elif key[pygame.K_d]:
+                print("坦克向右调头, 移动")
+                MainGame.TANK_P1.direction = "R"
+                MainGame.TANK_P1.move()
+            # 这个方法暂未解决边移动边设计
+            elif key[pygame.K_KP0]:
+                print("射击")
+                # 产生一颗子弹
+                m = Bullet(MainGame.TANK_P1)
+                # 将子弹加入到子弹列表
+                MainGame.Bullet_List.append(m)
 
     # 左上角文字绘制
     def getTextSurface(self, text):
@@ -393,7 +402,7 @@ class Bullet(BaseItem):
     def displayBullet(self):
         MainGame.window.blit(self.image, self.rect)
 
-    # 新增我方子弹碰撞敌方坦克
+    # 我方子弹碰撞敌方坦克
     def hitEnemyTank(self):
         for eTank in MainGame.EnemyTank_List:
             if pygame.sprite.collide_rect(eTank, self):  # 监测两个精灵的矩形是否碰撞返回布尔值
@@ -404,6 +413,17 @@ class Bullet(BaseItem):
                 # 如果打中坦克修改状态值
                 self.live = False
                 eTank.live = False
+
+    # 我方子弹碰撞敌方坦克
+    def hitMyTank(self):
+        if pygame.sprite.collide_rect(self, MainGame.TANK_P1):
+            # 产生爆炸效果，并加入到爆炸效果列表中
+            explode = Explode(MainGame.TANK_P1)
+            MainGame.Explode_List.append(explode)
+            # 修改子弹状态
+            self.live = False
+            # 修改我方坦克状态
+            MainGame.TANK_P1.live = False
 
 
 class Explode():
