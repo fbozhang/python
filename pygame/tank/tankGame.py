@@ -4,16 +4,18 @@
 # @File : tankGame.py
 
 """
-v1.19
+v1.20
     新增功能：
-        1.死亡后点击F1重生
+        1.实现墙壁类
+        2.将随机创建的墙壁对象加入到窗口中
+            创建墙壁对象，加入墙壁列表中
 """
 import random
 import time
 
 import pygame
 
-version = "v1.19"
+version = "v1.20"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -21,8 +23,8 @@ COLOR_RED = pygame.Color(255, 0, 0)
 class MainGame():
     # 游戏主窗口
     window = None
-    SCREEN_WIDTH = 700
-    SCREEN_HEIGHT = 400
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 500
     # 创建我方坦克
     TANK_P1 = None
     # 存储所有的敌方坦克
@@ -35,9 +37,8 @@ class MainGame():
     Enemy_bullet_List = []
     # 爆炸效果列表
     Explode_List = []
-
-    def __init__(self):
-        pass
+    # 墙壁列表
+    Wall_List = []
 
     # 开始游戏
     def startGame(self):
@@ -49,6 +50,8 @@ class MainGame():
         self.creatMyTank()
         # 创建敌方坦克
         self.creatEnemyTank()
+        # 创建墙壁
+        self.creatWalls()
         # 设置游戏标题
         pygame.display.set_caption("坦克大战" + version)
         # 让窗口持续刷新操作
@@ -59,6 +62,8 @@ class MainGame():
             self.getEvent()
             # 将绘制文字得到的小画布粘贴到窗口中
             MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆" % len(MainGame.EnemyTank_List)), (5, 5))
+            # 调用展示墙壁的方法
+            self.blitWalls()
             if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                 # 将我方坦克加入到窗口中
                 MainGame.TANK_P1.displayTank()
@@ -92,6 +97,17 @@ class MainGame():
             left = random.randint(1, int(MainGame.SCREEN_WIDTH / 100 - 1))
             eTank = EnemyTank(left * 100, top, speed)
             MainGame.EnemyTank_List.append(eTank)
+
+    # 创建墙壁
+    def creatWalls(self):
+        for i in range(6):
+            wall = Wall(120*i, MainGame.SCREEN_HEIGHT/2)
+            MainGame.Wall_List.append(wall)
+
+    # 将墙壁加入到窗口中
+    def blitWalls(self):
+        for wall in MainGame.Wall_List:
+            wall.displayWall()
 
     # 将敌方坦克加入到窗口中
     def blitEnemyTank(self):
@@ -460,12 +476,19 @@ class Explode():
 
 
 class Wall():
-    def __init__(self):
-        pass
+    def __init__(self, left, top):
+        self.image = pygame.image.load("images/cement_wall.gif")
+        self.rect = self.image.get_rect()
+        self.rect.left = left
+        self.rect.top = top
+        # 用来判断墙壁是否应该在窗口中展示
+        self.live = True
+        # 用来记录墙壁的生命值
+        self.hp = 3
 
     # 展示墙壁
     def displayWall(self):
-        pass
+        MainGame.window.blit(self.image, self.rect)
 
 
 class Music():
