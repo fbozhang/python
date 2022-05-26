@@ -6,7 +6,7 @@
 """
 v1.19
     新增功能：
-        1.死亡后点击ESC重生
+        1.死亡后点击F1重生
 """
 import random
 import time
@@ -155,7 +155,7 @@ class MainGame():
             # 判断事件类型是否为按键按下，如果是:继续判断按键是哪一个按键来进行对应的处理
             if event.type == pygame.KEYDOWN:
                 # 点击ESC按键让我方坦克重生
-                if event.key == pygame.K_ESCAPE and not MainGame.TANK_P1:
+                if event.key == pygame.K_F1 and not MainGame.TANK_P1:
                     # 调用创建我方坦克方法
                     self.creatMyTank()
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
