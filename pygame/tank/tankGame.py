@@ -4,18 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.20
+v1.21
     新增功能：
-        1.实现墙壁类
-        2.将随机创建的墙壁对象加入到窗口中
-            创建墙壁对象，加入墙壁列表中
+        实现子弹不可以穿墙
 """
 import random
 import time
 
 import pygame
 
-version = "v1.20"
+version = "v1.21"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -101,13 +99,16 @@ class MainGame():
     # 创建墙壁
     def creatWalls(self):
         for i in range(6):
-            wall = Wall(120*i, MainGame.SCREEN_HEIGHT/2)
+            wall = Wall(120 * i, MainGame.SCREEN_HEIGHT / 2)
             MainGame.Wall_List.append(wall)
 
     # 将墙壁加入到窗口中
     def blitWalls(self):
         for wall in MainGame.Wall_List:
-            wall.displayWall()
+            if wall.live:
+                wall.displayWall()
+            else:
+                MainGame.Wall_List.remove(wall)
 
     # 将敌方坦克加入到窗口中
     def blitEnemyTank(self):
@@ -133,8 +134,10 @@ class MainGame():
                 bullet.displayBullet()
                 # 让子弹移动
                 bullet.bulletMove()
-                # 调用我方子弹与敌方坦克的碰撞方法
+                # 判断我方子弹与敌方坦克是否碰撞
                 bullet.hitEnemyTank()
+                # 判断子弹是否碰撞到墙壁
+                bullet.hitWalls()
             else:
                 MainGame.Bullet_List.remove(bullet)
 
@@ -146,6 +149,8 @@ class MainGame():
                 eBullet.displayBullet()
                 # 让子弹移动
                 eBullet.bulletMove()
+                # 判断子弹是否碰撞到墙壁
+                eBullet.hitWalls()
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                     eBullet.hitMyTank()
             else:
@@ -447,6 +452,16 @@ class Bullet(BaseItem):
             self.live = False
             # 修改我方坦克状态
             MainGame.TANK_P1.live = False
+
+    # 新增子弹与墙壁的碰撞
+    def hitWalls(self):
+        for wall in MainGame.Wall_List:
+            if pygame.sprite.collide_rect(self, wall):
+                # 修改子弹状态
+                self.live = False
+                wall.hp -= 1
+                if wall.hp <= 0:
+                    wall.live = False
 
 
 class Explode():
