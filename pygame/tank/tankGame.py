@@ -4,16 +4,16 @@
 # @File : tankGame.py
 
 """
-v1.21
+v1.22
     新增功能：
-        实现子弹不可以穿墙
+        实现坦克与墙壁的碰撞检测(坦克不能穿墙)
 """
 import random
 import time
 
 import pygame
 
-version = "v1.21"
+version = "v1.22"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -73,6 +73,8 @@ class MainGame():
             # 根据坦克的开关状态调用坦克的移动方法
             if MainGame.TANK_P1 and not MainGame.TANK_P1.stop:
                 MainGame.TANK_P1.move()
+                # 调用坦克与墙壁的碰撞方法
+                MainGame.TANK_P1.hitWalls()
             # 调用渲染我方子弹列表的一个方法
             self.blitBullet()
             # 调用渲染敌方子弹列表的一个方法
@@ -117,6 +119,8 @@ class MainGame():
                 eTank.displayTank()  # 继承父类
                 # 坦克移动
                 eTank.randMove()
+                # 调用坦克与墙壁的碰撞方法
+                eTank.hitWalls()
                 # 调用敌方坦克的射击
                 eBullet = eTank.shot()
                 # 如果子弹为None，不加入到列表
@@ -290,9 +294,14 @@ class Tank(BaseItem):
         self.stop = True
         # 新增属性：live用来记录，坦克是否活着
         self.live = True
+        # 用来记录坦克移动之前的坐标(用于坐标还原时使用)
+        self.oldLeft = self.rect.left
+        self.oldTop = self.rect.top
 
     # 坦克的移动
     def move(self):
+        self.oldLeft = self.rect.left
+        self.oldTop = self.rect.top
         if self.direction == "L":
             if self.rect.left > 0:
                 self.rect.left -= self.speed
@@ -305,6 +314,15 @@ class Tank(BaseItem):
         elif self.direction == "D":
             if self.rect.top + self.rect.height < MainGame.SCREEN_HEIGHT:
                 self.rect.top += self.speed
+
+    def stay(self):
+        self.rect.left = self.oldLeft
+        self.rect.left = self.oldTop
+
+    def hitWalls(self):
+        for wall in MainGame.Wall_List:
+            if pygame.sprite.collide_rect(wall, self):  # 监测两个精灵的矩形是否碰撞返回布尔值
+                self.stay()
 
     # 射击
     def shot(self):
@@ -515,4 +533,5 @@ class Music():
         pass
 
 
-MainGame().startGame()
+if __name__ == '__main__':
+    MainGame().startGame()
