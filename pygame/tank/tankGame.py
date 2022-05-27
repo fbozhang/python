@@ -101,7 +101,13 @@ class MainGame():
     # 创建墙壁
     def creatWalls(self):
         for i in range(6):
-            wall = Wall(120 * i, MainGame.SCREEN_HEIGHT / 2)
+            wall = Wall(140 * i, MainGame.SCREEN_HEIGHT / 2)
+            MainGame.Wall_List.append(wall)
+            wall = Wall(140 * i + 31, MainGame.SCREEN_HEIGHT / 2)
+            MainGame.Wall_List.append(wall)
+            wall = Wall(140 * i, MainGame.SCREEN_HEIGHT / 2 + 31)
+            MainGame.Wall_List.append(wall)
+            wall = Wall(140 * i + 31, MainGame.SCREEN_HEIGHT / 2 + 31)
             MainGame.Wall_List.append(wall)
 
     # 将墙壁加入到窗口中
@@ -317,7 +323,7 @@ class Tank(BaseItem):
 
     def stay(self):
         self.rect.left = self.oldLeft
-        self.rect.left = self.oldTop
+        self.rect.top = self.oldTop
 
     def hitWalls(self):
         for wall in MainGame.Wall_List:
