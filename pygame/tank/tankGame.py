@@ -4,16 +4,19 @@
 # @File : tankGame.py
 
 """
-v1.22
+v1.23
     新增功能：
-        实现坦克与墙壁的碰撞检测(坦克不能穿墙)
+        1.我方坦克主动碰撞到敌方坦克
+            我方坦克停下来stay()
+        2.敌方坦克主动碰撞到我方坦克
+            我敌方坦克停下来stay()
 """
 import random
 import time
 
 import pygame
 
-version = "v1.22"
+version = "v1.23"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -73,8 +76,10 @@ class MainGame():
             # 根据坦克的开关状态调用坦克的移动方法
             if MainGame.TANK_P1 and not MainGame.TANK_P1.stop:
                 MainGame.TANK_P1.move()
-                # 调用坦克与墙壁的碰撞方法
+                # 调用坦克与墙壁的碰撞方法,判断是否碰撞
                 MainGame.TANK_P1.hitWalls()
+                # 调用我方坦克与敌方坦克的碰撞方法,判断是否碰撞
+                MainGame.TANK_P1.hitEnemyTank()
             # 调用渲染我方子弹列表的一个方法
             self.blitBullet()
             # 调用渲染敌方子弹列表的一个方法
@@ -87,7 +92,7 @@ class MainGame():
 
     # 创建我方坦克
     def creatMyTank(self):
-        MainGame.TANK_P1 = Tank(200, 300)
+        MainGame.TANK_P1 = MyTank(200, 300)
 
     # 创建敌方坦克
     def creatEnemyTank(self):
@@ -127,6 +132,8 @@ class MainGame():
                 eTank.randMove()
                 # 调用坦克与墙壁的碰撞方法
                 eTank.hitWalls()
+                # 敌方坦克是否撞到我方坦克
+                eTank.hitMyTank()
                 # 调用敌方坦克的射击
                 eBullet = eTank.shot()
                 # 如果子弹为None，不加入到列表
@@ -343,8 +350,14 @@ class Tank(BaseItem):
 
 
 class MyTank(Tank):
-    def __int__(self):
-        pass
+    def __int__(self, left, top):
+        super(MyTank, self).__init__(left, top)
+
+    # 主动碰撞到敌方坦克
+    def hitEnemyTank(self):
+        for eTank in MainGame.EnemyTank_List:
+            if pygame.sprite.collide_rect(eTank, self):
+                self.stay()
 
 
 class EnemyTank(Tank):
@@ -399,6 +412,12 @@ class EnemyTank(Tank):
         num = random.randint(1, 100)
         if num <= 2:
             return Bullet(self)
+
+    def hitMyTank(self):
+        if MainGame.TANK_P1 and MainGame.TANK_P1.live:
+            if pygame.sprite.collide_rect(self, MainGame.TANK_P1):
+                # 让敌方坦克停下来
+                self.stay()
 
 
 class Bullet(BaseItem):
