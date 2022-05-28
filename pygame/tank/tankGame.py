@@ -4,19 +4,17 @@
 # @File : tankGame.py
 
 """
-v1.23
+v1.24
     新增功能：
-        1.我方坦克主动碰撞到敌方坦克
-            我方坦克停下来stay()
-        2.敌方坦克主动碰撞到我方坦克
-            我敌方坦克停下来stay()
+        音乐的处理
 """
 import random
+import sys
 import time
 
 import pygame
 
-version = "v1.23"
+version = "v1.24"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -55,6 +53,10 @@ class MainGame():
         self.creatWalls()
         # 设置游戏标题
         pygame.display.set_caption("坦克大战" + version)
+        # 创建音乐对象
+        music = Music("audios/start.wav")
+        # 调用播放音乐方法
+        music.play()
         # 让窗口持续刷新操作
         while True:
             # 给窗口填充颜色
@@ -224,6 +226,8 @@ class MainGame():
                             m = MainGame.TANK_P1.shot()
                             # 将子弹加入到子弹列表
                             MainGame.Bullet_List.append(m)
+                            music = Music("audios/fire.wav")
+                            music.play()
                         else:
                             print("子弹数量不足")
                         print("当前屏幕中的子弹数量为：%d" % len(MainGame.Bullet_List))
@@ -278,7 +282,9 @@ class MainGame():
     def endGame(self):
         print("谢谢使用")
         # 结束python解释器
-        exit()
+        # exit()
+        # 结束程序
+        sys.exit()
 
 
 class BaseItem(pygame.sprite.Sprite):
@@ -550,12 +556,17 @@ class Wall():
 
 
 class Music():
-    def __init__(self):
-        pass
+    def __init__(self, fileName):
+        self.fileName = fileName
+        # 先初始化混响器
+        pygame.mixer.init()
+        # 加载音乐文件进行播放
+        pygame.mixer.music.load(self.fileName)
 
     # 开始播放音乐
     def play(self):
-        pass
+        # loops是一个可选的整数参数，默认情况下为0，表示重复音乐的次数(lopps=5,即播放一次重复5次一共6次)。如果此参数设置为-1，则音乐无限重复
+        pygame.mixer.music.play(loops=0)
 
 
 if __name__ == '__main__':
