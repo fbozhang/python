@@ -4,9 +4,9 @@
 # @File : tankGame.py
 
 """
-v1.24
+v1.25
     新增功能：
-        音乐的处理
+        双方子弹碰撞抵消
 """
 import random
 import sys
@@ -14,7 +14,7 @@ import time
 
 import pygame
 
-version = "v1.24"
+version = "v1.25"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -61,6 +61,8 @@ class MainGame():
         while True:
             # 给窗口填充颜色
             MainGame.window.fill(COLOR_BLACK)
+            # 显示背景
+            Background().displayBackground()
             # 在循环中持续完成事件的获取
             self.getEvent()
             # 将绘制文字得到的小画布粘贴到窗口中
@@ -157,6 +159,8 @@ class MainGame():
                 bullet.hitEnemyTank()
                 # 判断子弹是否碰撞到墙壁
                 bullet.hitWalls()
+                # 判断子弹是否碰撞
+                bullet.hitBullet()
             else:
                 MainGame.Bullet_List.remove(bullet)
 
@@ -286,6 +290,17 @@ class MainGame():
         # 结束程序
         sys.exit()
 
+# 背景
+class Background():
+    def __init__(self):
+        self.image = pygame.image.load("images/background.gif")
+        self.rect = self.image.get_rect()
+        self.rect.left = 0
+        self.rect.top = 0
+
+    def displayBackground(self):
+        MainGame.window.blit(self.image, self.rect)
+
 
 class BaseItem(pygame.sprite.Sprite):
     def __int__(self):
@@ -307,11 +322,11 @@ class Tank(BaseItem):
         # 指定坦克初始化位置 分别距x，y轴的位置
         self.rect.left = left
         self.rect.top = top
-        # 新增速度属性
+        # 速度属性
         self.speed = 5
-        # 新增属性：坦克的移动开关
+        # 坦克的移动开关
         self.stop = True
-        # 新增属性：live用来记录，坦克是否活着
+        # live用来记录，坦克是否活着
         self.live = True
         # 用来记录坦克移动之前的坐标(用于坐标还原时使用)
         self.oldLeft = self.rect.left
@@ -356,7 +371,7 @@ class Tank(BaseItem):
 
 
 class MyTank(Tank):
-    def __int__(self, left, top):
+    def __init__(self, left, top):
         super(MyTank, self).__init__(left, top)
 
     # 主动碰撞到敌方坦克
@@ -491,7 +506,7 @@ class Bullet(BaseItem):
                 self.live = False
                 eTank.live = False
 
-    # 我方子弹碰撞敌方坦克
+    # 敌方子弹碰撞我方坦克
     def hitMyTank(self):
         if pygame.sprite.collide_rect(self, MainGame.TANK_P1):
             # 产生爆炸效果，并加入到爆炸效果列表中
@@ -511,6 +526,14 @@ class Bullet(BaseItem):
                 wall.hp -= 1
                 if wall.hp <= 0:
                     wall.live = False
+
+    # 双方子弹碰撞
+    def hitBullet(self):
+        for bullet in MainGame.Enemy_bullet_List:
+            if pygame.sprite.collide_rect(bullet, self):  # 监测两个精灵的矩形是否碰撞返回布尔值
+                # 如果打中子弹修改状态值
+                self.live = False
+                bullet.live = False
 
 
 class Explode():
