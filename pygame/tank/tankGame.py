@@ -4,9 +4,10 @@
 # @File : tankGame.py
 
 """
-v1.25
+v1.26
     新增功能：
-        双方子弹碰撞抵消
+        1.增加我方水晶
+        2.子弹打中水晶水晶改变状态
 """
 import random
 import sys
@@ -14,7 +15,7 @@ import time
 
 import pygame
 
-version = "v1.25"
+version = "v1.26"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -24,6 +25,10 @@ class MainGame():
     window = None
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 500
+    # 背景
+    background = "images/background.gif"
+    # 创建我方水晶
+    Home = None
     # 创建我方坦克
     TANK_P1 = None
     # 存储所有的敌方坦克
@@ -49,6 +54,8 @@ class MainGame():
         self.creatMyTank()
         # 创建敌方坦克
         self.creatEnemyTank()
+        # 创建水晶
+        self.creatHome()
         # 创建墙壁
         self.creatWalls()
         # 设置游戏标题
@@ -62,13 +69,15 @@ class MainGame():
             # 给窗口填充颜色
             MainGame.window.fill(COLOR_BLACK)
             # 显示背景
-            Background().displayBackground()
+            self.blitBackground()
             # 在循环中持续完成事件的获取
             self.getEvent()
             # 将绘制文字得到的小画布粘贴到窗口中
             MainGame.window.blit(self.getTextSurface("剩余敌方坦克%d辆" % len(MainGame.EnemyTank_List)), (5, 5))
             # 调用展示墙壁的方法
             self.blitWalls()
+            # 展示水晶
+            self.blitHome()
             if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                 # 将我方坦克加入到窗口中
                 MainGame.TANK_P1.displayTank()
@@ -91,6 +100,9 @@ class MainGame():
             # 调用展示爆炸效果的方法
             self.displayExplodes()
             time.sleep(0.02)
+            if not MainGame.Home.live:
+                # 将绘制文字得到的小画布粘贴到窗口中
+                MainGame.window.blit(self.getTextSurface_gameover("Game Over!!"), (200, MainGame.SCREEN_HEIGHT / 2 - 60))
             # 窗口的刷新
             pygame.display.update()
 
@@ -109,15 +121,27 @@ class MainGame():
 
     # 创建墙壁
     def creatWalls(self):
+        # 创建障碍物
         for i in range(6):
-            wall = Wall(140 * i, MainGame.SCREEN_HEIGHT / 2)
-            MainGame.Wall_List.append(wall)
-            wall = Wall(140 * i + 31, MainGame.SCREEN_HEIGHT / 2)
-            MainGame.Wall_List.append(wall)
-            wall = Wall(140 * i, MainGame.SCREEN_HEIGHT / 2 + 31)
-            MainGame.Wall_List.append(wall)
-            wall = Wall(140 * i + 31, MainGame.SCREEN_HEIGHT / 2 + 31)
-            MainGame.Wall_List.append(wall)
+            for j in range(2):
+                for k in range(2):
+                    wall = Wall(140 * i + 31 * j, MainGame.SCREEN_HEIGHT / 2 - 31 * k)
+                    MainGame.Wall_List.append(wall)
+
+        # 创建水晶保护墙
+        for i in range(3):
+            for j in range(4):
+                if i != 0:
+                    if j == 0 or j == 4 - 1:
+                        wall = Wall(MainGame.Home.rect.left - 31 + 30 * j, MainGame.SCREEN_HEIGHT - 30 * i)
+                        MainGame.Wall_List.append(wall)
+                else:
+                    wall = Wall(MainGame.Home.rect.left - 31 + 30 * j, MainGame.SCREEN_HEIGHT - 30 * 3)
+                    MainGame.Wall_List.append(wall)
+
+    # 创建我方水晶
+    def creatHome(self):
+        MainGame.Home = Home()
 
     # 将墙壁加入到窗口中
     def blitWalls(self):
@@ -126,6 +150,14 @@ class MainGame():
                 wall.displayWall()
             else:
                 MainGame.Wall_List.remove(wall)
+
+    # 展示背景
+    def blitBackground(self):
+        Background(MainGame.background).displayBackground()
+
+    # 将水晶标志加入到窗口中
+    def blitHome(self):
+        MainGame.Home.displayHome()
 
     # 将敌方坦克加入到窗口中
     def blitEnemyTank(self):
@@ -161,6 +193,8 @@ class MainGame():
                 bullet.hitWalls()
                 # 判断子弹是否碰撞
                 bullet.hitBullet()
+                # 判断子弹是否打到水晶
+                bullet.hitHome()
             else:
                 MainGame.Bullet_List.remove(bullet)
 
@@ -174,6 +208,8 @@ class MainGame():
                 eBullet.bulletMove()
                 # 判断子弹是否碰撞到墙壁
                 eBullet.hitWalls()
+                # 判断子弹是否打到水晶
+                eBullet.hitHome()
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                     eBullet.hitMyTank()
             else:
@@ -202,6 +238,8 @@ class MainGame():
                 if event.key == pygame.K_F1 and not MainGame.TANK_P1:
                     # 调用创建我方坦克方法
                     self.creatMyTank()
+                if event.key == pygame.K_F2 and not MainGame.Home.live:
+                    MainGame.Home.live = True
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                     # 具体是哪一个按键的处理
                     if event.key == pygame.K_LEFT:
@@ -282,6 +320,19 @@ class MainGame():
         textSurface = font.render(text, True, COLOR_RED)  # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
         return textSurface
 
+    # 水晶击破提示
+    def getTextSurface_gameover(self, text):
+        # 字体初始化
+        pygame.font.init()
+        # 查看系统支持的所有字体
+        # fontList = pygame.font.get_fonts()
+        # print(fontList)
+        # 选择一个合适的字体
+        font = pygame.font.SysFont("kaiti", 60, bold=True, italic=True)  # pygame.font.SysFont("字体名称", 字号, 默认不粗体, 默认不斜体)
+        # 使用对应的字符完成相关内容的绘制
+        textSurface = font.render(text, True, COLOR_RED)  # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
+        return textSurface
+
     # 结束游戏
     def endGame(self):
         print("谢谢使用")
@@ -290,10 +341,11 @@ class MainGame():
         # 结束程序
         sys.exit()
 
+
 # 背景
 class Background():
-    def __init__(self):
-        self.image = pygame.image.load("images/background.gif")
+    def __init__(self, image):
+        self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()
         self.rect.left = 0
         self.rect.top = 0
@@ -535,6 +587,14 @@ class Bullet(BaseItem):
                 self.live = False
                 bullet.live = False
 
+    # 子弹碰撞水晶
+    def hitHome(self):
+        if pygame.sprite.collide_rect(self, MainGame.Home):
+            # 修改子弹状态
+            self.live = False
+            # 修改我方水晶状态
+            MainGame.Home.live = False
+
 
 class Explode():
     def __init__(self, tank):
@@ -576,6 +636,23 @@ class Wall():
     # 展示墙壁
     def displayWall(self):
         MainGame.window.blit(self.image, self.rect)
+
+
+class Home():
+    def __init__(self):
+        self.image_symbol = pygame.image.load("images/symbol.gif")
+        self.image_symbol_destoryed = pygame.image.load("images/symbol_destoryed.gif")
+        self.rect = self.image_symbol.get_rect()
+        self.rect.left = MainGame.SCREEN_WIDTH / 2 - self.rect.width
+        self.rect.top = MainGame.SCREEN_HEIGHT - self.rect.height
+        # 用来判断水晶还在吗
+        self.live = True
+
+    def displayHome(self):
+        if self.live:
+            MainGame.window.blit(self.image_symbol, self.rect)
+        else:
+            MainGame.window.blit(self.image_symbol_destoryed, self.rect)
 
 
 class Music():
