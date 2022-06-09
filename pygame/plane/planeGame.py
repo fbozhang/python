@@ -3,17 +3,18 @@
 # @Author: fbz
 # @File : planeGame.py
 """
-v1.03
+v1.04
     新增功能：
-        显示飞机
+        显示敌方飞机
         飞机可以移动
 """
-
+import random
 import sys
+import time
 
 import pygame
 
-version = "v1.01"
+version = "v1.04"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 
 
@@ -26,13 +27,19 @@ class MainGame():
     background = "resources/images/background.png"
     # 创建我方飞机
     MYPLANE = None
+    # 存储所有的敌方飞机
+    EnemyPlane_List = []
+    # 要创建的敌方飞机的数量
+    EnemyPlane_count = 5
 
     # 开始游戏方法
     def startGame(self):
         # 创建窗口加载窗口
         MainGame.window = pygame.display.set_mode([MainGame.SCREEN_WIDTH, MainGame.SCREEN_HEIGHT])
-        # 创建我方坦克
+        # 创建我方飞机
         self.creatMyPlane()
+        # 创建敌方飞机
+        self.creatEnemyPlane()
         # 设置游戏标题
         pygame.display.set_caption("飞机大战" + version)
         # 让窗口持续刷新操作
@@ -48,10 +55,14 @@ class MainGame():
             else:
                 del MainGame.MYPLANE
                 MainGame.MYPLANE = None
+
+            # 将敌方飞机加入到窗口中
+            self.blitEnemyPlane()
             # 在循环中持续完成事件的获取
             self.getEvent()
             # 我方飞机移动
             self.planeMove(MainGame.MYPLANE)
+            time.sleep(0.02)
             # 窗口的刷新
             pygame.display.update()
 
@@ -97,17 +108,34 @@ class MainGame():
     def blitBackground(self):
         Background(MainGame.background).displayBackground()
 
-    # 创建我方坦克
+    # 创建我方飞机
     def creatMyPlane(self):
         MainGame.MYPLANE = MyPlane(200, 600)
+
+    # 创建敌方飞机
+    def creatEnemyPlane(self):
+        top = 0 - 27
+        for i in range(MainGame.EnemyPlane_count):
+            speed = random.randint(3, 6)
+            left = random.randint(1, int(MainGame.SCREEN_WIDTH / 100 - 1))
+            ePlane = EnemyPlane(left * 100, top, speed)
+            MainGame.EnemyPlane_List.append(ePlane)
 
     def planeMove(self, plane):
         if plane and not plane.stop:
             plane.move()
-            # 调用飞机与墙壁的碰撞方法,判断是否碰撞
-            # plane.hitWalls()
-            # 调用我方坦克与敌方坦克的碰撞方法,判断是否碰撞
+            # 调用我方飞机与敌方飞机的碰撞方法,判断是否碰撞
             # plane.hitEnemyTank()
+
+    # 将敌方坦克加入到窗口中
+    def blitEnemyPlane(self):
+        for ePlane in MainGame.EnemyPlane_List:
+            if ePlane.live:
+                ePlane.displayPlane()  # 继承父类
+                # 飞机移动
+                ePlane.EplaneMove()
+            else:
+                MainGame.EnemyPlane_List.remove(ePlane)
 
     # 结束游戏方法
     def endGame(self):
@@ -143,9 +171,6 @@ class Plane():
         self.stop = True
         # live用来记录是否活着
         self.live = True
-        # 用来记录移动之前的坐标(用于坐标还原时使用)
-        self.oldLeft = self.rect.left
-        self.oldTop = self.rect.top
 
     def move(self):
         if self.direction == "L":
@@ -174,8 +199,23 @@ class MyPlane(Plane):
 
 
 class EnemyPlane(Plane):
-    def __init__(self):
-        pass
+    def __init__(self, left, top, speed):
+        super(EnemyPlane, self).__init__(left, top)
+        # self.live = True
+        self.image = pygame.image.load("resources/images/enemy-1.png")
+        # 飞机所在的区域
+        self.rect = self.image.get_rect()
+        # 指定飞机初始化位置 分别距x，y轴的位置
+        self.rect.left = left
+        self.rect.top = top
+        # 新增速度属性
+        self.speed = speed
+        # 飞机的移动开关
+        self.stop = True
+
+    # 移动
+    def EplaneMove(self):
+        self.rect.top += self.speed
 
 
 class Bullet():
