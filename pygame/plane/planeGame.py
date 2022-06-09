@@ -3,10 +3,9 @@
 # @Author: fbz
 # @File : planeGame.py
 """
-v1.04
+v1.05
     新增功能：
-        显示敌方飞机
-        飞机可以移动
+        双方飞机碰撞
 """
 import random
 import sys
@@ -14,7 +13,7 @@ import time
 
 import pygame
 
-version = "v1.04"
+version = "v1.05"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 
 
@@ -125,7 +124,7 @@ class MainGame():
         if plane and not plane.stop:
             plane.move()
             # 调用我方飞机与敌方飞机的碰撞方法,判断是否碰撞
-            # plane.hitEnemyTank()
+            plane.hitEnemyPlane()
 
     # 将敌方坦克加入到窗口中
     def blitEnemyPlane(self):
@@ -134,6 +133,8 @@ class MainGame():
                 ePlane.displayPlane()  # 继承父类
                 # 飞机移动
                 ePlane.EplaneMove()
+                # 敌方飞机是否撞到我方飞机
+                ePlane.hitMyPlane()
             else:
                 MainGame.EnemyPlane_List.remove(ePlane)
 
@@ -156,7 +157,12 @@ class Background:
         MainGame.window.blit(self.image, self.rect)
 
 
-class Plane():
+class BaseItem(pygame.sprite.Sprite):
+    def __int__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+
+class Plane(BaseItem):
     def __init__(self, left, top):
         self.image = pygame.image.load("resources/images/plane.png")
         self.direction = "U"
@@ -171,8 +177,13 @@ class Plane():
         self.stop = True
         # live用来记录是否活着
         self.live = True
+        # 用来记录飞机移动之前的坐标(用于坐标还原时使用)
+        self.oldLeft = self.rect.left
+        self.oldTop = self.rect.top
 
     def move(self):
+        self.oldLeft = self.rect.left
+        self.oldTop = self.rect.top
         if self.direction == "L":
             if self.rect.left > 0:
                 self.rect.left -= self.speed
@@ -189,6 +200,10 @@ class Plane():
     def shot(self):
         pass
 
+    def stay(self):
+        self.rect.left = self.oldLeft
+        self.rect.top = self.oldTop
+
     def displayPlane(self):
         MainGame.window.blit(self.image, self.rect)
 
@@ -196,6 +211,14 @@ class Plane():
 class MyPlane(Plane):
     def __init__(self, left, top):
         super(MyPlane, self).__init__(left, top)
+
+    # 主动碰撞到敌方飞机
+    def hitEnemyPlane(self):
+        for ePlane in MainGame.EnemyPlane_List:
+            if pygame.sprite.collide_rect(ePlane, self):
+                self.stay()
+                # self.live = False
+                # ePlane.live = False
 
 
 class EnemyPlane(Plane):
@@ -215,10 +238,18 @@ class EnemyPlane(Plane):
 
     # 移动
     def EplaneMove(self):
+        self.oldLeft = self.rect.left
+        self.oldTop = self.rect.top
         self.rect.top += self.speed
 
+    def hitMyPlane(self):
+        if MainGame.MYPLANE and MainGame.MYPLANE.live:
+            if pygame.sprite.collide_rect(self, MainGame.MYPLANE):
+                # 让敌方坦克停下来
+                self.stay()
 
-class Bullet():
+
+class Bullet(BaseItem):
     def __init__(self):
         pass
 
