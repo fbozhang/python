@@ -23,7 +23,8 @@ class MainGame():
     SCREEN_WIDTH = 480
     SCREEN_HEIGHT = 800
     # 背景
-    background = "resources/images/background.png"
+    background = "resources/images/background.gif" \
+                 ""
     # 创建我方飞机
     MYPLANE = None
     # 存储所有的敌方飞机
@@ -164,7 +165,7 @@ class BaseItem(pygame.sprite.Sprite):
 
 class Plane(BaseItem):
     def __init__(self, left, top):
-        self.image = pygame.image.load("resources/images/plane.png")
+        self.image = pygame.image.load("resources/images/plane.gif")
         self.direction = "U"
         # 坦克所在的区域
         self.rect = self.image.get_rect()
@@ -225,7 +226,7 @@ class EnemyPlane(Plane):
     def __init__(self, left, top, speed):
         super(EnemyPlane, self).__init__(left, top)
         # self.live = True
-        self.image = pygame.image.load("resources/images/enemy-1.png")
+        self.image = pygame.image.load("resources/images/enemy-1.gif")
         # 飞机所在的区域
         self.rect = self.image.get_rect()
         # 指定飞机初始化位置 分别距x，y轴的位置
