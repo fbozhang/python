@@ -4,10 +4,9 @@
 # @File : tankGame.py
 
 """
-v1.26
+v2.01
     新增功能：
-        1.增加我方水晶
-        2.子弹打中水晶水晶改变状态
+        打败敌方后按f3重新生成敌方坦克
 """
 import random
 import sys
@@ -15,7 +14,7 @@ import time
 
 import pygame
 
-version = "v1.26"
+version = "v2.01"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -35,6 +34,8 @@ class MainGame():
     EnemyTank_List = []
     # 要创建的敌方坦克的数量
     EnemyTank_count = 5
+    # 胜利标志
+    victory_flag = False
     # 存储我方子弹的列表
     Bullet_List = []
     # 存储敌方子弹的列表
@@ -103,12 +104,16 @@ class MainGame():
             if not MainGame.Home.live:
                 # 将绘制文字得到的小画布粘贴到窗口中
                 MainGame.window.blit(self.getTextSurface_gameover("Game Over!!"), (200, MainGame.SCREEN_HEIGHT / 2 - 60))
+            if len(MainGame.EnemyTank_List) == 0:
+                MainGame.victory_flag = True
+                MainGame.window.blit(self.getTextSurface_gameover("victory!!"),
+                                     (250, MainGame.SCREEN_HEIGHT / 2 - 60))
             # 窗口的刷新
             pygame.display.update()
 
     # 创建我方坦克
     def creatMyTank(self):
-        MainGame.TANK_P1 = MyTank(200, 300)
+        MainGame.TANK_P1 = MyTank(275, 440)
 
     # 创建敌方坦克
     def creatEnemyTank(self):
@@ -240,6 +245,9 @@ class MainGame():
                     self.creatMyTank()
                 if event.key == pygame.K_F2 and not MainGame.Home.live:
                     MainGame.Home.live = True
+                if event.key == pygame.K_F3 and MainGame.victory_flag == True:
+                    MainGame.victory_flag = False
+                    self.creatEnemyTank()
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                     # 具体是哪一个按键的处理
                     if event.key == pygame.K_LEFT:
@@ -320,7 +328,7 @@ class MainGame():
         textSurface = font.render(text, True, COLOR_RED)  # font.render(文字, 是否抗锯齿, 颜色, 背景默认没有)
         return textSurface
 
-    # 水晶击破提示
+    # 游戏结束提示
     def getTextSurface_gameover(self, text):
         # 字体初始化
         pygame.font.init()
@@ -643,7 +651,7 @@ class Home():
         self.image_symbol = pygame.image.load("images/symbol.gif")
         self.image_symbol_destoryed = pygame.image.load("images/symbol_destoryed.gif")
         self.rect = self.image_symbol.get_rect()
-        self.rect.left = MainGame.SCREEN_WIDTH / 2 - self.rect.width
+        self.rect.left = MainGame.SCREEN_WIDTH / 2 - self.rect.width / 2
         self.rect.top = MainGame.SCREEN_HEIGHT - self.rect.height
         # 用来判断水晶还在吗
         self.live = True
