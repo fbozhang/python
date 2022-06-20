@@ -2,19 +2,20 @@
 # @Time : 2022/5/23 23:42
 # @Author: fbz
 # @File : tankGame.py
-
-"""
-v2.01
-    新增功能：
-        打败敌方后按f3重新生成敌方坦克
-"""
+import math
 import random
 import sys
 import time
-
 import pygame
 
-version = "v2.01"
+version = "v2.02"
+
+f"""
+{version}
+    新增功能：
+        按F4开启外挂模式，子弹自动追踪敌方坦克
+"""
+
 COLOR_BLACK = pygame.Color(0, 0, 0)
 COLOR_RED = pygame.Color(255, 0, 0)
 
@@ -33,9 +34,7 @@ class MainGame():
     # 存储所有的敌方坦克
     EnemyTank_List = []
     # 要创建的敌方坦克的数量
-    EnemyTank_count = 5
-    # 胜利标志
-    victory_flag = False
+    EnemyTank_count = 2
     # 存储我方子弹的列表
     Bullet_List = []
     # 存储敌方子弹的列表
@@ -44,6 +43,8 @@ class MainGame():
     Explode_List = []
     # 墙壁列表
     Wall_List = []
+    # 外挂模式
+    cheat = False
 
     # 开始游戏
     def startGame(self):
@@ -103,9 +104,9 @@ class MainGame():
             time.sleep(0.02)
             if not MainGame.Home.live:
                 # 将绘制文字得到的小画布粘贴到窗口中
-                MainGame.window.blit(self.getTextSurface_gameover("Game Over!!"), (200, MainGame.SCREEN_HEIGHT / 2 - 60))
+                MainGame.window.blit(self.getTextSurface_gameover("Game Over!!"),
+                                     (200, MainGame.SCREEN_HEIGHT / 2 - 60))
             if len(MainGame.EnemyTank_List) == 0:
-                MainGame.victory_flag = True
                 MainGame.window.blit(self.getTextSurface_gameover("victory!!"),
                                      (250, MainGame.SCREEN_HEIGHT / 2 - 60))
             # 窗口的刷新
@@ -190,8 +191,16 @@ class MainGame():
             # 如果子弹还活着绘制出来，否则直接从列表中移除该子弹
             if bullet.live:
                 bullet.displayBullet()
-                # 让子弹移动
-                bullet.bulletMove()
+                print(bullet.cheat)
+                bullet.cheat = MainGame.cheat
+                if bullet.cheat:
+                    # 子弹追踪
+                    if len(MainGame.EnemyTank_List) > 0:
+                        bullet.bulletFollowMove(MainGame.EnemyTank_List[0].rect.left,
+                                                MainGame.EnemyTank_List[0].rect.top)
+                else:
+                    # 让子弹移动
+                    bullet.bulletMove()
                 # 判断我方子弹与敌方坦克是否碰撞
                 bullet.hitEnemyTank()
                 # 判断子弹是否碰撞到墙壁
@@ -239,15 +248,18 @@ class MainGame():
                 self.endGame()
             # 判断事件类型是否为按键按下，如果是:继续判断按键是哪一个按键来进行对应的处理
             if event.type == pygame.KEYDOWN:
-                # 点击ESC按键让我方坦克重生
+                # 点击F1按键让我方坦克重生
                 if event.key == pygame.K_F1 and not MainGame.TANK_P1:
                     # 调用创建我方坦克方法
                     self.creatMyTank()
+                # 点击F2按键让我方水晶重生
                 if event.key == pygame.K_F2 and not MainGame.Home.live:
                     MainGame.Home.live = True
-                if event.key == pygame.K_F3 and MainGame.victory_flag == True:
-                    MainGame.victory_flag = False
+                # 点击F3按键让敌方坦克重生
+                if event.key == pygame.K_F3 and len(MainGame.EnemyTank_List) == 0:
                     self.creatEnemyTank()
+                if event.key == pygame.K_F4:
+                    MainGame.cheat = True
                 if MainGame.TANK_P1 and MainGame.TANK_P1.live:
                     # 具体是哪一个按键的处理
                     if event.key == pygame.K_LEFT:
@@ -525,6 +537,8 @@ class Bullet(BaseItem):
         self.speed = 7
         # 用来记录子弹是否活着
         self.live = True
+        # 记录是否开挂
+        self.cheat = False
 
     # 子弹的移动
     def bulletMove(self):
@@ -549,6 +563,21 @@ class Bullet(BaseItem):
                 self.rect.left += self.speed
             else:
                 self.live = False
+
+    # 子弹跟踪移动
+    def bulletFollowMove(self, x, y):
+        velocity = 10000
+        time = 1 / 1000
+        space = velocity * time
+        clock = pygame.time.Clock()  # 创建时钟对象
+        clock.tick(120)  # 每秒最多循环60次，即设置帧率为60
+
+        distance = math.sqrt(pow(x - self.rect.left, 2) + pow(y - self.rect.top, 2))
+        sina = (y - self.rect.top) / distance
+        cosa = (x - self.rect.left) / distance
+        self.rect.left = self.rect.left + space * cosa
+        self.rect.top = self.rect.top + space * sina
+        print(self.rect.left,self.rect.top, x, y)
 
     # 展示子弹
     def displayBullet(self):
