@@ -104,10 +104,10 @@ class MainGame():
             time.sleep(0.02)
             if not MainGame.Home.live:
                 # 将绘制文字得到的小画布粘贴到窗口中
-                MainGame.window.blit(self.getTextSurface_gameover("Game Over!!"),
+                MainGame.window.blit(self.getTextSurface_Tips("Game Over!!"),
                                      (200, MainGame.SCREEN_HEIGHT / 2 - 60))
             if len(MainGame.EnemyTank_List) == 0:
-                MainGame.window.blit(self.getTextSurface_gameover("victory!!"),
+                MainGame.window.blit(self.getTextSurface_Tips("victory!!"),
                                      (250, MainGame.SCREEN_HEIGHT / 2 - 60))
             # 窗口的刷新
             pygame.display.update()
@@ -341,7 +341,7 @@ class MainGame():
         return textSurface
 
     # 游戏结束提示
-    def getTextSurface_gameover(self, text):
+    def getTextSurface_Tips(self, text):
         # 字体初始化
         pygame.font.init()
         # 查看系统支持的所有字体
