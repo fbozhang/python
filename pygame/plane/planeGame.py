@@ -3,9 +3,9 @@
 # @Author: fbz
 # @File : planeGame.py
 """
-v1.05
+v1.06
     新增功能：
-        双方飞机碰撞
+        显示爆炸效果
 """
 import random
 import sys
@@ -13,7 +13,7 @@ import time
 
 import pygame
 
-version = "v1.05"
+version = "v1.06"
 COLOR_BLACK = pygame.Color(0, 0, 0)
 
 
@@ -23,8 +23,7 @@ class MainGame():
     SCREEN_WIDTH = 480
     SCREEN_HEIGHT = 800
     # 背景
-    background = "resources/images/background.gif" \
-                 ""
+    background = "resources/images/background.gif"
     # 创建我方飞机
     MYPLANE = None
     # 存储所有的敌方飞机
@@ -264,12 +263,29 @@ class Bullet(BaseItem):
 
 
 class Explode():
-    def __init__(self):
-        pass
+    def __init__(self, tank):
+        self.rect = tank.rect
+        self.step = 0
+        self.images = [
+            pygame.image.load("resources/images/blast0.gif"),
+            pygame.image.load("resources/images/blast1.gif"),
+            pygame.image.load("resources/images/blast2.gif"),
+            pygame.image.load("resources/images/blast3.gif"),
+            pygame.image.load("resources/images/blast4.gif")
+        ]
+        self.image = self.images[self.step]
+        self.live = True
 
     # 展示爆炸效果
     def displayExplode(self):
-        pass
+        if self.step < len(self.images):
+            self.image = self.images[self.step]
+            MainGame.window.blit(self.image, self.rect)
+            time.sleep(0.03)
+            self.step += 1
+        else:
+            self.live = False
+            self.step = 0
 
 
 class Music():
