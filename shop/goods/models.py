@@ -19,6 +19,9 @@ class Goods(models.Model):
     def __unicode__(self):
         return u'Goods:%s' % self.gname
 
+    def getGImg(self):
+        return self.inventory_set.first().color.colorurl
+
 
 class GoodsDetailName(models.Model):
     gdname = models.CharField(max_length=30)
