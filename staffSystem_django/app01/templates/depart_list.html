@@ -42,7 +42,7 @@
         <li><a href="#"> 登录 </a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-             aria-haspopup="true" aria-expanded="true">阿斯顿 <span class="caret"></span></a>
+             aria-haspopup="true" aria-expanded="true">阿斯顿<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="#"> 个人资料 </a></li>
             <li><a href="#"> 我的信息 </a></li>
@@ -88,8 +88,8 @@
                     <th scope="row">{{ obj.id }}</th>
                     <td>{{ obj.title }}</td>
                     <td>
-                        <a class="btn btn-primary btn-xs" href="#">编辑</a>
-                        <a class="btn btn-danger btn-xs" href="#">删除</a>
+                        <a class="btn btn-primary btn-xs" href="/depart/{{ obj.id }}/edit/">编辑</a>
+                        <a class="btn btn-danger btn-xs" href="/depart/delete/?nid={{ obj.id }}">删除</a>
                     </td>
                 </tr>
 

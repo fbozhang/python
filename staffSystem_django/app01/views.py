@@ -23,3 +23,31 @@ def depart_add(request):
 
     # 重定向回部门列表
     return redirect("/depart/list/")
+
+
+def depart_delete(request):
+    """ 删除部门 """
+    # 获取ID
+    nid = request.GET.get('nid')
+    # 删除
+    Department.objects.filter(id=nid).delete()
+
+    # 重定向回部门列表
+    return redirect("/depart/list/")
+
+
+def depart_edit(request, nid):
+    """ 修改部门 """
+    if request.method == 'GET':
+        # 根据nid获取数据[obj,]
+        row_object = Department.objects.filter(id=nid).first()
+
+        return render(request, "depart_edit.html", {'row_object': row_object})
+
+    # 获取用户提交的标题
+    title = request.POST.get('title')
+    # 根据id找到数据库中数据更新
+    Department.objects.filter(id=nid).update(title=title)
+
+    # 重定向回部门列表
+    return redirect("/depart/list/")
