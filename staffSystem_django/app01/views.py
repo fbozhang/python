@@ -73,3 +73,31 @@ def user_list(request):
         """
 
     return render(request, "user_list.html", {'quertset': quertset})
+
+
+def user_add(request):
+    """ 添加用户 """
+
+    if request.method == 'GET':
+        context = {
+            'gender_choices': UserInfo.gender_choices,
+            'depart_list': Department.objects.all(),
+        }
+        return render(request, "user_add.html", context)
+
+    # 获取用户提交的数据
+    name = request.POST.get('name')
+    pwd = request.POST.get('pwd')
+    age = request.POST.get('age')
+    account = request.POST.get('ac')
+    ctime = request.POST.get('ctime')
+    gender = request.POST.get('gd')
+    depart_id = request.POST.get('dp')
+
+    # 添加到数据库中
+    UserInfo.objects.create(name=name, password=pwd, age=age,
+                            account=account, create_time=ctime,
+                            gender=gender, depart_id=depart_id)
+
+    # 返回到用户列表
+    return redirect("/user/list")
