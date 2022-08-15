@@ -76,7 +76,7 @@ def user_list(request):
 
 
 def user_add(request):
-    """ 添加用户 """
+    """ 添加用户(原始方法) """
 
     if request.method == 'GET':
         context = {
@@ -101,3 +101,19 @@ def user_add(request):
 
     # 返回到用户列表
     return redirect("/user/list")
+
+
+# ModelForm示例
+from django import forms
+
+
+class UserModelForm(forms.ModelForm):
+    class Meta:
+        model = UserInfo
+        fields = ["name", "password", "age", "gender", "depart"]
+
+
+def user_model_form_add(request):
+    """ 添加用户(ModelForm版本) """
+    form = UserModelForm()
+    return render(request, 'user_model_form_add.html', {'form': form})
