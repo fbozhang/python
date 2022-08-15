@@ -108,12 +108,44 @@ from django import forms
 
 
 class UserModelForm(forms.ModelForm):
+    name = forms.CharField(min_length=3, label="用户名")
+    # password = forms.CharField(mlabel="密码", validators=) # validators=正则表达式
+
     class Meta:
         model = UserInfo
-        fields = ["name", "password", "age", "gender", "depart"]
+        fields = ["name", "password", "age", "account", "create_time", "gender", "depart"]
+        # widgets = {
+        #     "name": forms.TextInput(attrs={"class": "form-control"}),
+        #     "password": forms.PasswordInput(attrs={"class": "form-control"}),
+        #     "age": forms.TextInput(attrs={"class": "form-control"}),
+        # }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # 循环找到所有插件，添加class="form-control"
+        for name, field in self.fields.items():
+            # if name == "age":
+            #     continue
+            # print(name, field)
+            field.widget.attrs = {"class": "form-control", "placeholder": field.label}
 
 
 def user_model_form_add(request):
     """ 添加用户(ModelForm版本) """
-    form = UserModelForm()
-    return render(request, 'user_model_form_add.html', {'form': form})
+    if request.method == "GET":
+        form = UserModelForm()
+        return render(request, 'user_model_form_add.html', {'form': form})
+
+    # 用户POST提交数据,数据校验
+    form = UserModelForm(data=request.POST)
+    if form.is_valid():
+        # 如歌数据合法，保存到数据库
+        # print(form.cleaned_data)    # {'name': '史蒂夫', 'password': '432'}
+        # UserInfo.objects.create(..)
+        form.save()
+        return redirect('/user/list/')
+    else:
+        # 校验失败
+        # print(form.errors)
+        return render(request, 'user_model_form_add.html', {'form': form})
