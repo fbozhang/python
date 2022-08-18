@@ -109,6 +109,7 @@ from django import forms
 
 class UserModelForm(forms.ModelForm):
     name = forms.CharField(min_length=3, label="用户名")
+
     # password = forms.CharField(mlabel="密码", validators=) # validators=正则表达式
 
     class Meta:
@@ -149,3 +150,29 @@ def user_model_form_add(request):
         # 校验失败
         # print(form.errors)
         return render(request, 'user_model_form_add.html', {'form': form})
+
+
+def user_edit(request, nid):
+    """ 编辑用户 """
+
+    # 根据id去数据库获取要编辑的那一行数据(对象)
+    row_object = UserInfo.objects.filter(id=nid).first()
+
+    if request.method == "GET":
+        form = UserModelForm(instance=row_object)
+        return render(request, "user_edit.html", {"form": form})
+
+    else:
+        form = UserModelForm(data=request.POST, instance=row_object)
+        if form.is_valid():
+            # 默认保存的是用户输入的所有数值，如果想要用户输入以外增加一点值
+            # form.instance.字段名 = 值(form.instance.name = '阿斯顿')
+            form.save()
+            return redirect('/user/list/')
+        return render(request, 'user_edit.html', {'form': form})
+
+
+def user_delete(request, nid):
+    UserInfo.objects.filter(id=nid).delete()
+
+    return redirect('/user/list/')

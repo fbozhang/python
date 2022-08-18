@@ -49,8 +49,8 @@
                         <td>{{ obj.get_gender_display }}</td>
                         <td>{{ obj.depart.title }}</td>
                         <td>
-                            <a class="btn btn-primary btn-xs" href="#">编辑</a>
-                            <a class="btn btn-danger btn-xs" href="#">删除</a>
+                            <a class="btn btn-primary btn-xs" href="/user/{{ obj.id }}/edit/">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="/user/{{ obj.id }}/delete/">删除</a>
                         </td>
                     </tr>
                 {% endfor %}
