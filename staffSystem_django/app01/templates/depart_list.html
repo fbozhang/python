@@ -11,37 +11,38 @@
 
         <div class="panel panel-default">
             <!-- Default panel contents -->
-          <div class="panel-heading">
-              <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-              部门列表
-          </div>
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                部门列表
+            </div>
 
-          <!-- Table -->
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>名称</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for obj in queryset %}
-
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
                 <tr>
-                    <th scope="row">{{ obj.id }}</th>
-                    <td>{{ obj.title }}</td>
-                    <td>
-                        <a class="btn btn-primary btn-xs" href="/depart/{{ obj.id }}/edit/">编辑</a>
-                        <a class="btn btn-danger btn-xs" href="/depart/delete/?nid={{ obj.id }}">删除</a>
-                    </td>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>操作</th>
                 </tr>
-
-            {% endfor %}
-
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <th scope="row">{{ obj.id }}</th>
+                        <td>{{ obj.title }}</td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" href="/depart/{{ obj.id }}/edit/">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="/depart/delete/?nid={{ obj.id }}">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
+
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
 
     </div>
 {% endblock %}

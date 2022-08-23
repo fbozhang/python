@@ -38,7 +38,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for obj in quertset %}
+                {% for obj in queryset %}
                     <tr>
                         <th scope="row">{{ obj.id }}</th>
                         <td>{{ obj.name }}</td>
@@ -58,6 +58,10 @@
                 </tbody>
             </table>
         </div>
+
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
 
     </div>
 {% endblock %}
