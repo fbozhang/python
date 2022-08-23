@@ -1,7 +1,26 @@
 {% extends 'layout.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugins/css/bootstrap-datepicker.min.css' %}">
+{% endblock %}
+{% block js %}
+    <script src="{% static 'plugins/js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'plugins/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+    <script>
+        $(function () {
+            $('#dt').datepicker({
+                format: 'yyyy-mm-dd',
+                startDate: '0',
+                language: "zh-CN",
+                autoclose: true
+            });
+        })
+    </script>
+{% endblock %}
 
 {% block content %}
-        <div class="container">
+    <div class="container">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"> 新建用户 </h3>
@@ -27,7 +46,7 @@
                     </div>
                     <div class="form-group">
                         <label>入职时间</label>
-                        <input type="text" class="form-control" placeholder="入职时间" name="ctime">
+                        <input id="dt" type="date" class="form-control" placeholder="入职时间" name="ctime">
                     </div>
                     <div class="form-group">
                         <label>性别</label>
