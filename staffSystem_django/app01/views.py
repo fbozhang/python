@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.shortcuts import render, redirect
 from django import forms
+from django.utils.safestring import mark_safe
+
 from app01.models import *
 
 
@@ -204,16 +206,90 @@ def pretty_list(request):
     '''
 
     data_dict = {}
-    value = request.GET.get('query')
+    value = request.GET.get('query', '')
     if value:
         data_dict['mobile__contains'] = value
 
-    queryset = Prettynum.objects.filter(**data_dict).order_by('-level')
+    # 根据用户想要访问的页码计算出起止位置，默认是1
+    page = int(request.GET.get('page', 1))
+    page_size = 10
+    start = (page - 1) * page_size
+    end = page * page_size
+
+    queryset = Prettynum.objects.filter(**data_dict).order_by('-level')[start:end]
+
+    # 数据总条数
+    total_count = Prettynum.objects.filter(**data_dict).order_by('-level').count()
+
+    # 总页码
+    total_page_count, div = divmod(total_count, page_size)  # divmod(67,10) -> (6,7) -> (商，余数)
+    if div:
+        total_page_count += 1
+
+    # 显示当前页的前5页后5页
+    plus = 5
+    if total_page_count <= 2 * plus + 1:
+        # 数据库数据较少，没有达到11页
+        start_page = 1
+        end_page = total_page_count
+    else:
+        # 数据库中数据大于11页
+        if page <= plus:
+            # 当前页<5(极小值)
+            start_page = 1
+            end_page = 2 * plus + 1
+        else:
+            # 当前页 > 5
+            if (page + plus) > total_page_count:
+                start_page = total_page_count - 2 * plus
+                end_page = total_page_count
+            else:
+                start_page = page - plus
+                end_page = page + plus
+
+    # 页码
+    '''
+    <li><a href="?page=1">1</a></li>
+    <li><a href="?page=2">2</a></li>
+    <li><a href="?page=3">3</a></li>
+    '''
+
+    page_list = []
+
+    # 首页
+    page_list.append('<li><a href="?page={}">首页</a></li>'.format(1))
+
+    # 上一页
+    if page > 1:
+        prev = '<li><a href="?page={}">上一页</a></li>'.format(page - 1)
+    else:
+        prev = '<li><a href="?page={}">上一页</a></li>'.format(1)
+    page_list.append(prev)
+
+    # 页面
+    for i in range(start_page, end_page + 1):
+        if i == page:
+            element = '<li class="active"><a href="?page={}">{}</a></li>'.format(i, i)
+        else:
+            element = '<li><a href="?page={}">{}</a></li>'.format(i, i)
+        page_list.append(element)
+
+    # 下一页
+    if page < total_page_count:
+        prev = '<li><a href="?page={}">下一页</a></li>'.format(page + 1)
+    else:
+        prev = '<li><a href="?page={}">下一页</a></li>'.format(total_page_count)
+    page_list.append(prev)
+
+    # 尾页
+    page_list.append('<li><a href="?page={}">尾页</a></li>'.format(total_page_count))
+
+    page_string = mark_safe(''.join(page_list))  # 标记为安全的才可以在前端显示为标签
 
     # select * from prettynum by level desc
     # queryset = Prettynum.objects.all().order_by('-level')
 
-    return render(request, 'pretty_list.html', {'queryset': queryset, 'value': value})
+    return render(request, 'pretty_list.html', {'queryset': queryset, 'value': value, 'page_string': page_string})
 
 
 # from django.core.validators import RegexValidator

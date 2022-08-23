@@ -12,7 +12,8 @@
             <div style="float: right;width: 300px">
                 <form method="get">
                     <div class="input-group">
-                        <input type="text" name="query" class="form-control" placeholder="Search for..." value="{{ value }}">
+                        <input type="text" name="query" class="form-control" placeholder="Search for..."
+                               value="{{ value }}">
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="submit">
                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -61,6 +62,20 @@
                 </tbody>
             </table>
         </div>
+
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
+        <br>
+
+        <form method="get">
+            <div class="input-group" style="width: 200px">
+                <input type="text" name="page" class="form-control" placeholder="页码">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">跳转</button>
+                </span>
+            </div>
+        </form>
 
     </div>
 {% endblock %}
