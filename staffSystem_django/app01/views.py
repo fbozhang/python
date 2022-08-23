@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.shortcuts import render, redirect
+from django import forms
 from app01.models import *
 
 
@@ -106,7 +107,7 @@ def user_add(request):
 
 
 # ModelForm示例
-from django import forms
+# from django import forms
 
 
 class UserModelForm(forms.ModelForm):
@@ -183,10 +184,36 @@ def user_delete(request, nid):
 def pretty_list(request):
     """ 靓号列表 """
 
-    # select * from prettynum by level desc
-    queryset = Prettynum.objects.all().order_by('-level')
+    '''
+    Prettynum.objects.filter(id=5)  # 等于5
+    Prettynum.objects.filter(id__gt=5)  # 大于5
+    Prettynum.objects.filter(id__gte=5)  # 大于等于5
+    Prettynum.objects.filter(id__lt=5)  # 小于5
+    Prettynum.objects.filter(id__lte=5)  # 小于等于5
 
-    return render(request, 'pretty_list.html', {'queryset': queryset})
+    data_dict = {'id__lte': 5}
+    Prettynum.objects.filter(**data_dict)
+
+    Prettynum.objects.filter(mobile='123')  # 等于123
+    Prettynum.objects.filter(mobile__startswith='123')  # 筛选出以123开头
+    Prettynum.objects.filter(mobile__endswith='123')  # 筛选出以123结尾
+    Prettynum.objects.filter(mobile__contains='123')  # 筛选出包含123
+
+    data_dict = {'mobile__contains': 123}
+    Prettynum.objects.filter(**data_dict)
+    '''
+
+    data_dict = {}
+    value = request.GET.get('query')
+    if value:
+        data_dict['mobile__contains'] = value
+
+    queryset = Prettynum.objects.filter(**data_dict).order_by('-level')
+
+    # select * from prettynum by level desc
+    # queryset = Prettynum.objects.all().order_by('-level')
+
+    return render(request, 'pretty_list.html', {'queryset': queryset, 'value': value})
 
 
 # from django.core.validators import RegexValidator
