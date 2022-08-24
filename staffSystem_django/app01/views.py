@@ -187,7 +187,7 @@ def user_edit(request, nid):
         form = UserModelForm(data=request.POST, instance=row_object)
         if form.is_valid():
             # 默认保存的是用户输入的所有数值，如果想要用户输入以外增加一点值
-            # form.instance.字段名 = 值(form.instance.name = '阿斯顿')
+            # form.instance.字段名 = 默认值(form.instance.name = '阿斯顿')
             form.save()
             return redirect('/user/list/')
         return render(request, 'user_edit.html', {'form': form})
@@ -511,3 +511,30 @@ def admin_add(request):
         return redirect('/admin/list/')
 
     return render(request, 'change.html', {'form': form, 'title': title})
+
+
+class AdminEditModeForm(BootStrapModelForm):
+    class Meta:
+        model = Admin
+        fields = ['username']
+
+
+def admin_edit(request, nid):
+    """ 编辑管理员 """
+
+    title = '编辑管理员'
+
+    row_object = Admin.objects.filter(id=nid).first()
+    if not row_object:
+        msg = '数据不存在'
+        return render(request, 'error.html', {'msg': msg})
+
+    if request.method == "GET":
+        form = AdminEditModeForm(instance=row_object)
+        return render(request, "change.html", {"form": form})
+    else:
+        form = AdminEditModeForm(data=request.POST, instance=row_object)
+        if form.is_valid():
+            form.save()
+            return redirect('/admin/list/')
+        return render(request, 'change.html', {'form': form, 'title': title})
