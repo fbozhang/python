@@ -125,8 +125,6 @@ def user_add(request):
 
 # ModelForm示例
 # from django import forms
-
-
 class UserModelForm(forms.ModelForm):
     name = forms.CharField(min_length=3, label="用户名")
 
@@ -220,11 +218,13 @@ def pretty_list(request):
     Prettynum.objects.filter(**data_dict)
     '''
 
+    # 搜索
     data_dict = {}
     value = request.GET.get('query', '')
     if value:
         data_dict['mobile__contains'] = value
 
+    # 根据搜索条件去数据库获取
     queryset = Prettynum.objects.filter(**data_dict).order_by('-level')
     # 根据用户想要访问的页码计算出起止位置，默认是1
     # page = int(request.GET.get('page', 1))
@@ -438,3 +438,26 @@ def pretty_delete(request, nid):
     """ 靓号删除 """
     Prettynum.objects.filter(id=nid).delete()
     return redirect('/pretty/list/')
+
+
+def admin_list(request):
+    """ 管理员列表 """
+
+    # 构造搜索
+    data_dict = {}
+    value = request.GET.get('query', '')
+    if value:
+        data_dict['username__contains'] = value
+
+    # 根据搜索条件去数据库获取
+    queryset = Admin.objects.filter(**data_dict)
+
+    # 分页
+    page_object = Pagination(request, queryset)
+    context = {
+        'queryset': page_object.page_queryset,
+        'page_string': page_object.html(),
+        'value': value,
+    }
+
+    return render(request, 'admin_list.html', context)
