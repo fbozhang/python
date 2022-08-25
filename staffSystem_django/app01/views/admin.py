@@ -18,13 +18,6 @@ from app01.models import *
 def admin_list(request):
     """ 管理员列表 """
 
-    # 检查用户是否已登录，未登录则跳转回登录页面
-    # 用户发来请求，获取cookie随机字符串，拿着随机字符串看看session中有没有
-    info = request.session.get('info')
-    if not info:
-        # None -> 没有登录
-        return redirect('/login/')
-
     # 构造搜索
     data_dict = {}
     value = request.GET.get('query', '')
