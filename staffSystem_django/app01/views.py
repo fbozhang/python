@@ -538,3 +538,61 @@ def admin_edit(request, nid):
             form.save()
             return redirect('/admin/list/')
         return render(request, 'change.html', {'form': form, 'title': title})
+
+
+def admin_delete(request, nid):
+    """ 删除管理员 """
+
+    Admin.objects.filter(id=nid).delete()
+    return redirect('/admin/list/')
+
+
+class AdminResetModeForm(BootStrapModelForm):
+    confirm_password = forms.CharField(
+        label='确认密码',
+        widget=forms.PasswordInput,
+    )
+
+    class Meta:
+        model = Admin
+        fields = ['password', 'confirm_password']
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        md5_pwd = md5(password)
+
+        # 去数据库校验当前密码和新输入的密码是否一致
+        exists = Admin.objects.filter(id=self.instance.pk, password=md5_pwd).exists()
+        if exists:
+            raise ValidationError("密码不能与以前的一致")
+
+        return md5(password)
+
+    def clean_confirm_password(self):
+        # print(self.cleaned_data)  # {'username': '阿瑟东', 'password': '13', 'confirm_password': '321'}
+        password = self.cleaned_data.get('password')
+        confirm = md5(self.cleaned_data.get('confirm_password'))
+        if confirm != password:
+            raise ValidationError("密码不一致")
+
+        # 返回此字段保存到数据库（数据库有此字段） -> 放在了cleaned_data里面
+        return confirm
+
+
+def admin_reset(request, nid):
+    """ 重置密码 """
+
+    row_object = Admin.objects.filter(id=nid).first()
+    if not row_object:
+        return redirect('/admin/list/')
+
+    title = '重置密码 - {}'.format(row_object.username)
+    if request.method == "GET":
+        form = AdminResetModeForm()
+        return render(request, 'change.html', {'form': form, 'title': title})
+
+    form = AdminResetModeForm(data=request.POST, instance=row_object)
+    if form.is_valid():
+        form.save()
+        return redirect('/admin/list/')
+    return render(request, 'change.html', {'form': form, 'title': title})
