@@ -2,15 +2,19 @@
 # @Time : 2022/8/25 20:40
 # @Author: fbz
 # @File : account.py
+from io import BytesIO
+
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils.safestring import mark_safe
 from django import forms
 
 from app01.utils.encrypt import md5
 from app01.utils.pagination import Pagination
 from app01.utils.bootstrap import *
-from django.utils.safestring import mark_safe
+from app01.utils.code import check_code
 
 from app01.models import *
 
@@ -58,6 +62,20 @@ def login(request):
         return redirect('/admin/list/')
 
     return render(request, 'login.html', {'form': form})
+
+
+# from io import BytesIO
+def image_code(request):
+    """ 生成图片验证码 """
+
+    # 调用pillow函数生成图片
+    img, code_str = check_code()
+    print(code_str)
+
+    stream = BytesIO()
+    img.save(stream, 'png')
+
+    return HttpResponse(stream.getvalue())
 
 
 def loginout(request):

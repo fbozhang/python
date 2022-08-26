@@ -15,7 +15,7 @@ class authMiddleware(MiddlewareMixin):
 
         # 排除那些不需要登录就能访问的页面
         # request.path_info 获取当前用户请求的URL /login/
-        if request.path_info == '/login/':
+        if request.path_info in ['/login/', '/image/code/']:
             return
 
         # 检查用户是否已登录，未登录则跳转回登录页面
