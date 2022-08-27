@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>任务管理</h1>
+
+        <h3>示例1</h3>
+        <input id="btn1" type="button" class="btn btn-primary" value="点击"/>
+
+        <h3>示例2</h3>
+        <input id="txtUser" type="text" placeholder="用户名"/>
+        <input id="txtAge" type="text" placeholder="年龄"/>
+        <input id="btn2" type="button" class="btn btn-primary" value="点击"/>
+
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            // 页面框架加载完成之后代码自动执行
+            bindBtn1Event();
+            bindBtn2Event();
+
+        })
+
+        function bindBtn1Event() {
+            $('#btn1').click(function () {
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: 'post',
+                    data: {
+                        n1: 123,
+                        n2: 123
+                    },
+                    dataType: 'JSON',
+                    success: function (res) {
+                        console.log(res.status)
+                        console.log(res.data)
+                    }
+                })
+            })
+        }
+
+        function bindBtn2Event() {
+            $('#btn2').click(function () {
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: 'post',
+                    data: {
+                        name: $('#txtUser').val(),
+                        age: $('#txtAge').val()
+                    },
+                    dataType: 'JSON',
+                    success: function (res) {
+                        console.log(res.name)
+                        console.log(res.age)
+                    }
+                })
+            })
+        }
+
+    </script>
+{% endblock %}
