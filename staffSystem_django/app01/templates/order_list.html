@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <div>
+            <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            <input id="btnAdd" type="button" value="新建订单2" class="btn btn-primary">
+        </div>
+    </div>
+
+    <!-- 新建订单(对话框) -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">新建</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formAdd">
+                    <div class="clearfix">
+                        {% for filed in form %}
+                            <div class="col-xs-6">
+                                <div class="form-group" style="position: relative;margin-bottom: 20px;">
+                                    <label>{{ filed.label }}</label>
+                                    {{ filed }}
+                                    <span class="error-msg" style="color: red;position: absolute;"></span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            bindBtnAddEvent();
+        })
+
+        function bindBtnAddEvent() {
+            $('#btnAdd').click(function () {
+                // 点击新建按钮，显示对话框
+                $('#myModal').modal('show');
+            });
+        }
+
+    </script>
+{% endblock %}
