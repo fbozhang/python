@@ -17,7 +17,6 @@
 
         context = {
             'queryset': page_object.page_queryset,  # 分页数据
-            'value': value,
             'page_string':page_object.html(),  # 页码
         }
         return render(request, 'pretty_list.html', context)
