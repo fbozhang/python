@@ -46,6 +46,7 @@
     <script type="text/javascript">
         $(function () {
             bindBtnAddEvent();
+            bindBtnSaveEvent();
         })
 
         function bindBtnAddEvent() {
@@ -55,5 +56,30 @@
             });
         }
 
+        function bindBtnSaveEvent() {
+            $('#btnSave').click(function () {
+                // 清除错误信息
+                $('.error-msg').empty();
+                // 向后台发送请求
+                $.ajax({
+                    url: '/order/add/',
+                    type: 'post',
+                    data: $('#formAdd').serialize(),
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if (res.status) {
+                            alert("添加成功");
+                            // 用JS实现页面的刷新
+                            location.reload();
+                        } else {
+                            $.each(res.error, function (name, errorlist) {
+                                // console.log(name, data);
+                                $('#id_' + name).next().text(errorlist[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
     </script>
 {% endblock %}

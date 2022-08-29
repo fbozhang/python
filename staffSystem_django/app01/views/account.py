@@ -85,7 +85,7 @@ def image_code(request):
 
     # 调用pillow函数生成图片
     img, code_str = check_code()
-    # print(code_str)
+    print(code_str)
 
     # 写入到session中以便后续获取验证码进行校验
     request.session['img_code'] = code_str
