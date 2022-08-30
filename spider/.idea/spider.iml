@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/BeautifulSoup/img" />
       <excludeFolder url="file://$MODULE_DIR$/aiohttp/novel" />
+      <excludeFolder url="file://$MODULE_DIR$/video/video" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
