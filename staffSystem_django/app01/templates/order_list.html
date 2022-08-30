@@ -4,7 +4,7 @@
 
     <div class="container">
         <div style="margin-bottom: 10px">
-            <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
             <input id="btnAdd" type="button" value="新建订单2" class="btn btn-primary">
         </div>
 
@@ -30,7 +30,7 @@
                 </thead>
                 <tbody>
                 {% for obj in queryset %}
-                    <tr>
+                    <tr uid="{{ obj.id }}">
                         <th scope="row">{{ obj.id }}</th>
                         <td>{{ obj.oid }}</td>
                         <td>{{ obj.title }}</td>
@@ -39,7 +39,7 @@
                         <td>{{ obj.admin.username }}</td>
                         <td>
                             <a class="btn btn-primary btn-xs" href="#">编辑</a>
-                            <a class="btn btn-danger btn-xs" href="#">删除</a>
+                            <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button" value="删除">
                         </td>
                     </tr>
                 {% endfor %}
@@ -53,13 +53,13 @@
     </div>
 
     <!-- 新建订单(对话框) -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">新建</h4>
+                    <h4 class="modal-title" id="addModalLabel">新建</h4>
                 </div>
                 <div class="modal-body">
                     <form id="formAdd">
@@ -84,19 +84,37 @@
         </div>
     </div>
 
+    <!-- 删除对话框 -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <h4>是否确定删除?</h4>
+                <p style="margin: 10px 0;"> 删除后所有关联的相关数据都会被删除。 </p>
+                <p style="text-align: right;">
+                    <button id="btnConfirmDelete" type="button" class="btn btn-danger">确 定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block js %}
     <script type="text/javascript">
+        var DELETE_ID; // 全局变量
+
         $(function () {
             bindBtnAddEvent();
             bindBtnSaveEvent();
+            bindBtnDeleteEvent();
+            bindBtnConfirmDeleteEvent();
         })
 
         function bindBtnAddEvent() {
             $('#btnAdd').click(function () {
                 // 点击新建按钮，显示对话框
-                $('#myModal').modal('show');
+                $('#addModal').modal('show');
             });
         }
 
@@ -116,7 +134,7 @@
                             // 清空表单   $('#formAdd')是jQuery对象 -> $('#formAdd')[0] DOM对象
                             $('#formAdd')[0].reset();
                             // 关闭对话框
-                            $('#myModal').modal('hide');
+                            $('#addModal').modal('hide');
                             // 用JS实现页面的刷新
                             location.reload();
                         } else {
@@ -129,5 +147,50 @@
                 })
             })
         }
+
+        function bindBtnDeleteEvent() {
+            $(".btn-delete").click(function () {
+                // alert("点击了删除");
+                // 显示删除对话框
+                $('#deleteModal').modal('show');
+
+                // 获取当前行ID并复制给全局变量
+                DELETE_ID = $(this).attr("uid");
+            });
+        }
+
+        function bindBtnConfirmDeleteEvent() {
+            $("#btnConfirmDelete").click(function () {
+                // 点击确认删除按钮，将全局变量中设置的DELETE_ID发送到后台
+                $.ajax({
+                    url: "/order/delete/",
+                    type: "get",
+                    data: {
+                        uid: DELETE_ID
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            // alert("删除成功");
+                            // 方法1
+                            {#// 隐藏对话框#}
+                            {#$('#deleteModal').modal('hide');#}
+                            {#// 在页面上将当前一行数据删除(js)#}
+                            {#$("tr[uid='" + DELETE_ID + "']").remove();#}
+                            {#// 要删除的ID制空#}
+                            {#DELETE_ID = 0;#}
+
+                            // 方法2
+                            // 用JS实现页面的刷新
+                            location.reload();
+                        } else {
+                            // 删除失败
+                            alert(res.error);
+                        }
+                    }
+                })
+            });
+        }
+
     </script>
 {% endblock %}

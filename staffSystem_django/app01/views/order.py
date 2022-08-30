@@ -69,3 +69,15 @@ def order_add(request):
 
     data_dict = {'status': False, 'error': form.errors}
     return JsonResponse(data_dict)
+
+
+def order_delete(request):
+    """ 删除订单 """
+
+    uid = request.GET.get("uid")
+    exists = Order.objects.filter(id=uid).exists()
+    if not exists:
+        return JsonResponse({"status": False, "error": "删除失败，数据不存在"})
+
+    Order.objects.filter(id=uid).delete()
+    return JsonResponse({"status": True})
