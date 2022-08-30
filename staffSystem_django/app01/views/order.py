@@ -81,3 +81,21 @@ def order_delete(request):
 
     Order.objects.filter(id=uid).delete()
     return JsonResponse({"status": True})
+
+
+def order_detail(request):
+    """ 根据ID获取订单详细"""
+
+    uid = request.GET.get("uid")
+    # queryset = [{"oid":123, "title":"asd"},{dict},{}]
+    row_dict = Order.objects.filter(id=uid).values("oid", "title", "price", "status").first()  # .values()得到字典
+    # print(row_dict)
+    if not row_dict:
+        return JsonResponse({"status": False, "error": "数据不存在"})
+
+    # 从数据库取字典
+    result = {
+        "status": True,
+        "data": row_dict,
+    }
+    return JsonResponse(result)

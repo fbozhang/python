@@ -4,7 +4,7 @@
 
     <div class="container">
         <div style="margin-bottom: 10px">
-            <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+            <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
             <input id="btnAdd" type="button" value="新建订单2" class="btn btn-primary">
         </div>
 
@@ -38,7 +38,7 @@
                         <td>{{ obj.get_status_display }}</td>
                         <td>{{ obj.admin.username }}</td>
                         <td>
-                            <a class="btn btn-primary btn-xs" href="#">编辑</a>
+                            <input uid="{{ obj.id }}" class="btn btn-primary btn-xs btn-edit" type="button" value="编辑">
                             <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button" value="删除">
                         </td>
                     </tr>
@@ -52,14 +52,14 @@
         </ul>
     </div>
 
-    <!-- 新建订单(对话框) -->
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
+    <!-- 新建/编辑 订单(对话框) -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="addModalLabel">新建</h4>
+                    <h4 class="modal-title" id="myModalLabel">新建</h4>
                 </div>
                 <div class="modal-body">
                     <form id="formAdd">
@@ -109,12 +109,17 @@
             bindBtnSaveEvent();
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
+            bindBtnEditEvent();
         })
 
         function bindBtnAddEvent() {
             $('#btnAdd').click(function () {
+                // 清空对话框
+                $("#formAdd")[0].reset();
+                // 设置对话框的标题
+                $("#myModalLabel").text("新建");
                 // 点击新建按钮，显示对话框
-                $('#addModal').modal('show');
+                $('#myModal').modal('show');
             });
         }
 
@@ -134,7 +139,7 @@
                             // 清空表单   $('#formAdd')是jQuery对象 -> $('#formAdd')[0] DOM对象
                             $('#formAdd')[0].reset();
                             // 关闭对话框
-                            $('#addModal').modal('hide');
+                            $('#myModal').modal('hide');
                             // 用JS实现页面的刷新
                             location.reload();
                         } else {
@@ -192,5 +197,38 @@
             });
         }
 
+        function bindBtnEditEvent() {
+            $(".btn-edit").click(function () {
+                // 清空对话框
+                $("#formAdd")[0].reset();
+
+                var uid = $(this).attr("uid");
+
+                // 发送Ajax去后端获取当前行的相关数据  /order/detail/?uid=123
+                $.ajax({
+                    url: "/order/detail/",
+                    type: "get",
+                    data: {
+                        "uid": uid
+                    },
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if (res.status) {
+                            // console.log(res);
+                            // 将数据赋值到对话框中的标签中
+                            $.each(res.data, function (name, value) {
+                                $("#id_" + name).val(value);
+                            })
+                            // 修改对话框的标题
+                            $("#myModalLabel").text("编辑");
+                            // 点击新建按钮，显示对话框
+                            $('#myModal').modal('show');
+                        } else {
+                            alert(res.error);
+                        }
+                    }
+                });
+            });
+        }
     </script>
 {% endblock %}
