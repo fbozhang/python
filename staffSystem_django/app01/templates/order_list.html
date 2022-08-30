@@ -3,39 +3,83 @@
 {% block content %}
 
     <div class="container">
-        <div>
+        <div style="margin-bottom: 10px">
             <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
             <input id="btnAdd" type="button" value="新建订单2" class="btn btn-primary">
         </div>
+
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                订单列表
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>订单号</th>
+                    <th>名称</th>
+                    <th>价格</th>
+                    <th>状态</th>
+                    <th>管理员</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <th scope="row">{{ obj.id }}</th>
+                        <td>{{ obj.oid }}</td>
+                        <td>{{ obj.title }}</td>
+                        <td>{{ obj.price }}</td>
+                        <td>{{ obj.get_status_display }}</td>
+                        <td>{{ obj.admin.username }}</td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" href="#">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="#">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
     </div>
 
     <!-- 新建订单(对话框) -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">新建</h4>
-            </div>
-            <div class="modal-body">
-                <form id="formAdd">
-                    <div class="clearfix">
-                        {% for filed in form %}
-                            <div class="col-xs-6">
-                                <div class="form-group" style="position: relative;margin-bottom: 20px;">
-                                    <label>{{ filed.label }}</label>
-                                    {{ filed }}
-                                    <span class="error-msg" style="color: red;position: absolute;"></span>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新建</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="formAdd">
+                        <div class="clearfix">
+                            {% for filed in form %}
+                                <div class="col-xs-6">
+                                    <div class="form-group" style="position: relative;margin-bottom: 20px;">
+                                        <label>{{ filed.label }}</label>
+                                        {{ filed }}
+                                        <span class="error-msg" style="color: red;position: absolute;"></span>
+                                    </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-                <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+                </div>
             </div>
         </div>
     </div>
@@ -68,7 +112,11 @@
                     dataType: 'JSON',
                     success: function (res) {
                         if (res.status) {
-                            alert("添加成功");
+                            // alert("添加成功");
+                            // 清空表单   $('#formAdd')是jQuery对象 -> $('#formAdd')[0] DOM对象
+                            $('#formAdd')[0].reset();
+                            // 关闭对话框
+                            $('#myModal').modal('hide');
                             // 用JS实现页面的刷新
                             location.reload();
                         } else {
