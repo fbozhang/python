@@ -4,8 +4,8 @@
 
     <div class="container">
         <div style="margin-bottom: 10px">
-            <input type="button" value="新建订单1" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-            <input id="btnAdd" type="button" value="新建订单2" class="btn btn-primary">
+            <input type="button" value="新建订单1" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+            <input id="btnAdd" type="button" value="新建订单2" class="btn btn-success">
         </div>
 
         <div class="panel panel-default">
@@ -103,6 +103,7 @@
 {% block js %}
     <script type="text/javascript">
         var DELETE_ID; // 全局变量
+        var EDIT_ID;
 
         $(function () {
             bindBtnAddEvent();
@@ -114,6 +115,8 @@
 
         function bindBtnAddEvent() {
             $('#btnAdd').click(function () {
+                // 将正在编辑的ID制空
+                EDIT_ID = undefined;
                 // 清空对话框
                 $("#formAdd")[0].reset();
                 // 设置对话框的标题
@@ -127,21 +130,35 @@
             $('#btnSave').click(function () {
                 // 清除错误信息
                 $('.error-msg').empty();
-                // 向后台发送请求
-                $.ajax({
-                    url: '/order/add/',
-                    type: 'post',
-                    data: $('#formAdd').serialize(),
-                    dataType: 'JSON',
-                    success: function (res) {
-                        if (res.status) {
-                            // alert("添加成功");
-                            // 清空表单   $('#formAdd')是jQuery对象 -> $('#formAdd')[0] DOM对象
-                            $('#formAdd')[0].reset();
-                            // 关闭对话框
-                            $('#myModal').modal('hide');
-                            // 用JS实现页面的刷新
-                            location.reload();
+
+                if (EDIT_ID) {
+                    // 编辑
+                    doEdit();
+                } else {
+                    // 添加
+                    doAdd();
+                }
+            })
+        }
+
+        function doEdit() {
+            // 向后台发送请求
+            $.ajax({
+                url: '/order/edit/?uid=' + EDIT_ID,
+                type: 'post',
+                data: $('#formAdd').serialize(),
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        // 清空表单   $('#formAdd')是jQuery对象 -> $('#formAdd')[0] DOM对象
+                        $('#formAdd')[0].reset();
+                        // 关闭对话框
+                        $('#myModal').modal('hide');
+                        // 用JS实现页面的刷新
+                        location.reload();
+                    } else {
+                        if (res.tips) {
+                            alert(res.tips);
                         } else {
                             $.each(res.error, function (name, errorlist) {
                                 // console.log(name, data);
@@ -149,7 +166,33 @@
                             })
                         }
                     }
-                })
+                }
+            })
+        }
+
+        function doAdd() {
+            // 向后台发送请求
+            $.ajax({
+                url: '/order/add/',
+                type: 'post',
+                data: $('#formAdd').serialize(),
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        // alert("添加成功");
+                        // 清空表单   $('#formAdd')是jQuery对象 -> $('#formAdd')[0] DOM对象
+                        $('#formAdd')[0].reset();
+                        // 关闭对话框
+                        $('#myModal').modal('hide');
+                        // 用JS实现页面的刷新
+                        location.reload();
+                    } else {
+                        $.each(res.error, function (name, errorlist) {
+                            // console.log(name, data);
+                            $('#id_' + name).next().text(errorlist[0]);
+                        })
+                    }
+                }
             })
         }
 
@@ -203,6 +246,7 @@
                 $("#formAdd")[0].reset();
 
                 var uid = $(this).attr("uid");
+                EDIT_ID = uid;
 
                 // 发送Ajax去后端获取当前行的相关数据  /order/detail/?uid=123
                 $.ajax({
