@@ -1,0 +1,205 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">折线图</div>
+            <div class="panel-body">
+                <div id="m1" style="width: 100%;height: 400px"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">柱状图</div>
+                    <div class="panel-body">
+                        <div id="m2" style="width: 100%;height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">饼图</div>
+                    <div class="panel-body">
+                        <div id="m3" style="width: 100%;height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            initLine();
+            initBar();
+            initPie();
+        })
+
+        /**
+         * 初始化折线图
+         */
+        function initLine() {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('m1'));
+
+            var option = {
+                title: {
+                    text: '业绩图',
+                    left: "center",
+                    textAlign: "auto",
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        data: [],
+                        type: 'line',
+                        smooth: true
+                    }
+                ]
+            };
+
+            $.ajax({
+                url: '/chart/line/',
+                type: 'get',
+                dataType: "JSON",
+                success: function (res) {
+                    // 将后台返回的数据，更新到option中
+                    if (res.status) {
+                        option.series[0].data = res.data;
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    }
+
+                }
+            })
+
+        }
+
+        /**
+         * 初始化柱状图
+         */
+        function initBar() {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('m2'));
+
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '员工业绩阅读汇总信息',
+                    left: "center",
+                    textAlign: "auto",
+                },
+                tooltip: {},
+                legend: {
+                    data: ['销量', '绩效'],
+                    bottom: 0
+                },
+                xAxis: {
+                    data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+                },
+                yAxis: {},
+                series: [
+                    {
+                        name: '销量',
+                        type: 'bar',
+                        data: [5, 20, 36, 10, 10, 20]
+                    },
+                    {
+                        name: '绩效',
+                        type: 'bar',
+                        data: [5, 20, 80, 10, 10, 100]
+                    }
+                ]
+            };
+
+            $.ajax({
+                url: '/chart/bar/',
+                type: 'get',
+                dataType: "JSON",
+                success: function (res) {
+                    // 将后台返回的数据，更新到option中
+                    if (res.status) {
+                        option.legend.data = res.data.legend;
+                        option.xAxis.data = res.data.x_axis;
+                        option.series = res.data.series_list;
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    }
+
+                }
+            })
+        }
+
+        /**
+         * 初始化饼状图
+         */
+        function initPie() {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('m3'));
+
+            var option = {
+                title: {
+                    text: '部门预算占比',
+                    left: "center",
+                    textAlign: "auto",
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    bottom: 0
+                },
+                series: [
+                    {
+                        name: '预算',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '30',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: []
+                    }
+                ]
+            };
+
+            $.ajax({
+                url: '/chart/pie/',
+                type: 'get',
+                dataType: "JSON",
+                success: function (res) {
+                    // 将后台返回的数据，更新到option中
+                    if (res.status) {
+                        option.series[0].data = res.data;
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    }
+
+                }
+            })
+        }
+    </script>
+{% endblock %}
