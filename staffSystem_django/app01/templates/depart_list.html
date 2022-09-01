@@ -2,6 +2,23 @@
 {% block content %}
     <div class="container">
 
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                批量上传
+            </div>
+            <div class="panel-body">
+                <form method="post" enctype="multipart/form-data" action="/depart/multi/">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="file" name="exc">
+                    </div>
+                    <input type="submit" value="上传" class="btn btn-info btn-sm">
+                </form>
+            </div>
+        </div>
+
         <div style="margin-bottom: 10px">
             <a class="btn btn-success" href="/depart/add/">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>

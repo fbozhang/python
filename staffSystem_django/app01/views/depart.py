@@ -2,17 +2,11 @@
 # @Time : 2022/8/25 20:42
 # @Author: fbz
 # @File : depart.py
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
-from django.shortcuts import render, redirect
-from django import forms
-
-from app01.utils.encrypt import md5
-from app01.utils.pagination import Pagination
-from app01.utils.bootstrap import BootStrapModelForm
-from django.utils.safestring import mark_safe
+from django.shortcuts import render, redirect, HttpResponse
+from openpyxl import load_workbook
 
 from app01.models import *
+from app01.utils.pagination import Pagination
 
 
 def depart_list(request):
@@ -70,3 +64,21 @@ def depart_edit(request, nid):
 
     # 重定向回部门列表
     return redirect("/depart/list/")
+
+
+def depart_multi(request):
+    """ 批量上传(Excel文件) """
+
+    # 获取用户上传的文件对象
+    file_object = request.FILES.get('exc')
+    # print(type(file_object))
+
+    # from openpyxl import load_workbook
+    # 对象传递给openpyxl，由openpyxl读取文件的内容
+    wb = load_workbook(file_object)
+    sheet = wb.worksheets[0]
+
+    cell = sheet.cell(1, 1)  # 第一行第一列的cell对象
+    print(cell.value)  # cell的值
+
+    return HttpResponse('asd')

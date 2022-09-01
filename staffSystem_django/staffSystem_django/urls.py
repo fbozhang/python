@@ -25,6 +25,7 @@ urlpatterns = [
     path('depart/add/', depart.depart_add),
     path('depart/delete/', depart.depart_delete),
     path('depart/<int:nid>/edit/', depart.depart_edit),
+    path('depart/multi/', depart.depart_multi),
 
     # 用户管理
     path('user/list/', user.user_list),
