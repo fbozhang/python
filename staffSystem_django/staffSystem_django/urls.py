@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from app01.views import depart, user, account, admin, pretty, task, order, chart
+from app01.views import depart, user, account, admin, pretty, task, order, chart, upload
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -68,4 +68,7 @@ urlpatterns = [
     path('chart/line/', chart.chart_line),
     path('chart/bar/', chart.chart_bar),
     path('chart/pie/', chart.chart_pie),
+
+    # 上传文件
+    path('upload/list/', upload.upload_list),
 ]
