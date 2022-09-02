@@ -77,8 +77,16 @@ def depart_multi(request):
     # 对象传递给openpyxl，由openpyxl读取文件的内容
     wb = load_workbook(file_object)
     sheet = wb.worksheets[0]
+    # cell = sheet.cell(1, 1)  # 第一行第一列的cell对象
+    # print(cell.value)  # cell的值
 
-    cell = sheet.cell(1, 1)  # 第一行第一列的cell对象
-    print(cell.value)  # cell的值
+    # 循环获取每一行数据
+    for row in sheet.iter_rows(min_row=2):
+        # print(row)
+        text = row[0].value
+        # print(text)
+        exists = Department.objects.filter(title=text).exists()
+        if not exists:
+            Department.objects.create(title=text)
 
-    return HttpResponse('asd')
+    return redirect('/depart/list/')
