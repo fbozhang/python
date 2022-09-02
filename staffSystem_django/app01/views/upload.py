@@ -4,6 +4,7 @@
 # @File : upload.py
 import os
 
+from django.conf import settings
 from django.shortcuts import render, HttpResponse
 from django import forms
 
@@ -50,11 +51,15 @@ def upload_form(request):
         # file_path = "app01/static/img/{}".format(image_object.name)
 
         # 防止win和mac目录结构不同
-        # http://127.0.0.1:8000/static/img/1.jpg 后台访问路径
+        """# http://127.0.0.1:8000/static/img/1.jpg 后台访问路径
         db_file_path = os.path.join('static', 'img', image_object.name)
-        file_path = os.path.join('app01', db_file_path)  # 实际文件路径 app01\static\img\1.jpg
-        # print(file_path)
-        f = open(file_path, mode='wb')
+        file_path = os.path.join('app01', db_file_path)  # 实际文件路径 app01\static\img\1.jpg"""
+
+        # http://127.0.0.1:8000/media/1.jpg 后台访问路径
+        # media_path = os.path.join(settings.MEDIA_ROOT, image_object.name)   # 绝对路径
+        media_path = os.path.join('media', image_object.name)  # 相对路径
+
+        f = open(media_path, mode='wb')
         for chunk in image_object.chunks():
             f.write(chunk)
         f.close()
@@ -63,7 +68,11 @@ def upload_form(request):
         Boss.objects.create(
             name=form.cleaned_data['name'],
             age=form.cleaned_data['age'],
-            img=db_file_path,
+            img=media_path,
         )
         return HttpResponse('asd')
     return render(request, "upload_form.html", {'form': form, 'title': title})
+
+
+def upload_model_form(request):
+    pass
