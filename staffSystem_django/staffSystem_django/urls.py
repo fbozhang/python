@@ -77,4 +77,5 @@ urlpatterns = [
     # 上传文件
     path('upload/list/', upload.upload_list),
     path('upload/form/', upload.upload_form),
+    path('upload/model/form/', upload.upload_model_form),
 ]

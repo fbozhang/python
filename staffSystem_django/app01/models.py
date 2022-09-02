@@ -104,3 +104,13 @@ class Boss(models.Model):
     name = models.CharField(verbose_name='姓名', max_length=32)
     age = models.IntegerField(verbose_name='年龄')
     img = models.CharField(verbose_name='头像', max_length=128)
+
+
+class City(models.Model):
+    """ 城市 """
+    name = models.CharField(verbose_name='名称', max_length=32)
+    count = models.IntegerField(verbose_name='人口')
+
+    # 本质上数据库也是CharField,自动保存数据
+    # upload_to -> 存到media里的哪个目录 -> city目录不存在会自动创建
+    img = models.FileField(verbose_name='Logo', max_length=128, upload_to='city/')
