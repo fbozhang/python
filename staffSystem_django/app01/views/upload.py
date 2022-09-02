@@ -70,7 +70,7 @@ def upload_form(request):
             age=form.cleaned_data['age'],
             img=media_path,
         )
-        return HttpResponse('asd')
+        return HttpResponse('成功')
     return render(request, "upload_form.html", {'form': form, 'title': title})
 
 
@@ -94,5 +94,5 @@ def upload_model_form(request):
         # 对于文件：自动保存
         # 字段 + 上传路径写入到数据库
         form.save()
-        return HttpResponse('asd')
+        return HttpResponse('成功')
     return render(request, "upload_form.html", {'form': form, 'title': title})
