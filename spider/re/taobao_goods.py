@@ -9,55 +9,53 @@ import xlwt
 url = 'https://s.taobao.com/search'
 
 
-def main(url):
+def main(url, query, page):
     # 爬取网页保存本地,如果本地存在这个文件则不爬取
-    if os.path.exists("./goods.html"):  # 判断html文件是存在不需要爬取，直接解析
-        data_list = getData()
-        saveDataXls(data_list=data_list,savepath='goods.xls')
+    if os.path.exists("./goods_{page}.html".format(page=page)):  # 判断html文件是存在不需要爬取，直接解析
+        data_list = getData(page)
+        saveDataXls(data_list=data_list, savepath='goods_{page}.xls'.format(page=page))
     else:
-        saveHTML(url)
-        getData()
+        saveHTML(url=url, query=query, page=page)
+        getData(page)
+        data_list = getData(page)
+        saveDataXls(data_list=data_list, savepath='goods_{page}.xls'.format(page=page))
 
 
 # 得到html并保存到本地
-def saveHTML(url):
+def saveHTML(url, query, page):
     headers = {
-        'referer': 'https://s.taobao.com/',
+        # 'referer': 'https://s.taobao.com/',
         'cookie': 'thw=cn; t=8ef5948506d609509b897ac412767013; _m_h5_tk=9205a93d94f5b54d1a54922316af5aec_1662141389697; _m_h5_tk_enc=123f20d72912e0d20050d22d851d8ded; xlly_s=1; sgcookie=E100VDChATh+YF/a5XZOqc/BDeRr4gZUQX3rSgAEw4oXUXy2Udy8tx1wWWjzhOBc/o5mIX4q+764oyt17cpgqibtwwGhuHYUNQEZnCSu3MmKt9E=; enc=zXYf7Jlko8azrQNhGjxvP5EAtmWVddVyyqtVqVP3Q+GwDN0FgLr5ApX0nh+rp1QDzOoRksm7x6Nza71uDm7DuwP6k/fK8WsdWvhHxCH+oNE=; mt=ci=0_0; tracknick=; cna=vRwmGkmxuHkCATr4wRnOiqN+; JSESSIONID=9B7785091EB056DD2E6716832A8F77DC; isg=BNXVAmsvGgeRwDyI_Zg3NlHW5NGP0onkq9AEMld6g8ybrvWgKiCutOZnfLIYrqGc; l=eBPGHwblg9rbzAbTBOfZnurza779QIRAguPzaNbMiOCP9vCp53qfW6k0GPY9CnGVh6py635Wn1oBBeYBqHKKnxv92j-la1Hmn; tfstk=cC5VB7Db2SF22SWFUQONasojdodAZLbcSb8BnkQAdETZappciim9rnTvzFgrjKf..',
         'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
         'sec-fetch-dest': 'document',
         'sec-fetch-mode': 'navigate',
-        'sec-fetch-site': 'same-origin',
+        'sec-fetch-site': 'none',
         'sec-fetch-user': '?1',
         'upgrade-insecure-requests': '1',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
     }
-
+    # 一页数据有44条
+    s = str((page - 1) * 44)
     param = {
-        'spm': ' a21bo.jianhua.201856-fline.5.5af911d9YaRmCw',
-        'q': ' 短裤',
-        'refpid': ' 430145_1006',
-        'source': ' tbsy',
-        'style': ' grid',
-        'tab': ' all',
-        'pvid': ' d0f2ec2810bcec0d5a16d5283ce59f69',
+        'q': query,  # 查询的商品
+        's': s,  # 从第几个数据开始，假设从0开始，一页有44个数据，第二页第一个数据则是s=44
     }
 
     resp = requests.get(url=url, params=param, headers=headers)
     # print(resp.request.url)
     # print(resp.text)
-    f = open("goods.html", mode="w", encoding="utf-8")
+    f = open("goods_{page}.html".format(page=page), mode="w", encoding="utf-8")
     f.write(resp.text)
     f.close()
 
 
 # 解析网页得到商品数据
-def getData():
+def getData(page):
     data_list = []
     # 以 utf-8 的编码格式打开指定文件
-    f = open("goods.html", encoding="utf-8")
+    f = open("goods_{page}.html".format(page=page), encoding="utf-8")
     # 输出读取到的数据
     # print(f.read())
 
@@ -111,13 +109,16 @@ def saveDataXls(data_list, savepath):
         for value in data.values():
             sheet.write(row_index, column_index, value)  # 数据
             column_index += 1
-            print('column_index_in=', column_index)
         row_index += 1
-        print('row_index=', row_index)
-        print('column_index_out=', column_index)
 
     book.save(savepath)  # 保存数据表
 
 
 if __name__ == '__main__':
-    main(url=url)
+    # 查询参数
+    query = '长裤'
+    # 第几页
+    page = 1
+
+    main(url=url, query=query, page=page)
+    print('OVER!!')
