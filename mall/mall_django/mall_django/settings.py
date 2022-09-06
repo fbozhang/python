@@ -35,12 +35,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # CORS
+    'corsheaders',
     # 注册app
     'apps.users',
 
 ]
 
 MIDDLEWARE = [
+    # CORS的配置放在最上边
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -193,3 +198,12 @@ LOGGING = {
 # 这个点式路径包含Django应用的名称（必须位于你的INSTALLED_APPS中），和要用作User模型的Django模型的名称。
 
 AUTH_USER_MODEL = 'users.User'
+
+# CORS  白名单
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+    'http://www.guiling.cn:8080',
+    'http://www.guiling.cn:8000',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
