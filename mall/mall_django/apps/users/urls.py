@@ -3,9 +3,12 @@
 # @Author: fbz
 # @File : urls.py
 from django.urls import path
-from apps.users.views import UsernmaeCountView
+from apps.users.views import *
 
 urlpatterns = [
     # 判断用户名是否重复
-    path('usernames/<username:username>/count/', UsernmaeCountView.as_view()),
+    path('usernames/<username:username>/count/', UsernameCountView.as_view()),
+    # 判断手机号是否存在
+    path('mobiles/<mobile:mobile>/count/', MobileCountView.as_view()),
+    path('register/', RsgisterView.as_view()),
 ]
