@@ -14,6 +14,7 @@ class ImageCodeView(View):
         # text 是图片验证码的内容
         # image 是图片二进制
         text, image = captcha.generate_captcha()
+        print(text)
 
         # 3. 通过redis把图片验证码保存起来
         # 进行redis的连接
