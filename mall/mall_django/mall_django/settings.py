@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # 注册app
     'apps.users',
+    'apps.verifications',
 
 ]
 
@@ -144,6 +145,13 @@ CACHES = {
     "session": {  # 用于保存session数据
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "code": {  # 用于保存session数据
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
