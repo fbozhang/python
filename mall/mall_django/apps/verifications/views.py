@@ -88,9 +88,19 @@ class SmsCodeView(View):
         sms_code = '%04d' % randint(0, 9999)
 
         # 5. 保存短信驗證碼
-        redis_cli.setex(mobile, 300, sms_code)
+        # redis_cli.setex(mobile, 300, sms_code)
+        # # 添加一個標記,有效期60s
+        # redis_cli.setex('flag_{}'.format(mobile), 60, 1)
+
+        # 使用管道
+        # 1. 新建一個管道
+        pipeline = redis_cli.pipeline()
+        # 2. 管道收集指令
+        pipeline.setex(mobile, 300, sms_code)
         # 添加一個標記,有效期60s
-        redis_cli.setex('flag_{}'.format(mobile), 60, 1)
+        pipeline.setex('flag_{}'.format(mobile), 60, 1)
+        # 3. 管道執行指令
+        pipeline.execute()
 
         # 6. 發送短信驗證碼
         from libs.yuntongxun.sms import CCP
