@@ -19,10 +19,10 @@ class UsernameConverter:
 
 # 验证手机号规则
 class MobileConverter:
-    regex = '1[345789]\d{9}'
+    regex = '1[3-9]\d{9}'
 
     def to_python(self, value):
-        return value
+        return str(value)
 
     def to_url(self, value):
         return str(value)
