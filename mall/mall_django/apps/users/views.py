@@ -47,12 +47,13 @@ class RsgisterView(View):
         password = body_dict.get('password')
         password2 = body_dict.get('password2')
         mobile = body_dict.get('mobile')
+        sms_code = body_dict.get('sms_code')
         allow = body_dict.get('allow')
 
         # 3. 验证数据
         #     3.1 用户名，密码，确认密码，手机号，是否同意协议 都要有
         # all()里面的元素只要是 None，False就返回False否则返回True
-        if not all([username, password, password2, mobile, allow]):
+        if not all([username, password, password2, mobile, sms_code, allow]):
             return JsonResponse({'code': 400, 'errmsg': '参数不全'})
         #     3.2 用户名满足规则，用户名不能重复
         if not re.match('[a-zA-Z0-9_-]{5,20}', username):
@@ -72,7 +73,19 @@ class RsgisterView(View):
         count = User.objects.filter(mobile=mobile).count()
         if count > 0:
             return JsonResponse({'code': 200, 'errmsg': '手机号已存在'})
-        #     3.6 需要同意协议
+        #     3.6 驗證碼短信驗證碼
+        from django_redis import get_redis_connection
+        # 連接redis
+        redis_cli = get_redis_connection('code')
+        # 獲取redis數據
+        redis_sms_code = redis_cli.get(mobile)
+        # 判斷短信驗證碼是否過期
+        if redis_sms_code is None:
+            return JsonResponse({'code': 400, 'errmsg': '短信驗證碼過期'})
+        # 對比用戶輸入的驗證碼是否正確
+        if redis_sms_code.decode() != sms_code:  # redis_sms_code是byte類型，要decode為str類型
+            return JsonResponse({'code': 400, 'errmsg': '短信驗證碼有誤'})
+        #     3.7 需要同意协议
         if not allow:
             return JsonResponse({'code': 200, 'errmsg': '需要同意协议'})
 
