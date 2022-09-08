@@ -61,9 +61,11 @@ class SmsCodeView(View):
         # 1. 獲取請求參數
         image_code = request.GET.get('image_code')
         uuid = request.GET.get('image_code_id')
+
         # 2. 驗證參數
         if not all([image_code, uuid]):
             return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+
         # 3. 驗證圖片驗證碼
         # 連接redis
         from django_redis import get_redis_connection
@@ -75,11 +77,21 @@ class SmsCodeView(View):
         # 對比 lower()轉爲小寫
         if redis_image_code.decode().lower() != image_code.lower():
             return JsonResponse({'code': 400, 'errmsg': '圖片驗證碼錯誤'})
+
+        # 提取發送短信標記，看看60s内有沒有發送過短信
+        flag = redis_cli.get('flag_{}'.format(mobile))
+        if flag is not None:
+            return JsonResponse({'code': 400, 'errmsg': '不要頻繁發送短信'})
+
         # 4. 生成短信驗證碼
         from random import randint
         sms_code = '%04d' % randint(0, 9999)
+
         # 5. 保存短信驗證碼
         redis_cli.setex(mobile, 300, sms_code)
+        # 添加一個標記,有效期60s
+        redis_cli.setex('flag_{}'.format(mobile), 60, 1)
+
         # 6. 發送短信驗證碼
         from libs.yuntongxun.sms import CCP
         CCP().send_template_sms(mobile, [sms_code, 5], 1)  # 給mobile手機號發驗證碼為sms_code時效5分鐘
