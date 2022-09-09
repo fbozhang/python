@@ -103,7 +103,12 @@ class SmsCodeView(View):
         pipeline.execute()
 
         # 6. 發送短信驗證碼
-        from libs.yuntongxun.sms import CCP
-        CCP().send_template_sms(mobile, [sms_code, 5], 1)  # 給mobile手機號發驗證碼為sms_code時效5分鐘
+        # from libs.yuntongxun.sms import CCP
+        # CCP().send_template_sms(mobile, [sms_code, 5], 1)  # 給mobile手機號發驗證碼為sms_code時效5分鐘
+
+        from celery_tasks.sms.tasks import celery_send_sms_code
+        # delay的參數等同於任務（函數）的參數
+        celery_send_sms_code.delay(mobile, sms_code)
+
         # 7. 返回响应
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
