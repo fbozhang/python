@@ -16,4 +16,5 @@ urlpatterns = [
     path('login/', LoginView.as_view()),
     # 退出登錄
     path('logout/', LogoutView.as_view()),
+    path('center/', CenterView.as_view()),
 ]
