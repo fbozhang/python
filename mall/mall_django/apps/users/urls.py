@@ -14,4 +14,6 @@ urlpatterns = [
     path('register/', RsgisterView.as_view()),
     # 登錄
     path('login/', LoginView.as_view()),
+    # 退出登錄
+    path('logout/', LogoutView.as_view()),
 ]
