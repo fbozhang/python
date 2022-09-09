@@ -140,6 +140,13 @@ class LoginView(View):
         if not all([username, password]):
             return JsonResponse({'code': 400, 'errmsg': '參數不全'})
 
+        # 判斷是根據手機號登錄還是用戶名登錄
+        # authenticate根據修改User.USERNAME_FIELD字段來查詢
+        if re.match('1[3-9]\d{9}', username):
+            User.USERNAME_FIELD = 'mobile'
+        else:
+            User.USERNAME_FIELD = 'username'  # 源代碼默認是用戶名
+
         # 3. 验证用户名和密码是否正确
         # 通過模型根據用戶名查詢
         # User.objects.get(username=username)
