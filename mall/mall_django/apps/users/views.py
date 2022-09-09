@@ -125,9 +125,46 @@ class RsgisterView(View):
     在客户端存储信息使用Cookie
     在服务器端存储信息使用Session
 """
-# 1. 接收数据
-# 2. 验证数据
-# 3. 验证用户名和密码是否正确
-# 4. session
-# 5. 判断是否记住登录
-# 6. 返回响应
+
+
+class LoginView(View):
+
+    def post(self, request):
+        # 1. 接收数据
+        data = json.loads(request.body.decode())
+        username = data.get('username')
+        password = data.get('password')
+        remembered = data.get('remembered')
+
+        # 2. 验证数据
+        if not all([username, password]):
+            return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+
+        # 3. 验证用户名和密码是否正确
+        # 通過模型根據用戶名查詢
+        # User.objects.get(username=username)
+        # print(User.objects.get(username=username).check_password(password))
+
+        # 方法2
+        from django.contrib.auth import authenticate
+        # authenticate傳遞用戶名和密碼
+        # 如果用戶名和密碼正確，返回User信息，不正確返回None
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return JsonResponse({'code': 400, 'errmsg': '賬號或密碼錯誤'})
+
+        # 4. session
+        from django.contrib.auth import login
+        login(request, user)
+
+        # 5. 判断是否记住密碼
+        if remembered:
+            # 記住密碼  -- 2周
+            request.session.set_expiry(None)
+        else:
+            # 不記住密碼，瀏覽器關閉session過期
+            request.session.set_expiry(0)
+
+        # 6. 返回响应
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})

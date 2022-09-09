@@ -10,5 +10,8 @@ urlpatterns = [
     path('usernames/<username:username>/count/', UsernameCountView.as_view()),
     # 判断手机号是否存在
     path('mobiles/<mobile:mobile>/count/', MobileCountView.as_view()),
+    # 注冊
     path('register/', RsgisterView.as_view()),
+    # 登錄
+    path('login/', LoginView.as_view()),
 ]
