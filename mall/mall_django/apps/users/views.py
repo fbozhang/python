@@ -174,4 +174,8 @@ class LoginView(View):
             request.session.set_expiry(0)
 
         # 6. 返回响应
-        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+        response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+        # 爲了首頁顯示用戶信息展示
+        response.set_cookie('username', username)
+
+        return response
