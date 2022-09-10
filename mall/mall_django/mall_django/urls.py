@@ -44,4 +44,6 @@ urlpatterns = [
     path('', include('apps.users.urls')),
     # 导入verifications子应用的路由
     path('', include('apps.verifications.urls')),
+    # 导入oauth子应用的路由
+    path('', include('apps.oauth.urls')),
 ]
