@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     # 注册app
     'apps.users',
     'apps.verifications',
-
+    'apps.oauth',
 ]
 
 MIDDLEWARE = [
