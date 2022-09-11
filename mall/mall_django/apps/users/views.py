@@ -176,7 +176,7 @@ class LoginView(View):
         # 6. 返回响应
         response = JsonResponse({'code': 0, 'errmsg': 'ok'})
         # 爲了首頁顯示用戶信息展示
-        response.set_cookie('username', username)
+        response.set_cookie('username', user.username)
 
         return response
 
