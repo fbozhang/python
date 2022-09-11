@@ -4,7 +4,7 @@ from django.db import models
 from utils.models import BaseModel
 
 
-class PAuthQQUser(BaseModel):
+class OAuthQQUser(BaseModel):
     """ QQ登錄用戶數據 """
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='用戶')
     openid = models.CharField(max_length=64, verbose_name='openid', db_index=True)
