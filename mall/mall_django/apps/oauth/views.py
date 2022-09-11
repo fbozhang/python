@@ -23,6 +23,10 @@ class QQLoginURLView(View):
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'login_url': qq_login_url})
 
 
+from apps.oauth.models import OAuthQQUser
+from django.contrib.auth import login
+
+
 class OauthQQView(View):
 
     def get(self, request):
@@ -30,15 +34,33 @@ class OauthQQView(View):
         code = request.GET.get('code')
         if code is None:
             return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+
         # 2.通過code換取token
         qq = OAuthQQ(client_id=settings.QQ_CLIENT_ID,  # appid
                      client_secret=settings.QQ_CLIENT_SECRET,  # appsecret
                      redirect_uri=settings.QQ_REDIRECT_URI,  # 用戶同意登錄之後跳轉的頁面
                      state='asd')  # 不知道是什麽東西，先隨便寫
         token = qq.get_access_token(code)
+
         # 3.根據token換取openid
         openid = qq.get_open_id(token)
-        print(openid)  # C35E6560AF6B22ED06A78F7706837FD9
+        # print(openid)  # C35E6560AF6B22ED06A78F7706837FD9
+
         # 4.根據openid進行判斷
-        # 5.如果沒有綁定過，則需要綁定
-        # 6.如果綁定過，則直接登錄
+        try:
+            qquser = OAuthQQUser.objects.get(openid=openid)
+        except OAuthQQUser.DoesNotExist:
+            # 不存在
+            # 5.如果沒有綁定過，則需要綁定
+            response = JsonResponse({'code': 400, 'access_token': openid})
+            return response
+        else:
+            # 存在
+            # 6.如果綁定過，則直接登錄
+            # 設置session
+            login(request, qquser.user)
+            # 設置cookie
+            response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+            response.set_cookie('username', qquser.user.username)
+
+            return response
