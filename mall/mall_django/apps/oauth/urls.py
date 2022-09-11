@@ -8,5 +8,6 @@ from apps.oauth.views import *
 urlpatterns = [
     # 判断用户名是否重复
     path('qq/authorization/', QQLoginURLView.as_view()),
+    # QQ登錄
     path('oauth_callback/', OauthQQView.as_view()),
 ]

@@ -1,3 +1,6 @@
+import json
+import re
+
 from django.shortcuts import render
 
 # Create your views here.
@@ -24,6 +27,7 @@ class QQLoginURLView(View):
 
 
 from apps.oauth.models import OAuthQQUser
+from apps.users.models import User
 from django.contrib.auth import login
 
 
@@ -64,3 +68,54 @@ class OauthQQView(View):
             response.set_cookie('username', qquser.user.username)
 
             return response
+
+    def post(self, request):
+        # 1.接收請求
+        data = json.loads(request.body.decode())
+
+        # 2.獲取請求參數 openid
+        mobile = data.get('mobile')
+        password = data.get('password')
+        sms_code = data.get('sms_code')
+        openid = data.get('access_token')
+        # 校驗參數
+        if not all([password, mobile, sms_code, openid]):
+            return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+        # 手機號
+        if not re.match(r'^1[3-9]\d{9}$', mobile):
+            return JsonResponse({'code': 400, 'errmsg': '請輸入正確的手機號哦'})
+        # 密碼
+        if not re.match(r'^[0-9A-Za-z]{8,20}$', password):
+            return JsonResponse({'code': 400, 'errmsg': '請輸入8-20位密碼'})
+        # 短信驗證碼
+        from django_redis import get_redis_connection
+        redis_cli = get_redis_connection('code')  # 創建redis連接對象
+        redis_sms_code = redis_cli.get(mobile)  # 得到redis中的短信驗證碼
+        if redis_sms_code is None:
+            return JsonResponse({'code': 400, 'errmsg': '驗證碼失效'})
+        if sms_code != redis_sms_code.decode():
+            return JsonResponse({'code': 400, 'errmsg': '輸入的驗證碼有誤'})
+
+        # 3.根據手機號進行用戶信息的查詢
+        try:
+            user = User.objects.get(mobile=mobile)
+        except User.DoesNotExist:
+            # 手機號不存在
+            # 4.查詢到用戶手機號沒有注冊，就創建一個user信息然後綁定
+            user = User.objects.create_user(username=mobile, mobile=mobile, password=password)
+        else:
+            # 手機號存在
+            # 5.查詢到用戶手機號已經注冊。判斷密碼是否正確，正確就可以直接保存（綁定）user和openid信息
+            if not user.check_password(password):
+                return JsonResponse({'code': 400, 'errmsg': '賬號或密碼錯誤'})
+
+        OAuthQQUser.objects.create(user=user, openid=openid)
+
+        # 6.狀態保持
+        login(request, user)
+
+        # 7.返回相應
+        response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+        response.set_cookie('username', user.username)
+
+        return response
