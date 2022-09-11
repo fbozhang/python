@@ -213,6 +213,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:8080',
     'http://www.guiling.cn:8080',
     'http://www.guiling.cn:8000',
+    'http://www.meiduo.site:8080' # QQ登錄跨域
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
