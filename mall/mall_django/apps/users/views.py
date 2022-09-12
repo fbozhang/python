@@ -205,4 +205,15 @@ from utils.views import LoginRequiredJsonMixin
 class CenterView(LoginRequiredJsonMixin, View):
 
     def get(self, request):
-        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+        # request.user 就是已經登錄的用戶信息
+        # request.user 就是來源於中間件
+        # 系統會進行判斷 如果確實是登錄用戶，則可以獲取到登錄用戶對應的模型實例數據
+        # 如果不是登錄用戶，則request.user = AnoymousUesr() 匿名用戶
+        info_data = {
+            'username': request.user.username,
+            'mobile': request.user.mobile,
+            'email': request.user.email,
+            'email_active': request.user.email_active,
+        }
+
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'info_data': info_data})
