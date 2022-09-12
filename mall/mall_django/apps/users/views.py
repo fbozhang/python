@@ -240,5 +240,20 @@ class EmailView(LoginRequiredJsonMixin, View):
         user.save()
 
         # 發送一封激活郵件
+        from django.core.mail import send_mail
+        subject = '龜靈商城激活郵件'  # 主題
+        message = ""  # 郵件内容
+        from_email = '龜靈聖母<fbozhang@163.com>'  # 發件人
+        recipient_list = ['fbozhang@163.com']  # 收件人列表
+        # 郵件内容如果是html，使用html_message, 將message制空即可因爲不管裏面是什麽都不會發出去
+        html_message = "點擊按鈕進行激活 <a href='http://www.guiling.cn:8080'>激活</a>"  # html郵件内容
+
+        # 發送郵件
+        send_mail(subject=subject,
+                  message=message,
+                  from_email=from_email,
+                  recipient_list=recipient_list,
+                  html_message=html_message)
+
         # 返回相應
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
