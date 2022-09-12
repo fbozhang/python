@@ -18,4 +18,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     # 用戶中心
     path('info/', CenterView.as_view()),
+    # 添加郵箱
+    path('emails/', EmailView.as_view()),
 ]

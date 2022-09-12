@@ -186,7 +186,7 @@ from django.contrib.auth import logout
 
 class LogoutView(View):
 
-    def get(self, request):
+    def delete(self, request):
         # 刪除session信息
         logout(request)
 
@@ -217,3 +217,28 @@ class CenterView(LoginRequiredJsonMixin, View):
         }
 
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'info_data': info_data})
+
+
+# 添加郵箱
+class EmailView(LoginRequiredJsonMixin, View):
+
+    def put(self, request):
+        # 接收請求
+        data = json.loads(request.body.decode())
+        # 獲取數據
+        email = data.get('email')
+
+        # 驗證數據
+        if not email:
+            return JsonResponse({'code': 400, 'errmsg': '缺少email參數'})
+        if not re.match(r'[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}', email):
+            return JsonResponse({'code': 400, 'errmsg': '參數email有誤'})
+
+        # 保存郵箱地址
+        user = request.user
+        user.email = email
+        user.save()
+
+        # 發送一封激活郵件
+        # 返回相應
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})
