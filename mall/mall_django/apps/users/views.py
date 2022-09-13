@@ -251,15 +251,33 @@ class EmailView(LoginRequiredJsonMixin, View):
         id_token = generate_token(data={'id_token': request.user.id})
 
         # 郵件内容如果是html，使用html_message, 將message制空即可因爲不管裏面是什麽都不會發出去
-        html_message = "點擊按鈕進行激活 <a href='http://www.guiling.cn:8080?token={id_token}'>激活</a>".format(
-            id_token=id_token)  # html郵件内容
+        # html_message = "點擊按鈕進行激活 <a href='http://www.guiling.cn:8080'>激活</a>"  # html郵件内容
+        verify_url = f'http://www.guiling.cn:8080/success_verify_email.html?token={id_token}'
+
+        html_message = f'''
+        <p>尊敬的用户您好！</p>
+        <p>感谢您使用龜靈商城。</p>
+        <p>您的邮箱为：{email} 。请点击此链接激活您的邮箱：</p>
+        <p><a href="{verify_url}">{verify_url}<a></p>
+        '''
 
         # 發送郵件
-        send_mail(subject=subject,
-                  message=message,
-                  from_email=from_email,
-                  recipient_list=recipient_list,
-                  html_message=html_message)
+        # send_mail(subject=subject,
+        #           message=message,
+        #           from_email=from_email,
+        #           recipient_list=recipient_list,
+        #           html_message=html_message)
+
+        # 使用celery異步發送郵件
+        from celery_tasks.email.tasks import celery_send_email
+        # 必須要要 .delay 才有celery異步，不然是同步
+        celery_send_email.delay(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=recipient_list,
+            html_message=html_message
+        )
 
         # 返回相應
         return JsonResponse({'code': 0, 'errmsg': 'ok'})

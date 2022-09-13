@@ -43,6 +43,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mall_django.settings')
 
 # 創建celery實例
 from celery import Celery
+
 # main設置脚本路徑
 app = Celery(main='celery_tasks')
 
@@ -53,4 +54,4 @@ app.config_from_object('celery_tasks.config')
 # celery自動檢測指定包的任務
 # autodiscover_tasks參數是列表
 # 列表中的元素是tasks的路徑
-app.autodiscover_tasks(['celery_tasks.sms'])
+app.autodiscover_tasks(['celery_tasks.sms', 'celery_tasks.email'])

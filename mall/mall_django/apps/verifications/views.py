@@ -108,6 +108,7 @@ class SmsCodeView(View):
 
         from celery_tasks.sms.tasks import celery_send_sms_code
         # delay的參數等同於任務（函數）的參數
+        # 必須要要 .delay 才有celery異步，不然是同步
         celery_send_sms_code.delay(mobile, sms_code)
 
         # 7. 返回响应
