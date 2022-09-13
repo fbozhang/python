@@ -30,7 +30,10 @@ def generate_token(data):
 
 # 解密
 def validate_token(token):
-    """用于验证token, 返回原未加密字典數據"""
+    """
+    用于验证token, 返回原未加密字典數據
+    例子: return data.get('xxx)
+    """
     key = settings.SECRET_KEY
 
     try:

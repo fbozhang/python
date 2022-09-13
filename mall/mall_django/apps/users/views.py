@@ -281,3 +281,31 @@ class EmailView(LoginRequiredJsonMixin, View):
 
         # 返回相應
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
+class EmailVerfyView(View):
+
+    def put(self, request):
+        # 接收請求
+        params = request.GET
+        # 獲取參數
+        token = params.get('token')
+        # 驗證參數
+        if token is None:
+            return JsonResponse({'code': 400, 'errmsg': '參數缺失'})
+
+        # 獲取user_id
+        from utils.tooken import validate_token
+        # 解密token
+        user_id = validate_token(token=token).get('id_token')
+        if user_id is None:
+            return JsonResponse({'code': 400, 'errmsg': '參數錯誤'})
+
+        # 根據用戶id查詢數據
+        user = User.objects.get(id=user_id)
+        # 修改數據
+        user.email_active = True
+        user.save()
+
+        # 返回相應
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})

@@ -20,4 +20,6 @@ urlpatterns = [
     path('info/', CenterView.as_view()),
     # 添加郵箱
     path('emails/', EmailView.as_view()),
+    # 郵箱驗證
+    path('emails/verification/', EmailVerfyView.as_view()),
 ]
