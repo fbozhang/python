@@ -56,7 +56,11 @@ class OauthQQView(View):
         except OAuthQQUser.DoesNotExist:
             # 不存在
             # 5.如果沒有綁定過，則需要綁定
-            response = JsonResponse({'code': 400, 'access_token': openid})
+            from apps.oauth.utils import generate_token
+            # 加密openid
+            access_token = generate_token(openid=openid)
+
+            response = JsonResponse({'code': 400, 'access_token': access_token})
             return response
         else:
             # 存在
@@ -77,7 +81,14 @@ class OauthQQView(View):
         mobile = data.get('mobile')
         password = data.get('password')
         sms_code = data.get('sms_code')
-        openid = data.get('access_token')
+        access_token = data.get('access_token')
+
+        # 解密 access_token
+        from apps.oauth.utils import validate_token
+        openid = validate_token(access_token)
+        if openid is None:
+            return JsonResponse({'code': 400, 'errmsg': '參數缺失'})
+
         # 校驗參數
         if not all([password, mobile, sms_code, openid]):
             return JsonResponse({'code': 400, 'errmsg': '參數不全'})
