@@ -1,8 +1,6 @@
 import json
 import re
 
-from django.shortcuts import render
-
 # Create your views here.
 # pip install QQLoginTool 安裝QQLoginTool
 
@@ -56,9 +54,9 @@ class OauthQQView(View):
         except OAuthQQUser.DoesNotExist:
             # 不存在
             # 5.如果沒有綁定過，則需要綁定
-            from apps.oauth.utils import generate_token
+            from utils.tooken import generate_token
             # 加密openid
-            access_token = generate_token(openid=openid)
+            access_token = generate_token(data={'openid': openid})
 
             response = JsonResponse({'code': 400, 'access_token': access_token})
             return response
@@ -84,8 +82,9 @@ class OauthQQView(View):
         access_token = data.get('access_token')
 
         # 解密 access_token
-        from apps.oauth.utils import validate_token
-        openid = validate_token(access_token)
+        from utils.tooken import validate_token
+        # 獲取字典openid的值
+        openid = validate_token(access_token).get('openid')
         if openid is None:
             return JsonResponse({'code': 400, 'errmsg': '參數缺失'})
 
