@@ -10,7 +10,9 @@ from mall_django import settings
 def generate_token(data):
     """
     生成用于邮箱验证的JWT（json web token）
-    傳入一個需要加密的字典: data = {'openid': openid}
+    傳入一個需要加密的字典
+
+    例如: data = {'openid': openid}
     """
     # 签名算法
     header = {'alg': 'HS256'}

@@ -245,8 +245,14 @@ class EmailView(LoginRequiredJsonMixin, View):
         message = ""  # 郵件内容
         from_email = '龜靈聖母<fbozhang@163.com>'  # 發件人
         recipient_list = ['fbozhang@163.com']  # 收件人列表
+
+        # 加密數據
+        from utils.tooken import generate_token
+        id_token = generate_token(data={'id_token': request.user.id})
+
         # 郵件内容如果是html，使用html_message, 將message制空即可因爲不管裏面是什麽都不會發出去
-        html_message = "點擊按鈕進行激活 <a href='http://www.guiling.cn:8080'>激活</a>"  # html郵件内容
+        html_message = "點擊按鈕進行激活 <a href='http://www.guiling.cn:8080?token={id_token}'>激活</a>".format(
+            id_token=id_token)  # html郵件内容
 
         # 發送郵件
         send_mail(subject=subject,
