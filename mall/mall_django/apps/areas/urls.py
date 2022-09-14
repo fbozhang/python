@@ -6,6 +6,8 @@ from django.urls import path
 from apps.areas.views import *
 
 urlpatterns = [
-    # 地區
+    # 省數據
     path('areas/', AreaView.as_view()),
+    # 市區數據
+    path('areas/<id>/', SubAreaView.as_view()),
 ]
