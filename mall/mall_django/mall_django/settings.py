@@ -136,7 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://django-redis-chs.readthedocs.io/zh_CN/latest/
 
 CACHES = {
-    "default": {  # 预留
+    "default": {  # 预留 保存了省市區數據的緩存
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/0",
         "OPTIONS": {
