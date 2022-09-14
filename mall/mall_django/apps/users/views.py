@@ -309,3 +309,61 @@ class EmailVerfyView(View):
 
         # 返回相應
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
+class AddressCreateView(LoginRequiredJsonMixin, View):
+    """ 新增地址 """
+
+    def post(self, request):
+        # 接收請求
+        data = json.loads(request.body.decode())
+
+        # 獲取參數,
+        receiver = data.get('receiver')
+        province_id = data.get('province_id')
+        city_id = data.get('city_id')
+        district_id = data.get('district_id')
+        place = data.get('place')
+        mobile = data.get('mobile')
+        tel = data.get('tel')
+        email = data.get('email')
+
+        user = request.user
+
+        # 驗證參數
+        if not all([receiver, province_id, city_id, district_id, place, mobile]):
+            return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+        if not re.match(r'1[345789]\d{9}', mobile):
+            return JsonResponse({'code': 400, 'errmsg': '參數mobile有誤'})
+        if email:
+            if not re.match(r'[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}', email):
+                return JsonResponse({'code': 400, 'errmsg': '參數email有誤'})
+
+        # 數據入庫
+        address = Address.objects.create(
+            user=user,
+            title=receiver,
+            receiver=receiver,
+            province_id=province_id,
+            city_id=city_id,
+            district_id=district_id,
+            place=place,
+            mobile=mobile,
+            tel=tel,
+            email=email
+        )
+
+        adress_dict = {
+            'id': address.id,
+            "title": address.title,
+            "receiver": address.receiver,
+            "province": address.province.name,
+            "city": address.city.name,
+            "district": address.district.name,
+            "place": address.place,
+            "mobile": address.mobile,
+            "tel": address.tel,
+            "email": address.email
+        }
+
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'address': adress_dict})
