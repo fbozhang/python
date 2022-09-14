@@ -24,4 +24,6 @@ urlpatterns = [
     path('emails/verification/', EmailVerfyView.as_view()),
     # 新增地址
     path('addresses/create/', AddressCreateView.as_view()),
+    # 查詢地址
+    path('addresses/', AddressView.as_view()),
 ]
