@@ -80,7 +80,7 @@ def getData(page):
         # print(auctions)  # 测试： 查看auctions全部信息
         data = {
             'title': auctions['raw_title'],  # 商品标题
-            'pic_url': 'https://' + auctions['pic_url'],  # 预览图地址
+            'pic_url': 'https:' + auctions['pic_url'],  # 预览图地址
             'price': auctions['view_price'],  # 商品价格
             'salesNum': auctions['view_sales'],  # 付款人数
             'region': auctions['item_loc'],  # 产地
