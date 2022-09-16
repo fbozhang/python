@@ -48,4 +48,6 @@ urlpatterns = [
     path('', include('apps.oauth.urls')),
     # 导入 areas 子应用的路由
     path('', include('apps.areas.urls')),
+    # 导入 goods 子应用的路由
+    path('', include('apps.goods.urls')),
 ]
