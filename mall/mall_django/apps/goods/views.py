@@ -77,3 +77,32 @@ class ListView(View):
             'list': sku_list,
             'count': total_num
         })
+
+
+class HotView(View):
+
+    def get(self, request, category_id):
+        # 根據分類id進行分類數據的查詢驗證
+        try:
+            category = GoodsCategory.objects.get(id=category_id)
+        except GoodsCategory.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': '參數缺失'})
+
+        # 查詢分類對應的sku數據，然後排序，然後分頁
+        skus = SKU.objects.filter(category=category, is_launched=True).order_by('-sales')
+
+        hot_skus_list = []
+        # 將對象轉換為列表數據, 顯示銷量前三為熱銷
+        top = 3
+        for sku in skus:
+            if top == 0:
+                break
+            hot_skus_list.append({
+                'id': sku.id,
+                'name': sku.name,
+                'price': sku.price,
+                'default_image_url': sku.default_image.url
+            })
+            top -= 1
+
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'hot_skus': hot_skus_list})

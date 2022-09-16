@@ -10,4 +10,6 @@ urlpatterns = [
     path('index/', IndexView.as_view()),
     # 商品数据
     path('list/<category_id>/skus/', ListView.as_view()),
+    # 获取热销商品数据
+    path('hot/<category_id>/', HotView.as_view()),
 ]
