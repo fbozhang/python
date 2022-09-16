@@ -6,6 +6,8 @@ from django.urls import path
 from apps.goods.views import *
 
 urlpatterns = [
-    # 判断用户名是否重复
+    # 首頁
     path('index/', IndexView.as_view()),
+    # 商品数据
+    path('list/<category_id>/skus/', ListView.as_view()),
 ]
