@@ -24,6 +24,7 @@ from haystack import indexes
 
 
 class SKUIndex(indexes.SearchIndex, indexes.Indexable):
+    # 接收索引字段：使用文档定义索引字段，并且使用模板语法渲染
     text = indexes.CharField(document=True, use_template=True)
 
     def get_model(self):
