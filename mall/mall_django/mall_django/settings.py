@@ -247,10 +247,14 @@ EMAIL_HOST_PASSWORD = 'HCVBVCHLRFVSLVSG'
 # ES的配置
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',    # 要和es版本對應
         'URL': 'http://127.0.0.1:9200/',
         'INDEX_NAME': 'guiling',
     },
 }
+
 # 设置搜索 每页返回的记录条数
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
+
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

@@ -106,3 +106,30 @@ class HotView(View):
             top -= 1
 
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'hot_skus': hot_skus_list})
+
+
+""" 借助haystack來對接elasticsearch """
+from haystack.views import SearchView
+
+
+class SKUSearchView(SearchView):
+
+    def create_response(self):
+        """ 重寫 create_response 方法"""
+
+        # 獲取搜索的結果
+        context = self.get_context()
+
+        sku_list = []
+        for sku in context['page'].object_list:
+            sku_list.append({
+                'id': sku.object.id,
+                'name': sku.object.name,
+                'price': sku.object.price,
+                'default_image_url': sku.object.default_image.url,
+                'searchkey': context.get('query'),
+                'page_size': context['page'].paginator.num_pages,
+                'count': context['page'].paginator.count
+            })
+
+        return JsonResponse(sku_list, safe=False)

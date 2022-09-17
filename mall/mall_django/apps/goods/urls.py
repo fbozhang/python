@@ -12,4 +12,6 @@ urlpatterns = [
     path('list/<category_id>/skus/', ListView.as_view()),
     # 获取热销商品数据
     path('hot/<category_id>/', HotView.as_view()),
+    # 搜索商品
+    path('search/', SKUSearchView()),  # 直接實例化就行，他沒有as_vieew()
 ]
