@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # CORS
     'corsheaders',
+    # haystack
+    'haystack',
     # 注册app
     'apps.users',
     'apps.verifications',
@@ -216,7 +218,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:8080',
     'http://www.guiling.cn:8080',
     'http://www.guiling.cn:8000',
-    'http://www.meiduo.site:8080' # QQ登錄跨域
+    'http://www.meiduo.site:8080'  # QQ登錄跨域
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -227,7 +229,6 @@ QQ_CLIENT_ID = '101474184'
 QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
 # 我们申请时添加的: 登录成功后回调的路径
 QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
-
 
 # 郵件發送配置
 #  让django的哪个类来发送邮件
@@ -241,3 +242,15 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = 'fbozhang@163.com'
 # 在邮箱中设置的客户端授权密码
 EMAIL_HOST_PASSWORD = 'HCVBVCHLRFVSLVSG'
+
+
+# ES的配置
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'guiling',
+    },
+}
+# 设置搜索 每页返回的记录条数
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
