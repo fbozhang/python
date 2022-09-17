@@ -248,8 +248,8 @@ EMAIL_HOST_PASSWORD = 'HCVBVCHLRFVSLVSG'
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',    # 要和es版本對應
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'guiling',
+        'URL': 'http://127.0.0.1:9200/',    # Elasticsearch服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'guiling',    # Elasticsearch建立的索引库的名称
     },
 }
 
