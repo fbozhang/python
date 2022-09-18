@@ -85,7 +85,7 @@ categories
         <ul class="slide">
             {% for lbt in contents.index_lbt %}
                 {# <li><a href="{{ lbt.url }}"><img src="http://image.guiling.cn:8888/{{ lbt.image }}" alt="{{ lbt.title }}"></a></li> #}
-                <li><a href="{{ lbt.url }}"><img src="{{ lbt.image.url }}" alt="{{ lbt.title }}"></a></li>
+                <li><a href="{{ lbt.url }}"><img src="{{ lbt.image.name }}" alt="{{ lbt.title }}"></a></li>
 
             {% endfor %}
         </ul>
@@ -131,7 +131,7 @@ categories
                 {% endfor %}
             </ul>
             {% for content in contents.index_ytgg %}
-                <a href="{{ content.url }}" class="advs"><img src="{{ content.image.url }}"></a>
+                <a href="{{ content.url }}" class="advs"><img src="{{ content.image.name }}"></a>
             {% endfor %}
         </div>
     </div>
@@ -148,7 +148,7 @@ categories
         <div class="goods_con clearfix">
             <div class="goods_banner fl">
 
-                <img src="{{ contents.index_1f_logo.0.image.url }}">
+                <img src="{{ contents.index_1f_logo.0.image.name }}">
                 <div class="channel">
                     {% for content in contents.index_1f_pd %}
                         <a href="{{ content.url }}">{{ content.title }}</a>
@@ -164,7 +164,7 @@ categories
                 <ul v-show="f1_tab===1" class="goods_list fl">
                     {% for content in contents.index_1f_ssxp %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
@@ -173,7 +173,7 @@ categories
                 <ul v-show="f1_tab===2" class="goods_list fl">
                     {% for content in contents.index_1f_cxdj %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
@@ -182,7 +182,7 @@ categories
                 <ul v-show="f1_tab===3" class="goods_list fl">
                     {% for content in contents.index_1f_sjpj %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
@@ -202,7 +202,7 @@ categories
         </div>
         <div class="goods_con clearfix">
             <div class="goods_banner fl">
-                <img src="{{ contents.index_2f_logo.0.image.url }}">
+                <img src="{{ contents.index_2f_logo.0.image.name }}">
                 <div class="channel">
                     {% for content in contents.index_2f_pd %}
                         <a href="{{ content.url }}">{{ content.title }}</a>
@@ -218,7 +218,7 @@ categories
                 <ul v-show="f2_tab===1" class="goods_list fl">
                     {% for content in contents.index_2f_cxdj %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
@@ -227,7 +227,7 @@ categories
                 <ul v-show="f2_tab===2" class="goods_list fl">
                     {% for content in contents.index_2f_jjhg %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
@@ -247,7 +247,7 @@ categories
         </div>
         <div class="goods_con clearfix">
             <div class="goods_banner fl">
-                <img src="{{ contents.index_3f_logo.0.image.url }}">
+                <img src="{{ contents.index_3f_logo.0.image.name }}">
                 <div class="channel">
                     {% for content in contents.index_3f_pd %}
                         <a href="{{ content.url }}">{{ content.title }}</a>
@@ -263,7 +263,7 @@ categories
                 <ul v-show="f3_tab===1" class="goods_list fl">
                     {% for content in contents.index_3f_shyp %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
@@ -272,7 +272,7 @@ categories
                 <ul v-show="f3_tab===2" class="goods_list fl">
                     {% for content in contents.index_3f_cfyp %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
+                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.name }}"></a>
                             <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
