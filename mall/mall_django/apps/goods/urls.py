@@ -8,6 +8,8 @@ from apps.goods.views import *
 urlpatterns = [
     # 首頁
     path('index/', IndexView.as_view()),
+    # 詳情頁
+    path('detail/<sku_id>/', DetailView.as_view()),
     # 商品数据
     path('list/<category_id>/skus/', ListView.as_view()),
     # 获取热销商品数据

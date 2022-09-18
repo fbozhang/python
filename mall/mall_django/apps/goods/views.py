@@ -133,3 +133,33 @@ class SKUSearchView(SearchView):
             })
 
         return JsonResponse(sku_list, safe=False)
+
+
+from utils.goods import *
+
+
+class DetailView(View):
+    """ 詳情頁 """
+
+    def get(self, request, sku_id):
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            pass
+        # 分類數據
+        categories = get_categories()
+        # 麵包屑
+        breadcrumb = get_breadcrumb(sku.category)
+        # SKU信息
+
+        # 規格信息
+        goods_spece = get_goods_specs(sku)
+
+        context = {
+            'categories': categories,
+            'breadcrumb': breadcrumb,
+            'sku': sku,
+            'specs': goods_spece,
+        }
+
+        return render(request, 'detail.html', context=context)
