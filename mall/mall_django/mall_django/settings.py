@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # CORS
     'corsheaders',
-    # haystack
+    # haystack 連接es
     'haystack',
+    # 定時任務, django_crontab 僅支持Linux
+    # 'django_crontab',
+    # 定時任務,本次使用 django_apscheduler
+    "django_apscheduler",
     # 注册app
     'apps.users',
     'apps.verifications',
@@ -252,9 +256,38 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'guiling',    # Elasticsearch建立的索引库的名称
     },
 }
-
 # 设置搜索 每页返回的记录条数
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
-
 # 当添加、修改、删除数据时，自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+
+# 定時任務
+"""
+# 元素的第一个参数是 频次(多久一次)
+*  *  *  * *
+分 时 日 月 周    命令
+
+M: 分钟（0-59）。每分钟用 * 或者 */1 表示
+H：小时（0-23）。（0表示0点）
+D：天（1-31）。
+m: 月（1-12）。
+d: 一星期内的天（0~6，0为星期天）。
+
+*/5 * * * * ---- 每5分鐘執行一次
+
+# 元素的第二个参数是 定时任务（函数）
+
+finally run this command to add all defined jobs from CRONJOBS to crontab (of the user which you are running this command with):
+在終端運行: python manage.py crontab add
+
+show current active jobs of this project:
+在終端運行: python manage.py crontab show
+
+removing all defined jobs is straight forward:
+在終端運行: python manage.py crontab remove
+"""
+# crontab 只在Linux下才能使用
+# CRONJOBS = [
+#     ('*/1 * * * *', 'apps.contents.scheduler.py.generic_guiling_index', '>>' + os.path.join(BASE_DIR, 'logs/crontab.log'))
+# ]
