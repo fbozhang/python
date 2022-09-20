@@ -395,3 +395,36 @@ class AddressView(LoginRequiredJsonMixin, View):
 
         # 3.返回响应
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'addresses': address_list})
+
+
+from apps.goods.models import *
+from django_redis import get_redis_connection
+
+
+class UserHistoryView(LoginRequiredJsonMixin, View):
+
+    def post(self, request):
+
+        user = request.user
+        # 接收請求
+        data = json.loads(request.body.decode())
+        # 獲取請求參數
+        sku_id = data.get('sku_id')
+        # 驗證參數
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': '沒有此商品'})
+
+        # 連接redis
+        redis_cli = get_redis_connection('history')
+        # 去重(先刪除這個商品id的數據，再添加就可以了)
+        redis_cli.lrem(f'history_{user.id}', sku_id)  # 刪除
+        # 保存到redis list
+        redis_cli.lpush(f'history_{user.id}', sku_id)
+        # 只保存5條記錄
+        # ltrim(list,0,4) -> 只保留列表中 0 ~ 4 號位的5個數據
+        redis_cli.ltrim(f'history_{user.id}', 0, 4)
+
+        # 返回相應
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})

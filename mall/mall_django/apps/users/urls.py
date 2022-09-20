@@ -26,4 +26,6 @@ urlpatterns = [
     path('addresses/create/', AddressCreateView.as_view()),
     # 查詢地址
     path('addresses/', AddressView.as_view()),
+    # 用户浏览历史记录
+    path('browse_histories/', UserHistoryView.as_view()),
 ]
