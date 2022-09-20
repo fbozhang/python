@@ -404,6 +404,7 @@ from django_redis import get_redis_connection
 class UserHistoryView(LoginRequiredJsonMixin, View):
 
     def post(self, request):
+        """ 添加用户浏览历史记录 """
 
         user = request.user
         # 接收請求
@@ -419,12 +420,39 @@ class UserHistoryView(LoginRequiredJsonMixin, View):
         # 連接redis
         redis_cli = get_redis_connection('history')
         # 去重(先刪除這個商品id的數據，再添加就可以了)
-        redis_cli.lrem(f'history_{user.id}', sku_id)  # 刪除
+        redis_cli.lrem(f'history_{user.id}', 0, sku_id)  # 刪除
         # 保存到redis list
-        redis_cli.lpush(f'history_{user.id}', sku_id)
+        redis_cli.lpush(f'history_{user.id}', sku_id)  # 添加
         # 只保存5條記錄
         # ltrim(list,0,4) -> 只保留列表中 0 ~ 4 號位的5個數據
         redis_cli.ltrim(f'history_{user.id}', 0, 4)
 
         # 返回相應
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+    def get(self, request):
+        """ 展示用户浏览历史记录 """
+
+        # 連接redis
+        redis_cli = get_redis_connection('history')
+        # 獲取redis數據([1,2,3])
+        ids = redis_cli.lrange(f'history_{request.user.id}', 0, 4)
+        # ([1,2,3])
+        # 根據商品id進行數據查詢
+        history_list = []
+        for sku_id in ids:
+            try:
+                sku = SKU.objects.get(id=sku_id)
+            except SKU.DoesNotExist:
+                return JsonResponse({'code': 400, 'errmsg': '沒有此商品'})
+
+            # 將對象轉爲字典
+            history_list.append({
+                'id': sku.id,
+                'name': sku.name,
+                'default_image_url': sku.default_image.url,
+                'price': sku.price
+            })
+
+        # 返回相應
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'skus': history_list})
