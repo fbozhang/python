@@ -160,3 +160,32 @@ class DetailView(View):
         }
 
         return render(request, 'detail.html', context=context)
+
+
+from datetime import date
+
+
+class CategoryVistCountView(View):
+
+    def post(self, request, category_id):
+        # 驗證參數
+        try:
+            category = GoodsCategory.objects.get(id=category_id)
+        except GoodsCategory.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': '沒有此分類'})
+
+        # 查詢當天 這個分類的記錄有沒有
+        today = date.today()
+
+        try:
+            gvc = GoodsVisitCount.objects.get(category=category, date=today)
+        except GoodsVisitCount.DoesNotExist:
+            # 沒有 新建數據
+            GoodsVisitCount.objects.create(category=category, date=today, count=1)
+        else:
+            # 有 更新數據
+            gvc.count += 1
+            gvc.save()
+
+        # 返回相應
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})
