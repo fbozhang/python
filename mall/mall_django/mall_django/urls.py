@@ -52,4 +52,6 @@ urlpatterns = [
     path('', include('apps.goods.urls')),
     # 导入 contents 子应用的路由
     path('', include('apps.contents.urls')),
+    # 导入 carts 子应用的路由
+    path('', include('apps.carts.urls')),
 ]
