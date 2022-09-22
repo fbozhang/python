@@ -1,4 +1,6 @@
+import base64
 import json
+import pickle
 
 from django.shortcuts import render
 
@@ -63,16 +65,29 @@ class CartVist(View):
                         sku_id:{'count': count,'selected': True},
                     }
             '''
-            # cookie字典
-            carts = {
-                sku_id: {'count': count, 'selected': True}
+            # 先讀取cookie數據
+            cookie_carts = request.COOKIES.get('carts')
+            if cookie_carts:
+                # 對數據解密
+                carts = pickle.loads(base64.b64decode(cookie_carts))
+            else:
+                # 初始化cookie字典
+                carts = {}
+
+            # 判斷新增的商品有沒有在購物車裏
+            if sku_id in carts:
+                # 購物車中 已經有該商品id
+                origin_count = carts[sku_id]['count']
+                count += origin_count
+
+            carts[sku_id] = {
+                'count': count,
+                'selected': True
             }
 
             # 將數據轉換為bytes
-            import pickle
             carts_bytes = pickle.dumps(carts)
             # bytes類型數據base64編碼
-            import base64
             base64endoce = base64.b64encode(carts_bytes)
 
             # 設置cookie
