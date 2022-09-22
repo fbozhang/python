@@ -99,3 +99,58 @@ class CartVist(View):
 
             # 返回相應
             return response
+
+    def get(self, request):
+        # 判斷用戶是否登錄
+        user = request.user
+
+        # 登錄用戶 查詢redis
+        if user.is_authenticated:
+            # 連接redis
+            redis_cli = get_redis_connection('carts')
+            # hash  {sku_id: count, sku_id: count, ...}
+            sku_id_counts = redis_cli.hgetall(f'carts_{user.id}')
+            # set   {sku_id, sku_id, ...}
+            select_ids = redis_cli.smembers(f'selectes_{user.id}')
+
+            # 將redis的數據轉換為和 cookie一樣的類型，方便統一操作
+            # {sku_id:{count:xxx,selected:True}}
+            carts = {}
+            for sku_id, count in sku_id_counts.items():
+                carts[sku_id] = {
+                    'count': count,
+                    'selected': sku_id in select_ids
+                }
+
+        # 未登錄用戶 查詢cookie
+        else:
+            # 讀取cookie數據
+            cookie_carts = request.COOKIES.get('carts')
+            # 判斷是否存在購物車數據
+            if cookie_carts is not None:
+                # 如果存在則解碼   {sku_id:{count:xxx,selected:True}}
+                carts = pickle.loads(base64.b64decode(cookie_carts))
+            else:
+                # 如果不存在，初始化空字典
+                carts = {}
+
+        # 根據商品id查詢商品信息  {sku_id:{count:xxx,selected:True}}
+        sku_ids = carts.keys()  # [1,2,3]
+        # 所有的sku對象
+        skus = SKU.objects.filter(id__in=sku_ids)
+
+        # 將對象數據轉換為字典數據
+        sku_list = []
+        for sku in skus:
+            sku_list.append({
+                'id': sku.id,
+                'price': sku.price,
+                'name': sku.name,
+                'default_image_url': sku.default_image.url,
+                'selected': carts[sku.id]['selected'],  # 選中狀態
+                'count': carts[sku.id]['count'],  # 數量
+                'amount': sku.price * carts[sku.id]['count']  # 總價格
+            })
+
+        # 返回相應
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'cart_skus': sku_list})
