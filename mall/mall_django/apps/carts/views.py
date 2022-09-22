@@ -219,3 +219,48 @@ class CartVist(View):
             response.set_cookie('carts', carts_encode.decode(), max_age=3600 * 24 * 14)
             # 返回响应
             return response
+
+    def delete(self, request):
+        # 接收请求
+        user = request.user
+        sku_id = json.loads(request.body.decode()).get('sku_id')
+        # 验证参数
+        try:
+            SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': '商品不存在'})
+
+        # 根据用户状态
+        if user.is_authenticated:
+            # 登录用户操作redis
+            # 连接redis
+            redis_cli = get_redis_connection('carts')
+            # hash
+            redis_cli.hdel(f'carts_{user.id}', sku_id)
+            # set
+            redis_cli.srem(f'carts_{user.id}', sku_id)
+            # 返回响应
+            return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+        # 未登录用户操作cookie
+        else:
+            # 读取cookie中的购物车数据
+            cookie_carts = request.COOKIES.get('carts')
+            # 判断数据是否存在
+            if cookie_carts is not None:
+                # 存在则解码
+                carts = pickle.loads(base64.b64decode(cookie_carts))
+            else:
+                # 不存在则初始化字典
+                carts = {}
+
+            # 删除数据 {}
+            del carts[sku_id]
+            # 我们需要对字典数据进行编码和base64的处理
+            carts_encode = base64.b64encode(pickle.dumps(carts))
+            # 设置cookie
+            response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+            response.set_cookie('carts', carts_encode.decode(), max_age=14 * 24 * 3600)
+            # 返回响应
+            return response
