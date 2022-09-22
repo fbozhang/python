@@ -154,3 +154,68 @@ class CartVist(View):
 
         # 返回相應
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'cart_skus': sku_list})
+
+    def put(self, request):
+        # 获取用户信息
+        user = request.user
+        # 接收数据
+        data = json.loads(request.body.decode())
+        sku_id = data.get('sku_id')
+        count = data.get('count')
+        selected = data.get('selected')
+
+        # 验证数据
+        if not all([sku_id, count]):
+            return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+
+        try:
+            SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': '沒有此商品'})
+
+        try:
+            count = int(count)
+        except Exception:
+            count = 1
+
+        # 登录用户更新redis
+        if user.is_authenticated:
+            # 连接redis
+            redis_clil = get_redis_connection('carts')
+            # hash
+            redis_clil.hset(f'carts_{user.id}', sku_id, count)
+            # set
+            if selected:
+                redis_clil.sadd(f'selected_{user.id}', sku_id)
+            else:
+                redis_clil.srem(f'selected_{user.id}', sku_id)
+
+            # 返回响应
+            return JsonResponse({'code': 0, 'errmsg': 'ok', 'cart_sku': {'count': count, 'selected': selected}})
+
+        # 未登录用户更新cookie
+        else:
+            # 先读取购物车数据
+            cookie_carts = request.COOKIES.get('carts')
+            # 判断有没有。
+            if cookie_carts is not None:
+                # 如果有则解密数据
+                carts = pickle.loads(base64.b64decode(cookie_carts))
+            else:
+                # 如果没有则初始化一个空字典
+                carts = {}
+
+            # 更新数据
+            if sku_id in carts:
+                carts[sku_id] = {
+                    'count': count,
+                    'selected': selected
+                }
+            # 重新對字典进行编码和base64加密
+            carts_encode = base64.b64encode(pickle.dumps(carts))
+            # 设置cookie
+            response = JsonResponse({'code': 0, 'errmsg': 'ok', 'cart_sku': {'count': count, 'selected': selected}})
+
+            response.set_cookie('carts', carts_encode.decode(), max_age=3600 * 24 * 14)
+            # 返回响应
+            return response
