@@ -45,12 +45,20 @@ class CartVist(View):
         if user.is_authenticated:
             # 連接redis
             redis_cli = get_redis_connection('carts')
+            # 使用管道
+            pipeline=redis_cli.pipeline()
+
             # 操作hash
             # redis_cli.hset(key,field,value)
-            redis_cli.hset(f'carts_{user.id}', sku_id, count)
+            # redis_cli.hset(f'carts_{user.id}', sku_id, count) # 沒有纍加
+            # hincrby 會進行纍加操作
+            pipeline.hincrby(f'carts_{user.id}', sku_id, count)
             # 操作set
             # 默認選中
-            redis_cli.sadd(f'selected_{user.id}', sku_id)
+            pipeline.sadd(f'selected_{user.id}', sku_id)
+
+            # 執行pipeline
+            pipeline.execute()
 
             # 返回相應
             return JsonResponse({'code': 0, 'errmsg': 'ok'})
@@ -117,8 +125,9 @@ class CartVist(View):
             # {sku_id:{count:xxx,selected:True}}
             carts = {}
             for sku_id, count in sku_id_counts.items():
-                carts[sku_id] = {
-                    'count': count,
+                carts[int(sku_id)] = {
+                    # redis 的數據是byte類型，需要轉換為int型
+                    'count': int(count),
                     'selected': sku_id in select_ids
                 }
 
@@ -238,7 +247,7 @@ class CartVist(View):
             # hash
             redis_cli.hdel(f'carts_{user.id}', sku_id)
             # set
-            redis_cli.srem(f'carts_{user.id}', sku_id)
+            redis_cli.srem(f'selected_{user.id}', sku_id)
             # 返回响应
             return JsonResponse({'code': 0, 'errmsg': 'ok'})
 
