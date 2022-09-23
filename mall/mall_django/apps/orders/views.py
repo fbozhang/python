@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 
 # Create your views here.
@@ -12,6 +14,7 @@ from utils.views import LoginRequiredJsonMixin
 
 class OrderSettlementView(LoginRequiredJsonMixin, View):
     """ 提交訂單頁面 """
+
     def get(self, request):
         # 获取用户信息
         user = request.user
@@ -80,3 +83,84 @@ class OrderSettlementView(LoginRequiredJsonMixin, View):
         }
 
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'context': context})
+
+
+from apps.orders.models import *
+
+
+class OrderCommitView(LoginRequiredJsonMixin, View):
+    """ 提交訂單 """
+
+    def post(self, request):
+        # 接收请求  user, address_id, pay_method
+        user = request.user
+        data = json.loads(request.body.decode())
+        address_id = data.get('address_id')
+        pay_method = data.get('pay_method')
+
+        # 验证数据
+        if not all([address_id, pay_method]):
+            return JsonResponse({'code': 400, 'errmsg': '參數不全'})
+
+        try:
+            address = Address.objects.get(id=address_id)
+        except Address.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': '參數不正確'})
+
+        # if pay_method not in [1,2]: # 可讀性差
+        if pay_method not in [OrderInfo.PAY_METHODS_ENUM['CASH'], OrderInfo.PAY_METHODS_ENUM['ALIPAY']]:
+            return JsonResponse({'code': 400, 'errmsg': '參數不正確'})
+
+        # order_id  主键（自己生成）年月日時分秒 + 用戶id(9位數字)
+        # from datetime import datetime
+        # datetime.strftime()
+        from django.utils import timezone
+        # timezone.localtime() -> 2022-10-10 10:10:10
+        # timezone.localtime().strftime('%Y%m%d%H%M%S') -> 20221010101010
+        order_id = timezone.localtime().strftime('%Y%m%d%H%M%S') + '%09d' % user.id
+
+        # 支付状态由支付方式决定
+        # 代码是对的。可读性差
+        # if pay_method == 1: # 货到付款
+        #     pay_status=2
+        # else:
+        #     pay_status=1
+        if pay_method == OrderInfo.PAY_METHODS_ENUM['CASH']:
+            status = OrderInfo.ORDER_STATUS_ENUM['UNSEND']
+        else:
+            status = OrderInfo.ORDER_STATUS_ENUM['UNPAID']
+
+        # 总数量，总金额， = 0
+        total_count = 0
+        from decimal import Decimal
+        total_amount = Decimal('0')
+        # 运费
+        freight = Decimal('8.00')
+
+        # 先保存订单基本信息
+        OrderInfo.objects.create(
+            order_id=order_id,
+            user=user,
+            address=address,
+            total_count=total_count,
+            total_amount=total_amount,
+            freight=freight,
+            pay_method=pay_method,
+            status=status
+        )
+
+        # 再保存订单商品信息
+        # 连接redis
+        # 获取hash
+        # 获取set
+        # 遍历选中商品的id，
+        # 最好重写组织一个数据，这个数据是选中的商品信息
+        # {sku_id:count,sku_id:count}
+        # 遍历 根据选中商品的id进行查询
+        # 判断库存是否充足，
+        # 如果不充足，下单失败
+        # 如果充足，则库存减少，销量增加
+        # 累加总数量和总金额
+        #  保存订单商品信息
+        # 更新订单的总金额和总数量
+        # 将redis中选中的商品信息移除出去
