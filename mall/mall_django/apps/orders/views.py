@@ -11,7 +11,7 @@ from utils.views import LoginRequiredJsonMixin
 
 
 class OrderSettlementView(LoginRequiredJsonMixin, View):
-
+    """ 提交訂單頁面 """
     def get(self, request):
         # 获取用户信息
         user = request.user
