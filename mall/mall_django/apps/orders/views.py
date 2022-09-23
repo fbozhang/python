@@ -69,9 +69,13 @@ class OrderSettlementView(LoginRequiredJsonMixin, View):
                     'count': count,
                 })
 
+        # 運費
+        from decimal import Decimal
+        freight = Decimal('8')
+
         context = {
             'skus': sku_list,
-            'freight': 8,  # 運費
+            'freight': freight,  # 運費
             'addresses': addresses_list
         }
 
