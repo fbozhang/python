@@ -138,7 +138,7 @@ class OrderCommitView(LoginRequiredJsonMixin, View):
         freight = Decimal('8.00')
 
         # 先保存订单基本信息
-        OrderInfo.objects.create(
+        orderinfo = OrderInfo.objects.create(
             order_id=order_id,
             user=user,
             address=address,
@@ -151,16 +151,51 @@ class OrderCommitView(LoginRequiredJsonMixin, View):
 
         # 再保存订单商品信息
         # 连接redis
+        redis_cli = get_redis_connection('carts')
         # 获取hash
+        sku_id_counts = redis_cli.hgetall(f'carts_{user.id}')
         # 获取set
+        selected_ids = redis_cli.smembers(f'selected_{user.id}')
+
         # 遍历选中商品的id，
-        # 最好重写组织一个数据，这个数据是选中的商品信息
+        # 重写组织一个数据，这个数据是选中的商品信息
+        carts = {}
         # {sku_id:count,sku_id:count}
-        # 遍历 根据选中商品的id进行查询
-        # 判断库存是否充足，
-        # 如果不充足，下单失败
-        # 如果充足，则库存减少，销量增加
-        # 累加总数量和总金额
-        #  保存订单商品信息
+        for sku_id in selected_ids:
+            carts[int(sku_id)] = int(sku_id_counts[sku_id])
+
+        # 遍历 {sku_id:count,sku_id:count}
+        for sku_id, count in carts.items():
+            # 根据选中商品的id进行查询
+            try:
+                sku = SKU.objects.get(id=sku_id)
+            except SKU.DoesNotExist:
+                return JsonResponse({'code': 400, 'errmsg': '商品不存在'})
+
+            # 判断库存是否充足，
+            # 如果不充足，下单失败
+            if sku.stock < count:
+                return JsonResponse({'code': 400, 'errmsg': '庫存不足'})
+
+            # 如果充足，则库存减少，销量增加
+            sku.stock -= count
+            sku.sales += count
+            sku.save()  # 保存
+
+            # 累加总数量和总金额
+            orderinfo.total_count += count
+            orderinfo.total_amount += (count * sku.price)
+
+            #  保存订单商品信息
+            OrderGoods.objects.create(
+                order=orderinfo,
+                sku=sku,
+                count=count,
+                price=sku.price,
+            )
         # 更新订单的总金额和总数量
-        # 将redis中选中的商品信息移除出去
+        orderinfo.save()
+        # 将redis中选中的商品信息移除出去(暫緩)
+
+        # 返回相應
+        return JsonResponse({'code':0,'errmsg':'ok','order_id':order_id})
