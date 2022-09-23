@@ -178,6 +178,10 @@ class LoginView(View):
         # 爲了首頁顯示用戶信息展示
         response.set_cookie('username', user.username)
 
+        # 登錄后合并購物車
+        from apps.carts.utils import merge_cookie_to_redis
+        response = merge_cookie_to_redis(request, response)
+
         return response
 
 

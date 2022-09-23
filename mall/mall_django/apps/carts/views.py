@@ -119,7 +119,7 @@ class CartVist(View):
             # hash  {sku_id: count, sku_id: count, ...}
             sku_id_counts = redis_cli.hgetall(f'carts_{user.id}')
             # set   {sku_id, sku_id, ...}
-            select_ids = redis_cli.smembers(f'selectes_{user.id}')
+            select_ids = redis_cli.smembers(f'selected_{user.id}')
 
             # 將redis的數據轉換為和 cookie一樣的類型，方便統一操作
             # {sku_id:{count:xxx,selected:True}}
