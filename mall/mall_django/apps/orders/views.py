@@ -198,4 +198,4 @@ class OrderCommitView(LoginRequiredJsonMixin, View):
         # 将redis中选中的商品信息移除出去(暫緩)
 
         # 返回相應
-        return JsonResponse({'code':0,'errmsg':'ok','order_id':order_id})
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'order_id': order_id})
