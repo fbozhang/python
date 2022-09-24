@@ -188,9 +188,22 @@ class OrderCommitView(LoginRequiredJsonMixin, View):
                     return JsonResponse({'code': 400, 'errmsg': '庫存不足'})
 
                 # 如果充足，则库存减少，销量增加
-                sku.stock -= count
-                sku.sales += count
-                sku.save()  # 保存
+                # sku.stock -= count
+                # sku.sales += count
+                # sku.save()  # 保存
+
+                # 先記錄表一個數據, 哪個都行 (樂觀鎖)
+                old_stock = sku.stock
+                # 更新的時候比對這個記錄對不對
+                new_stock = sku.stock - count
+                new_sales = sku.sales + count
+
+                result = SKU.objects.filter(id=sku_id, stock=old_stock).update(stock=new_stock, sales=new_sales)
+                # result = 1 表示 有1條記錄修改成功
+                # result = 0 表示 沒有更新
+                if result == 0:
+                    transaction.savepoint_rollback(point)
+                    return JsonResponse({'code': 400, 'errmsg': '下單失敗~~~'})
 
                 # 累加总数量和总金额
                 orderinfo.total_count += count
