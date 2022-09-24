@@ -262,7 +262,7 @@ MySQL数据库事务隔离级别主要有四种：
 
     Serializable：串行化，一个事务一个事务的执行。  用的并不多
     Repeatable read：可重复读，无论其他事务是否修改并提交了数据，在这个事务中看到的数据值始终不受其他事务影响。
-    Read committed：读取已提交，其他事务提交了对数据的修改后，本事务就能读取到修改后的数据值。
+v    Read committed：读取已提交，其他事务提交了对数据的修改后，本事务就能读取到修改后的数据值。
     Read uncommitted：读取未提交，其他事务只要修改了数据，即使未提交，本事务也能看到修改后的数据值。
 
     举例：     5,7 库存 都是  8
@@ -271,4 +271,27 @@ MySQL数据库事务隔离级别主要有四种：
 
 MySQL数据库默认使用可重复读（ Repeatable read）
 
+修改MySQL数据库事务隔离级别為：Read committed
+
+sql語句:
+    查看事務級別: SELECT @@transaction_isolation;
+    查看事務級別: set session transaction isolation level read committed; # 會話 session 全局 GLOBAL 
+
+django:
+    setting.py:
+    
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+                'NAME': 'guiling_mall',  # 数据库名字
+                'USER': 'root',  # 数据库用户名
+                'PASSWORD': '123456',  # 数据库密码
+                'HOST': '127.0.0.1',  # 数据库主机
+                'PORT': '3306',  # 数据库端口
+                'OPTIONS': {
+                    'isolation_level': 'read committed',    # 數據庫隔離級別
+                }
+            }
+        }
+        
 """

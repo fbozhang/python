@@ -98,6 +98,9 @@ DATABASES = {
         'PASSWORD': '123456',  # 数据库密码
         'HOST': '127.0.0.1',  # 数据库主机
         'PORT': '3306',  # 数据库端口
+        'OPTIONS': {
+            'isolation_level': 'read committed',    # 數據庫隔離級別
+        }
     }
 }
 
