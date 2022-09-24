@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.shortcuts import render
 
@@ -118,7 +119,7 @@ class OrderCommitView(LoginRequiredJsonMixin, View):
         from django.utils import timezone
         # timezone.localtime() -> 2022-10-10 10:10:10
         # timezone.localtime().strftime('%Y%m%d%H%M%S') -> 20221010101010
-        order_id = timezone.localtime().strftime('%Y%m%d%H%M%S') + '%09d' % user.id
+        order_id = timezone.localtime().strftime('%Y%m%d%H%M%S%f') + '%09d' % user.id  # %Y%m%d%H%M%S%f 年月日時分秒微妙
 
         # 支付状态由支付方式决定
         # 代码是对的。可读性差
@@ -173,49 +174,55 @@ class OrderCommitView(LoginRequiredJsonMixin, View):
 
             # 遍历 {sku_id:count,sku_id:count}
             for sku_id, count in carts.items():
-                # 根据选中商品的id进行查询
-                try:
-                    sku = SKU.objects.get(id=sku_id)
-                except SKU.DoesNotExist:
-                    return JsonResponse({'code': 400, 'errmsg': '商品不存在'})
+                while True:
+                    # 根据选中商品的id进行查询
+                    try:
+                        sku = SKU.objects.get(id=sku_id)
+                    except SKU.DoesNotExist:
+                        return JsonResponse({'code': 400, 'errmsg': '商品不存在'})
 
-                # 判断库存是否充足，
-                # 如果不充足，下单失败
-                if sku.stock < count:
-                    # 回滾點
-                    transaction.savepoint_rollback(point)
+                    # 判断库存是否充足，
+                    # 如果不充足，下单失败
+                    if sku.stock < count:
+                        # 回滾點
+                        transaction.savepoint_rollback(point)
 
-                    return JsonResponse({'code': 400, 'errmsg': '庫存不足'})
+                        return JsonResponse({'code': 400, 'errmsg': '庫存不足'})
 
-                # 如果充足，则库存减少，销量增加
-                # sku.stock -= count
-                # sku.sales += count
-                # sku.save()  # 保存
+                    # 如果充足，则库存减少，销量增加
+                    # sku.stock -= count
+                    # sku.sales += count
+                    # sku.save()  # 保存
+                    
+                    # 先記錄表一個數據, 哪個都行 (樂觀鎖)
+                    old_stock = sku.stock
+                    # 更新的時候比對這個記錄對不對
+                    new_stock = sku.stock - count
+                    new_sales = sku.sales + count
 
-                # 先記錄表一個數據, 哪個都行 (樂觀鎖)
-                old_stock = sku.stock
-                # 更新的時候比對這個記錄對不對
-                new_stock = sku.stock - count
-                new_sales = sku.sales + count
+                    result = SKU.objects.filter(id=sku_id, stock=old_stock).update(stock=new_stock, sales=new_sales)
+                    # result = 1 表示 有1條記錄修改成功
+                    # result = 0 表示 沒有更新
+                    if result == 0:
+                        # 暫時回滾和返回下單失敗
+                        # transaction.savepoint_rollback(point)
+                        # return JsonResponse({'code': 400, 'errmsg': '下單失敗~~~'})
 
-                result = SKU.objects.filter(id=sku_id, stock=old_stock).update(stock=new_stock, sales=new_sales)
-                # result = 1 表示 有1條記錄修改成功
-                # result = 0 表示 沒有更新
-                if result == 0:
-                    transaction.savepoint_rollback(point)
-                    return JsonResponse({'code': 400, 'errmsg': '下單失敗~~~'})
+                        # time.sleep(0.005)
+                        continue
 
-                # 累加总数量和总金额
-                orderinfo.total_count += count
-                orderinfo.total_amount += (count * sku.price)
+                    # 累加总数量和总金额
+                    orderinfo.total_count += count
+                    orderinfo.total_amount += (count * sku.price)
 
-                #  保存订单商品信息
-                OrderGoods.objects.create(
-                    order=orderinfo,
-                    sku=sku,
-                    count=count,
-                    price=sku.price,
-                )
+                    #  保存订单商品信息
+                    OrderGoods.objects.create(
+                        order=orderinfo,
+                        sku=sku,
+                        count=count,
+                        price=sku.price,
+                    )
+                    break
             # 更新订单的总金额和总数量
             orderinfo.save()
 
