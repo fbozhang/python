@@ -310,3 +310,13 @@ removing all defined jobs is straight forward:
 # CRONJOBS = [
 #     ('*/1 * * * *', 'apps.contents.scheduler.py.generic_guiling_index', '>>' + os.path.join(BASE_DIR, 'logs/crontab.log'))
 # ]
+
+
+# 支付寶支付相關
+# 买家账号    ovmpoy2042@sandbox.com
+ALIPAY_APPID = '2021000121670950'
+ALIPAY_DEBUG = True
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+ALIPAY_RETURN_URL = 'http://www.guiling.cn:8080/pay_success.html'
+APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/app_private_key.txt')
+ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/alipay_public_key.txt')
