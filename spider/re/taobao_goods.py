@@ -11,14 +11,11 @@ url = 'https://s.taobao.com/search'
 
 def main(url, query, page):
     # 爬取网页保存本地,如果本地存在这个文件则不爬取
-    if os.path.exists("./goods_{page}.html".format(page=page)):  # 判断html文件是存在不需要爬取，直接解析
-        data_list = getData(page)
-        saveDataXls(data_list=data_list, savepath='goods_{page}.xls'.format(page=page))
-    else:
+    if not os.path.exists("./goods_{page}.html".format(page=page)):  # 判断html文件是存在不需要爬取，直接解析
         saveHTML(url=url, query=query, page=page)
-        getData(page)
-        data_list = getData(page)
-        saveDataXls(data_list=data_list, savepath='goods_{page}.xls'.format(page=page))
+
+    data_list = getData(page)
+    saveDataXls(data_list=data_list, savepath='goods_{page}.xls'.format(page=page))
 
 
 # 得到html并保存到本地
