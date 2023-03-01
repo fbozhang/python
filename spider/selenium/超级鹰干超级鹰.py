@@ -8,6 +8,7 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from chaojiying import Chaojiying_Client
 
+# 可以使用ddddocr庫識別驗證碼
 web = Chrome()
 web.get("http://www.chaojiying.com/user/login/")
 
