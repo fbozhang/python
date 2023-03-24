@@ -46,4 +46,7 @@ class CountrySerializers(serializers.Serializer):
     # 方法3
     # 如果想要获取外键字段关联的 字符串信息，可以使用 StringRelatedField
     # 实际上获取的是模型中 def __str__(self): 的返回值
-    area = serializers.StringRelatedField()
+    # area = serializers.StringRelatedField()
+
+    # 方法4
+    area = AreaSerializers()
