@@ -8,11 +8,15 @@ from rest_framework import serializers
 class AutherSerializers(serializers.Serializer):
     # 变量名与模型字段名一样
     # 类型与模型类型一样
-    id = serializers.IntegerField()
-    author = serializers.CharField()
-    email = serializers.CharField()
-    direction = serializers.CharField()
-    useNum = serializers.IntegerField()
+    # read_only 只用于序列化使用，反序列化的时候 忽略该字段
+    id = serializers.IntegerField(read_only=True)
+    # 通过字段选项验证数据。例如：max_length=10, min_length=2
+    author = serializers.CharField(max_length=10, min_length=2)
+    # required 表明该字段在反序列化时必须输入，默认True
+    email = serializers.CharField(required=False)
+    # write_only 只用于反序列化使用，序列化的时候 忽略该字段
+    direction = serializers.CharField(write_only=True)
+    useNum = serializers.IntegerField(max_value=5)
     company_name = serializers.CharField()
 
 

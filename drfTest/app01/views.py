@@ -51,3 +51,20 @@ serializer = CountrySerializers(instance=country, many=True)
 # 获取序列化器中，将对象转为字典数据
 serializer.data
 '''
+
+# 反序列化
+from app01.serializers import AutherSerializers
+
+data = {
+    'author': 'asdasd',
+    'direction': 'aseq',
+    'useNum': '1',
+    'company_name': 'sdfdsfs',
+}
+
+# instance 用于序列化(对象转换为字典)
+# data     用于反序列化(字典转换为对象)
+serializer = AutherSerializers(data=data)
+
+# 验证数据
+serializer.is_valid(raise_exception=True)
