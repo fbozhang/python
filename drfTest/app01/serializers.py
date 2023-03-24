@@ -14,3 +14,18 @@ class AutherSerializers(serializers.Serializer):
     direction = serializers.CharField()
     useNum = serializers.IntegerField()
     company_name = serializers.CharField()
+
+
+class AreaSerializers(serializers.Serializer):
+    area = serializers.CharField()
+
+
+class CountrySerializers(serializers.Serializer):
+    country = serializers.CharField()
+
+    # 对外键的学习
+    # area = serializers.IntegerField()
+    # TypeError: int() argument must be a string, a bytes-like object or a number, not 'Area'
+
+    # 方法1
+    area_id = serializers.IntegerField()

@@ -37,3 +37,17 @@ serializers = AutherSerializers(instance=authors, many=True)
 # 获取序列化器将对象转换为字典的数据
 serializers.data
 '''
+
+'''
+# 对外键的处理
+from app01.serializers import CountrySerializers
+from app01.models import Country
+
+# 获取查询结果集
+country = Country.objects.all()
+
+serializer = CountrySerializers(instance=country, many=True)
+
+# 获取序列化器中，将对象转为字典数据
+serializer.data
+'''
