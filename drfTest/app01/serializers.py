@@ -20,6 +20,9 @@ class AreaSerializers(serializers.Serializer):
     area = serializers.CharField()
 
 
+from app01.models import Area
+
+
 class CountrySerializers(serializers.Serializer):
     country = serializers.CharField()
 
@@ -28,4 +31,10 @@ class CountrySerializers(serializers.Serializer):
     # TypeError: int() argument must be a string, a bytes-like object or a number, not 'Area'
 
     # 方法1
-    area_id = serializers.IntegerField()
+    # area_id = serializers.IntegerField()
+
+    # 方法2
+    # AssertionError: Relational field must provide a `queryset` argument, override `get_queryset`, or set read_only=`True`.
+    area = serializers.PrimaryKeyRelatedField(queryset=Area.objects.all())
+    # 或者 read_only=True,意思是不验证了
+    # area = serializers.PrimaryKeyRelatedField(read_only=True)

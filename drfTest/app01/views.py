@@ -38,8 +38,8 @@ serializers = AutherSerializers(instance=authors, many=True)
 serializers.data
 '''
 
-'''
 # 对外键的处理
+'''
 from app01.serializers import CountrySerializers
 from app01.models import Country
 
