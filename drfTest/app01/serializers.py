@@ -4,7 +4,7 @@
 # @File : serializers.py
 from rest_framework import serializers
 
-
+# 反序列化验证顺序: 字段类型 -> 字段选项 -> 单个字段(validate_字段名) -> 多个字段(validate)
 class AutherSerializers(serializers.Serializer):
     # 变量名与模型字段名一样
     # 类型与模型类型一样
@@ -20,7 +20,8 @@ class AutherSerializers(serializers.Serializer):
     company_name = serializers.CharField()
     documentTitle = serializers.CharField()
 
-    # 单个字段验证
+    # 如果有单个字段验证先验证单个字段再验证多个字段
+    # 单个字段验证 validate_字段名
     def validate_company_name(self, attrs):
         # 写额外的检测代码
         if len(attrs) < 3:
