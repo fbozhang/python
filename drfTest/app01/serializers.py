@@ -20,9 +20,6 @@ class AreaSerializers(serializers.Serializer):
     area = serializers.CharField()
 
 
-from app01.models import Area
-
-
 class CountrySerializers(serializers.Serializer):
     country = serializers.CharField()
 
@@ -39,6 +36,7 @@ class CountrySerializers(serializers.Serializer):
     # 如果想要外键数据的key就是模型字段名字，那么PrimaryKeyRelatedField 就可以获取到关联的模型id
     # queryset 再验证数据的时候告诉系统在哪匹配外键数据
     # AssertionError: Relational field must provide a `queryset` argument, override `get_queryset`, or set read_only=`True`.
+    # from app01.models import Area
     # area = serializers.PrimaryKeyRelatedField(queryset=Area.objects.all())
     # 或者 read_only=True,意思是不验证了
     # area = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -50,3 +48,10 @@ class CountrySerializers(serializers.Serializer):
 
     # 方法4
     area = AreaSerializers()
+
+    # 方法5 在下面的 AreaCountrySerializers
+
+
+class AreaCountrySerializers(serializers.Serializer):
+    area = serializers.CharField()
+    country_set = CountrySerializers(many=True)
