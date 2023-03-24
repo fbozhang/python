@@ -19,6 +19,13 @@ class AutherSerializers(serializers.Serializer):
     useNum = serializers.IntegerField(max_value=5)
     company_name = serializers.CharField()
 
+    def validate_company_name(self, attrs):
+        # 写额外的检测代码
+        if len(attrs) < 3:
+            raise serializers.ValidationError('单位名称不能小于3')
+
+        return attrs
+
 
 class AreaSerializers(serializers.Serializer):
     area = serializers.CharField()

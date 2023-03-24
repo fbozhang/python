@@ -59,7 +59,7 @@ data = {
     'author': 'asdasd',
     'direction': 'aseq',
     'useNum': '1',
-    'company_name': 'sdfdsfs',
+    'company_name': 'as',
 }
 
 # instance 用于序列化(对象转换为字典)
