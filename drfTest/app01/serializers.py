@@ -18,7 +18,9 @@ class AutherSerializers(serializers.Serializer):
     direction = serializers.CharField(write_only=True)
     useNum = serializers.IntegerField(max_value=5)
     company_name = serializers.CharField()
+    documentTitle = serializers.CharField()
 
+    # 单个字段验证
     def validate_company_name(self, attrs):
         # 写额外的检测代码
         if len(attrs) < 3:
@@ -26,6 +28,15 @@ class AutherSerializers(serializers.Serializer):
 
         return attrs
 
+    # 多个字段验证
+    def validate(self, data):
+        company_name = data.get('company_name')
+        documentTitle = data.get('documentTitle')
+
+        if len(company_name) < 3 or len(documentTitle) < 3:
+            raise serializers.ValidationError('单位名称和标题不能小于3')
+
+        return data
 
 class AreaSerializers(serializers.Serializer):
     area = serializers.CharField()
