@@ -235,7 +235,7 @@ class CountryListGenericAPIView(GenericAPIView):
         # 接收参数
         data = request.data
         # 验证参数
-        serializer = CountryModelSerializers(data=data)
+        serializer = self.get_serializer(data=data)
         serializer.is_valid()
         # 保存数据
         serializer.save()
