@@ -295,7 +295,12 @@ class CountryDetailGenericAPIView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request: Request, id):
-        pass
+        # 接收参数
+        country = self.get_object()
+        # 操作数据库(删除)
+        country.delete()
+        # 返回响应
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
@@ -318,11 +323,11 @@ class CountryGenericMixinAPIView(ListModelMixin, CreateModelMixin, GenericAPIVie
         return self.create(request)
 
 
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
 
 
 # 详情视图
-class CountryDetailGenericMixinAPIView(RetrieveModelMixin, UpdateModelMixin, GenericAPIView):
+class CountryDetailGenericMixinAPIView(RetrieveModelMixin, UpdateModelMixin, GenericAPIView, DestroyModelMixin):
     # 查询结果集
     queryset = Country.objects.all()
     # 序列化器
@@ -334,8 +339,11 @@ class CountryDetailGenericMixinAPIView(RetrieveModelMixin, UpdateModelMixin, Gen
     def put(self, request: Request, pk):
         return self.update(request)
 
+    def delete(self, request: Request, pk):
+        return self.destroy(request)
 
-from rest_framework.generics import ListCreateAPIView, UpdateAPIView
+
+from rest_framework.generics import ListCreateAPIView
 
 
 # 三级视图
@@ -344,3 +352,13 @@ class CountryListCreateAPIView(ListCreateAPIView):
     queryset = Country.objects.all()
     # 序列化器
     serializer_class = CountryModelSerializers
+
+
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import DestroyAPIView
+from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListAPIView
+
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import RetrieveDestroyAPIView, RetrieveUpdateAPIView
