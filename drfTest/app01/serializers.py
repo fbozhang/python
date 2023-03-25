@@ -3,6 +3,8 @@
 # @Author: fbz
 # @File : serializers.py
 from rest_framework import serializers
+from app01.models import Author
+
 
 # 反序列化验证顺序: 字段类型 -> 字段选项 -> 单个字段(validate_字段名) -> 多个字段(validate)
 class AutherSerializers(serializers.Serializer):
@@ -38,6 +40,14 @@ class AutherSerializers(serializers.Serializer):
             raise serializers.ValidationError('单位名称和标题不能小于3')
 
         return data
+
+    # 如果序列化器是继承 Serializers
+    # 当调用序列化器的save方法时，会触发调用 序列化器的create方法
+    def create(self, validated_data):
+        # validated_data 没有问题的数据
+
+        return Author.objects.create(**validated_data)
+
 
 class AreaSerializers(serializers.Serializer):
     area = serializers.CharField()

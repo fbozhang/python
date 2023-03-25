@@ -60,7 +60,7 @@ data = {
     'direction': 'aseq',
     'useNum': '1',
     'company_name': 'asd',
-    'documentTitle': 'as',
+    'documentTitle': 'asd',
 }
 
 # instance 用于序列化(对象转换为字典)
@@ -69,3 +69,6 @@ serializer = AutherSerializers(data=data)
 
 # 验证数据
 serializer.is_valid(raise_exception=True)
+
+# 保存数据库, 必须进行验证才能保存
+serializer.save()
