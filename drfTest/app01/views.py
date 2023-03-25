@@ -52,7 +52,8 @@ serializer = CountrySerializers(instance=country, many=True)
 serializer.data
 '''
 
-# 反序列化
+# 反序列化保存数据
+'''
 from app01.serializers import AutherSerializers
 
 data = {
@@ -72,3 +73,32 @@ serializer.is_valid(raise_exception=True)
 
 # 保存数据库, 必须进行验证才能保存
 serializer.save()
+'''
+
+# 反序列化更新数据
+'''
+from app01.serializers import AutherSerializers
+from app01.models import Author
+
+data = {
+    'author': 'qwe',
+    'direction': 'qwe',
+    'useNum': '1',
+    'company_name': 'asd',
+    'documentTitle': 'asd',
+}
+
+author = Author.objects.get(id=1)
+
+# instance 用于序列化(对象转换为字典)
+# data     用于反序列化(字典转换为对象)
+serializer = AutherSerializers(instance=author, data=data)
+
+# 验证数据
+serializer.is_valid(raise_exception=True)
+
+# 保存数据库, 必须进行验证才能保存
+serializer.save()
+# 获取新字典数据
+serializer.data
+'''

@@ -48,6 +48,20 @@ class AutherSerializers(serializers.Serializer):
 
         return Author.objects.create(**validated_data)
 
+    def update(self, instance, validated_data):
+        # instance       序列化器创建时 传递的对象
+        # validated_data 没有问题的数据
+
+        # get(key,default_value), 如果key是None，则使用默认值
+        instance.author = validated_data.get('author', instance.author)
+        instance.direction = validated_data.get('direction', instance.direction)
+        instance.useNum = validated_data.get('useNum', instance.useNum)
+        instance.company_name = validated_data.get('company_name', instance.company_name)
+        instance.documentTitle = validated_data.get('documentTitle', instance.documentTitle)
+        instance.save()  # 调用保存方法数据才会入库
+
+        return instance
+
 
 class AreaSerializers(serializers.Serializer):
     area = serializers.CharField()
