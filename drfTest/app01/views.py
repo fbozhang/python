@@ -165,8 +165,12 @@ serializers.save()
 from rest_framework.views import APIView
 from app01.serializers import CountryModelSerializers
 from app01.models import Country
+
 from django.http import HttpRequest  # django
+from django.http import HttpResponse  # django
 from rest_framework.request import Request  # drf
+from rest_framework.response import Response  # drf
+from rest_framework import status
 
 
 class CountryListView(APIView):
@@ -181,7 +185,8 @@ class CountryListView(APIView):
         # 将查询结果集给序列化器
         serializers = CountryModelSerializers(instance=country, many=True)
 
-        return JsonResponse({'code': 'get', 'country': serializers.data})
+        # 返回响应
+        return Response(data=serializers.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request):
         # django -- request.POST, request.body
