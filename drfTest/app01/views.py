@@ -382,3 +382,12 @@ class CountryViewSet(ViewSet):
         user = get_object_or_404(queryset, pk=pk)
         serializer = CountryModelSerializers(instance=user)
         return Response(serializer.data)
+
+
+from rest_framework.viewsets import ModelViewSet
+
+
+# ModelViewSet 的基本使用
+class CountryModelViewSet(ModelViewSet):
+    queryset = Country.objects.all()
+    serializer_class = CountryModelSerializers

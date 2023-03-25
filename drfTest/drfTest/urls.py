@@ -34,3 +34,16 @@ urlpatterns = [
     path('viewsetcountry/', CountryViewSet.as_view({'get': 'list'})),
     path('viewsetcountry/<pk>/', CountryViewSet.as_view({'get': 'retrieve'})),
 ]
+
+# 视图集的路由借助于 drf 的 router 实现
+from rest_framework.routers import DefaultRouter
+
+# 创建router实例
+router = DefaultRouter()
+# 设置列表视图和详情视图的公共部分(不包括/部分)
+# prefix            列表视图和详情视图的公共部分(不包括/部分)
+# viewset           视图集
+# basename=None     给列表视图和详情视图的路由设置别名
+router.register(prefix='asd', viewset=CountryModelViewSet, basename='qwe')
+# 将router生成的路由追加到 urlpatterns
+urlpatterns += router.urls
