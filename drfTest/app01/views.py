@@ -137,3 +137,26 @@ serializers = CountryModelSerializers(data=data,many=True)
 serializers.is_valid(raise_exception=True)
 serializers.save()
 '''
+
+# ModelSerializer序列化器啊嵌套序列化器保存嵌套字典数据
+'''
+from app01.serializers import AreaModelSerializers
+
+data = {
+    'area': 'Zone IV',
+    'country': [
+        {
+            'id': 4,
+            'country': 'China',
+        },
+        {
+            'id': 5,
+            'country': 'HK',
+        },
+    ]
+}
+
+serializers = AreaModelSerializers(data=data)
+serializers.is_valid(raise_exception=True)
+serializers.save()
+'''

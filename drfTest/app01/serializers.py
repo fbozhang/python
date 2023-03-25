@@ -104,7 +104,7 @@ class AreaCountrySerializers(serializers.Serializer):
     country_set = CountrySerializers(many=True)
 
 
-from app01.models import Country
+from app01.models import Country, Area
 
 
 class CountryModelSerializers(serializers.ModelSerializer):
@@ -127,3 +127,27 @@ class CountryModelSerializers(serializers.ModelSerializer):
                 'max_length': 10,
             }
         }
+
+
+class AreaModelSerializers(serializers.ModelSerializer):
+    country = CountryModelSerializers(many=True, required=True)
+
+    class Meta:
+        model = Area
+        fields = '__all__'
+
+    # 序列化器嵌套序列化器写入数据的时候默认不写入多方实体的模型数据(本来应该报错，但是好像不报错了就是存不了数据库而已)
+    # 需要自己实现create方法来实现数据的写入
+    # 写入数据的思想：因为当前 地区和国家的关系是 1对多 应该想写入1的模型数据，再写入 多的模型数据
+    def create(self, validated_data):
+        # 先把validated_data 的嵌套数据分解开
+        country = validated_data.pop('country')
+
+        # 先写入 1 的模型数据
+        area = Area.objects.create(**validated_data)
+
+        # 再写入 多 的模型数据
+        for item in country:
+            Country.objects.create(area=area, **item)
+
+        return area
