@@ -24,4 +24,6 @@ urlpatterns = [
     path('genericcountry/', CountryListGenericAPIView.as_view()),
     # GenericAPIView + Mixin
     path('mixincountry/', CountryGenericMixinAPIView.as_view()),
+    # 三级视图
+    path('threecountry/', CountryListCreateAPIView.as_view()),
 ]

@@ -173,6 +173,7 @@ from rest_framework.response import Response  # drf
 from rest_framework import status
 
 
+# 一级视图 -- APIView
 class CountryListAPIView(APIView):
 
     def get(self, request: Request):
@@ -206,6 +207,7 @@ class CountryListAPIView(APIView):
 from rest_framework.generics import GenericAPIView
 
 
+# 二级视图 -- GenericAPIView
 class CountryListGenericAPIView(GenericAPIView):
     # 查询结果集
     queryset = Country.objects.all()
@@ -247,6 +249,7 @@ class CountryListGenericAPIView(GenericAPIView):
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
 
 
+# 二级视图 -- GenericAPIView + mixin
 # GenericAPIView 一般和 mixin 配合使用
 class CountryGenericMixinAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
     # 查询结果集
@@ -261,3 +264,14 @@ class CountryGenericMixinAPIView(ListModelMixin, CreateModelMixin, GenericAPIVie
     def post(self, request: Request):
         # CreateModelMixin 中的方法
         return self.create(request)
+
+
+from rest_framework.generics import ListCreateAPIView
+
+
+# 三级视图
+class CountryListCreateAPIView(ListCreateAPIView):
+    # 查询结果集
+    queryset = Country.objects.all()
+    # 序列化器
+    serializer_class = CountryModelSerializers
