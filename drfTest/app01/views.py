@@ -191,6 +191,13 @@ class CountryListView(APIView):
     def post(self, request: Request):
         # django -- request.POST, request.body
         # drf -- request.data
+        # 接收参数
         data = request.data
+        # 验证参数
+        serializer = CountryModelSerializers(data=data)
+        serializer.is_valid()
+        # 保存数据
+        serializer.save()
 
-        return JsonResponse({'code': 'post'})
+        # 返回响应
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
