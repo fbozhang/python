@@ -104,6 +104,7 @@ serializer.data
 '''
 
 # ModelSerializer反序列化保存数据
+'''
 from app01.serializers import CountryModelSerializers
 
 data = {
@@ -114,3 +115,4 @@ data = {
 serializers = CountryModelSerializers(data=data)
 serializers.is_valid(raise_exception=True)
 serializers.save()
+'''
