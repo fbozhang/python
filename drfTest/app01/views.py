@@ -343,7 +343,16 @@ class CountryDetailGenericMixinAPIView(RetrieveModelMixin, UpdateModelMixin, Gen
         return self.destroy(request)
 
 
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import CreateAPIView
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import DestroyAPIView
+
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.generics import RetrieveDestroyAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 
 
 # 三级视图
@@ -354,11 +363,22 @@ class CountryListCreateAPIView(ListCreateAPIView):
     serializer_class = CountryModelSerializers
 
 
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.generics import UpdateAPIView
-from rest_framework.generics import DestroyAPIView
-from rest_framework.generics import CreateAPIView
-from rest_framework.generics import ListAPIView
+from rest_framework.viewsets import ViewSet
+from django.shortcuts import get_object_or_404
 
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.generics import RetrieveDestroyAPIView, RetrieveUpdateAPIView
+
+# 视图集
+class CountryViewSet(ViewSet):
+
+    # 获取所有书籍    GET     genericcountry/
+    def list(self, request: Request):
+        queryset = Country.objects.all()
+        serializer = CountryModelSerializers(instance=queryset, many=True)
+        return Response(serializer.data)
+
+    # 获取指定书籍    GET     genericcountry/pk/
+    def retrieve(self, request: Request, pk=None):
+        queryset = Country.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = CountryModelSerializers(instance=user)
+        return Response(serializer.data)
