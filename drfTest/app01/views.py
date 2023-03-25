@@ -165,11 +165,17 @@ serializers.save()
 from rest_framework.views import APIView
 from app01.serializers import CountryModelSerializers
 from app01.models import Country
+from django.http import HttpRequest  # django
+from rest_framework.request import Request  # drf
 
 
 class CountryListView(APIView):
 
-    def get(self, request):
+    def get(self, request: Request):
+        # django -- request.GET
+        # drf -- request.query_params
+        query_params = request.query_params
+
         # 查询所有数据
         country = Country.objects.all()
         # 将查询结果集给序列化器
@@ -177,5 +183,9 @@ class CountryListView(APIView):
 
         return JsonResponse({'code': 'get', 'country': serializers.data})
 
-    def post(self, request):
+    def post(self, request: Request):
+        # django -- request.POST, request.body
+        # drf -- request.data
+        data = request.data
+
         return JsonResponse({'code': 'post'})
