@@ -172,6 +172,19 @@ from rest_framework.request import Request  # drf
 from rest_framework.response import Response  # drf
 from rest_framework import status
 
+'''
+GenericAPIView 比 APIView 扩展了一些属性和方法
+
+属性
+    queryset            设置查询结果集
+    serializer_class    设置序列化器
+    lookup_field        设置查询指定数据的关键字参数
+方法
+    get_queryset()      获取查询结果集
+    get_serializer()    获取序列化实例
+    get_object()        获取到指定的数据
+'''
+
 
 # 一级视图 -- APIView
 class CountryListAPIView(APIView):
@@ -237,13 +250,42 @@ class CountryListGenericAPIView(GenericAPIView):
         # 接收参数
         data = request.data
         # 验证参数
-        serializer = self.get_serializer(data=data)
+        serializer = self.get_serializer(data=data)  # 获取序列化实例
         serializer.is_valid()
         # 保存数据
         serializer.save()
 
         # 返回响应
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class CountryDetailGenericAPIView(GenericAPIView):
+    # 查询所有数据，因为查询结果集有惰性 后续代码可以采用 self.queryset.filter(id=pk) 属性
+    # 所以直接设置 手游查询结果就可以
+    # 查询结果集
+    queryset = Country.objects.all()
+    # 序列化器
+    serializer_class = CountryModelSerializers
+    # 如果想要传参不是 pk，而是其他 则需要设置 lookup_field
+    lookup_field = 'id'  # 设置查询指定数据的关键字参数
+
+    def get(self, request: Request, id):
+        # 查询指定数据
+        # country = self.queryset.filter(id=pk)
+        # country = self.get_queryset().filter(id=pk)
+        country = self.get_object()  # 获取到指定的数据
+
+        # 将对象数据转换为字典数据
+        serializers = self.get_serializer(instance=country)  # 获取序列化实例
+
+        # 返回响应
+        return Response(data=serializers.data, status=status.HTTP_200_OK)
+
+    def put(self, request: Request, pk):
+        pass
+
+    def delete(self, request: Request, pk):
+        pass
 
 
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
