@@ -281,10 +281,20 @@ class CountryDetailGenericAPIView(GenericAPIView):
         # 返回响应
         return Response(data=serializers.data, status=status.HTTP_200_OK)
 
-    def put(self, request: Request, pk):
-        pass
+    def put(self, request: Request, id):
+        # 查询指定的数据
+        country = self.get_object()  # 获取到指定的数据
+        # 接收参数
+        data = request.data
+        # 验证参数
+        serializer = self.get_serializer(instance=country, data=data)
+        serializer.is_valid(raise_exception=True)
+        # 更新数据
+        serializer.save()
+        # 返回响应
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, request: Request, pk):
+    def delete(self, request: Request, id):
         pass
 
 
@@ -308,11 +318,11 @@ class CountryGenericMixinAPIView(ListModelMixin, CreateModelMixin, GenericAPIVie
         return self.create(request)
 
 
-from rest_framework.mixins import RetrieveModelMixin
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 
 
 # 详情视图
-class CountryDetailGenericMixinAPIView(RetrieveModelMixin, GenericAPIView):
+class CountryDetailGenericMixinAPIView(RetrieveModelMixin, UpdateModelMixin, GenericAPIView):
     # 查询结果集
     queryset = Country.objects.all()
     # 序列化器
@@ -321,8 +331,11 @@ class CountryDetailGenericMixinAPIView(RetrieveModelMixin, GenericAPIView):
     def get(self, request: Request, pk):
         return self.retrieve(request)
 
+    def put(self, request: Request, pk):
+        return self.update(request)
 
-from rest_framework.generics import ListCreateAPIView
+
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView
 
 
 # 三级视图
