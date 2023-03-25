@@ -19,5 +19,7 @@ from app01.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('apicountry/', CountryListView.as_view()),
+    path('apicountry/', CountryListAPIView.as_view()),
+    # GenericAPIView
+    path('genericcountry/', CountryListGenericAPIView.as_view()),
 ]

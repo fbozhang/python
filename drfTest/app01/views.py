@@ -173,7 +173,7 @@ from rest_framework.response import Response  # drf
 from rest_framework import status
 
 
-class CountryListView(APIView):
+class CountryListAPIView(APIView):
 
     def get(self, request: Request):
         # django -- request.GET
@@ -184,6 +184,47 @@ class CountryListView(APIView):
         country = Country.objects.all()
         # 将查询结果集给序列化器
         serializers = CountryModelSerializers(instance=country, many=True)
+
+        # 返回响应
+        return Response(data=serializers.data, status=status.HTTP_200_OK)
+
+    def post(self, request: Request):
+        # django -- request.POST, request.body
+        # drf -- request.data
+        # 接收参数
+        data = request.data
+        # 验证参数
+        serializer = CountryModelSerializers(data=data)
+        serializer.is_valid()
+        # 保存数据
+        serializer.save()
+
+        # 返回响应
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+from rest_framework.generics import GenericAPIView
+
+
+class CountryListGenericAPIView(GenericAPIView):
+    # 查询结果集
+    queryset = Country.objects.all()
+    # 序列化器
+    serializer_class = CountryModelSerializers
+
+    def get(self, request: Request):
+        # django -- request.GET
+        # drf -- request.query_params
+        query_params = request.query_params
+
+        # 查询所有数据
+        # country = Country.objects.all()
+        # country = self.queryset
+        country = self.get_queryset()  # 获取查询结果集
+        # 将查询结果集给序列化器
+        # serializers = CountryModelSerializers(instance=country, many=True)
+        # serializers = self.serializer_class(instance=country, many=True)
+        serializers = self.get_serializer(instance=country, many=True)  # 获取序列化实例
 
         # 返回响应
         return Response(data=serializers.data, status=status.HTTP_200_OK)
