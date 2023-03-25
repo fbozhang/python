@@ -102,3 +102,13 @@ class CountrySerializers(serializers.Serializer):
 class AreaCountrySerializers(serializers.Serializer):
     area = serializers.CharField()
     country_set = CountrySerializers(many=True)
+
+
+from app01.models import Country
+
+
+class CountryModelSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Country
+        fields = '__all__'

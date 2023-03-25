@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 
-# 序列化一个对象
+# Serializer序列化一个对象
 '''
 from app01.serializers import AutherSerializers
 from app01.models import Author
@@ -17,7 +17,7 @@ serializers = AutherSerializers(instance=author)
 serializers.data
 '''
 
-# 序列化多个对象
+# Serializer序列化多个对象
 '''
 from app01.serializers import AutherSerializers
 from app01.models import Author
@@ -38,7 +38,7 @@ serializers = AutherSerializers(instance=authors, many=True)
 serializers.data
 '''
 
-# 对外键的处理
+# Serializer对外键的处理
 '''
 from app01.serializers import CountrySerializers
 from app01.models import Country
@@ -52,7 +52,7 @@ serializer = CountrySerializers(instance=country, many=True)
 serializer.data
 '''
 
-# 反序列化保存数据
+# Serializer反序列化保存数据
 '''
 from app01.serializers import AutherSerializers
 
@@ -75,7 +75,7 @@ serializer.is_valid(raise_exception=True)
 serializer.save()
 '''
 
-# 反序列化更新数据
+# Serializer反序列化更新数据
 '''
 from app01.serializers import AutherSerializers
 from app01.models import Author
@@ -102,3 +102,15 @@ serializer.save()
 # 获取新字典数据
 serializer.data
 '''
+
+# ModelSerializer反序列化保存数据
+from app01.serializers import CountryModelSerializers
+
+data = {
+    'country': 'China',
+    'area': '1',
+}
+
+serializers = CountryModelSerializers(data=data)
+serializers.is_valid(raise_exception=True)
+serializers.save()
