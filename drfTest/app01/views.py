@@ -308,6 +308,20 @@ class CountryGenericMixinAPIView(ListModelMixin, CreateModelMixin, GenericAPIVie
         return self.create(request)
 
 
+from rest_framework.mixins import RetrieveModelMixin
+
+
+# 详情视图
+class CountryDetailGenericMixinAPIView(RetrieveModelMixin, GenericAPIView):
+    # 查询结果集
+    queryset = Country.objects.all()
+    # 序列化器
+    serializer_class = CountryModelSerializers
+
+    def get(self, request: Request, pk):
+        return self.retrieve(request)
+
+
 from rest_framework.generics import ListCreateAPIView
 
 
