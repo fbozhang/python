@@ -242,3 +242,22 @@ class CountryListGenericAPIView(GenericAPIView):
 
         # 返回响应
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+from rest_framework.mixins import ListModelMixin, CreateModelMixin
+
+
+# GenericAPIView 一般和 mixin 配合使用
+class CountryGenericMixinAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
+    # 查询结果集
+    queryset = Country.objects.all()
+    # 序列化器
+    serializer_class = CountryModelSerializers
+
+    def get(self, request: Request):
+        # ListModelMixin 中的方法
+        return self.list(request)
+
+    def post(self, request: Request):
+        # CreateModelMixin 中的方法
+        return self.create(request)

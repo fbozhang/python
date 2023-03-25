@@ -22,4 +22,6 @@ urlpatterns = [
     path('apicountry/', CountryListAPIView.as_view()),
     # GenericAPIView
     path('genericcountry/', CountryListGenericAPIView.as_view()),
+    # GenericAPIView + Mixin
+    path('mixincountry/', CountryGenericMixinAPIView.as_view()),
 ]
