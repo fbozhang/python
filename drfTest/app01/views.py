@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -160,3 +161,21 @@ serializers = AreaModelSerializers(data=data)
 serializers.is_valid(raise_exception=True)
 serializers.save()
 '''
+
+from rest_framework.views import APIView
+from app01.serializers import CountryModelSerializers
+from app01.models import Country
+
+
+class CountryListView(APIView):
+
+    def get(self, request):
+        # 查询所有数据
+        country = Country.objects.all()
+        # 将查询结果集给序列化器
+        serializers = CountryModelSerializers(instance=country, many=True)
+
+        return JsonResponse({'code': 'get', 'country': serializers.data})
+
+    def post(self, request):
+        return JsonResponse({'code': 'post'})
