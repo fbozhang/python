@@ -103,7 +103,7 @@ serializer.save()
 serializer.data
 '''
 
-# ModelSerializer反序列化保存数据
+# ModelSerializer反序列化保存数据单个字典
 '''
 from app01.serializers import CountryModelSerializers
 
@@ -113,6 +113,27 @@ data = {
 }
 
 serializers = CountryModelSerializers(data=data)
+serializers.is_valid(raise_exception=True)
+serializers.save()
+'''
+
+# ModelSerializer反序列化保存数据多个字典
+'''
+from app01.serializers import CountryModelSerializers
+
+data = [
+    {
+        'id': 4,
+        'country': 'China',
+        'area': '1',
+    },
+    {
+        'country': 'HK',
+        'area': '2',
+    },
+]
+
+serializers = CountryModelSerializers(data=data,many=True)
 serializers.is_valid(raise_exception=True)
 serializers.save()
 '''

@@ -109,6 +109,8 @@ from app01.models import Country
 
 class CountryModelSerializers(serializers.ModelSerializer):
     # country = serializers.CharField(min_length=1)
+    id = serializers.IntegerField(required=False)
+
     class Meta:
         model = Country  # ModelSerializer 必须设置 model
         fields = '__all__'  # 设置自动生成的字段列表 __all__ 表示所有
@@ -116,7 +118,7 @@ class CountryModelSerializers(serializers.ModelSerializer):
         # exclude = ['id']  # 出去列表中的字段，其他字段都生成
 
         # 只读字段列表
-        read_only_fields = ['country']
+        # read_only_fields = ['country']
 
         extra_kwargs = {
             # '字段名': {'选项名':value}
