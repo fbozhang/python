@@ -393,6 +393,19 @@ class CountryModelViewSet(ModelViewSet):
     serializer_class = CountryModelSerializers
 
 
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+
+
 class AuthorModelViewSet(ModelViewSet):
-    queryset = Author.objects.all()
-    serializer_class = AuthorModelSerializers
+    # 给视图 单独设置权限
+    permission_classes = [AllowAny]
+
+    # queryset = Author.objects.all()
+    # 或者
+    def get_queryset(self):
+        return Author.objects.all()
+
+    # serializer_class = AuthorModelSerializers
+    # 或者
+    def get_serializer_class(self):
+        return AuthorModelSerializers

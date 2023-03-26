@@ -123,3 +123,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# drf 的配置key REST_FRAMEWORK
+# 在setting 配置文件中的设置，所有的 drf 视图类都遵守
+REST_FRAMEWORK = {
+    # 权限
+    # IsAuthenticated 登录用户
+    # IsAuthenticatedOrReadOnly 未登录用户可以查看，不能 增删改
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
