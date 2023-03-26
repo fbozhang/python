@@ -163,8 +163,8 @@ serializers.save()
 '''
 
 from rest_framework.views import APIView
-from app01.serializers import CountryModelSerializers
-from app01.models import Country
+from app01.serializers import *
+from app01.models import *
 
 from django.http import HttpRequest  # django
 from django.http import HttpResponse  # django
@@ -391,3 +391,8 @@ from rest_framework.viewsets import ModelViewSet
 class CountryModelViewSet(ModelViewSet):
     queryset = Country.objects.all()
     serializer_class = CountryModelSerializers
+
+
+class AuthorModelViewSet(ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorModelSerializers

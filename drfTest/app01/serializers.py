@@ -104,7 +104,7 @@ class AreaCountrySerializers(serializers.Serializer):
     country_set = CountrySerializers(many=True)
 
 
-from app01.models import Country, Area
+from app01.models import Country, Area, Author
 
 
 class CountryModelSerializers(serializers.ModelSerializer):
@@ -151,3 +151,9 @@ class AreaModelSerializers(serializers.ModelSerializer):
             Country.objects.create(area=area, **item)
 
         return area
+
+
+class AuthorModelSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Author  # ModelSerializer 必须设置 model
+        fields = '__all__'  # 设置自动生成的字段列表 __all__ 表示所有
