@@ -137,5 +137,9 @@ REST_FRAMEWORK = {
     # 认证要和权限配合使用，不和权限配合使用，没有任何效果
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',  # session认证
-    ]
+    ],
+    # 分页类
+    # 只有GenericAPIView及其之类 才能使用分页类
+    # APIView, ViewSet 不能使用系统的分页
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 }

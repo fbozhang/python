@@ -394,11 +394,27 @@ class CountryModelViewSet(ModelViewSet):
 
 
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+# 系统提供了两个分页类
+from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+
+
+class PageNum(PageNumberPagination):
+    # 如果setting中没有设置PAGE_SIZE，则必须重写page_size，否则不分页
+    page_size = 2
+    # 设置查询字符串的key，这个名字可以随便写(效果本来应该是设置一页多少条，但是变成了设置第几页了)
+    page_query_param = 'page_size'
+
+    # 一页最多多少条记录(没什么效果好像)
+    max_page_size = 8
 
 
 class AuthorModelViewSet(ModelViewSet):
     # 给视图 单独设置权限
     permission_classes = [AllowAny]
+
+    # 单独设置分页类
+    # pagination_class = LimitOffsetPagination
+    pagination_class = PageNum
 
     # queryset = Author.objects.all()
     # 或者
