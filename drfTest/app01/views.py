@@ -400,9 +400,11 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 
 class PageNum(PageNumberPagination):
     # 如果setting中没有设置PAGE_SIZE，则必须重写page_size，否则不分页
-    page_size = 2
-    # 设置查询字符串的key，这个名字可以随便写(效果本来应该是设置一页多少条，但是变成了设置第几页了)
-    page_query_param = 'page_size'
+    page_size = 2  # 默认一页多少个
+
+    # 设置查询字符串的key，这个名字可以随便写
+    page_query_param = 'page'  # 设置页的key
+    page_size_query_param = 'page_size'  # 设置一页多少个的key
 
     # 一页最多多少条记录(没什么效果好像)
     max_page_size = 8
