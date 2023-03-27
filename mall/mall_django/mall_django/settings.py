@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     # 'django_crontab',
     # 定時任務,本次使用 django_apscheduler
     "django_apscheduler",
+    # drf
+    'rest_framework',
+    # jwt
+    'rest_framework_simplejwt',
     # 注册app
     'apps.users',
     'apps.verifications',
@@ -52,6 +56,7 @@ INSTALLED_APPS = [
     'apps.contents',
     'apps.orders',
     'apps.pay',
+    'apps.mall_admin',
 ]
 
 MIDDLEWARE = [
@@ -100,7 +105,7 @@ DATABASES = {
         'HOST': '127.0.0.1',  # 数据库主机
         'PORT': '3306',  # 数据库端口
         'OPTIONS': {
-            'isolation_level': 'read committed',    # 數據庫隔離級別
+            'isolation_level': 'read committed',  # 數據庫隔離級別
         }
     }
 }
@@ -266,20 +271,18 @@ EMAIL_HOST_USER = 'fbozhang@163.com'
 # 在邮箱中设置的客户端授权密码
 EMAIL_HOST_PASSWORD = 'HCVBVCHLRFVSLVSG'
 
-
 # ES的配置
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',    # 要和es版本對應
-        'URL': 'http://127.0.0.1:9200/',    # Elasticsearch服务器ip地址，端口号固定为9200
-        'INDEX_NAME': 'guiling',    # Elasticsearch建立的索引库的名称
+        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',  # 要和es版本對應
+        'URL': 'http://127.0.0.1:9200/',  # Elasticsearch服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'guiling',  # Elasticsearch建立的索引库的名称
     },
 }
 # 设置搜索 每页返回的记录条数
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
 # 当添加、修改、删除数据时，自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-
 
 # 定時任務
 """
@@ -320,3 +323,27 @@ ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
 ALIPAY_RETURN_URL = 'http://www.guiling.cn:8080/pay_success.html'
 APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/app_private_key.txt')
 ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/alipay_public_key.txt')
+
+REST_FRAMEWORK = {
+    # 权限
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ],
+    # 认证类
+    # 先进行token的验证，如果没有携带token就进行session认证，如果没有session就就基本认证
+    # 认证顺序是从上到下，需要哪个加哪个
+    # https://django-rest-framework-simplejwt.readthedocs.io/
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ALGORITHM": "HS256",  # 签名算法
+    "SIGNING_KEY": SECRET_KEY,  # 用于对生成的令牌内容进行签名的签名密钥
+    # 设置为自己重写的类，加上了用户名和id
+    "TOKEN_OBTAIN_SERIALIZER": "apps.mall_admin.user.MyTokenObtainPairSerializer",
+}

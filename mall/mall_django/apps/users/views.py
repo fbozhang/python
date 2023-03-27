@@ -167,7 +167,10 @@ class LoginView(View):
 
         # 5. 判断是否记住密碼
         if remembered:
-            # 記住密碼  -- 2周
+            # 14天免登录
+            # set_expiry(value), value是一个整数，将在value秒后过期
+            #                           None 默认两周，可以在setting中设置
+            #                            0   将在浏览器关闭时过期
             request.session.set_expiry(None)
         else:
             # 不記住密碼，瀏覽器關閉session過期

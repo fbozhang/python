@@ -58,4 +58,6 @@ urlpatterns = [
     path('', include('apps.orders.urls')),
     # 导入 pay 子应用的路由
     path('', include('apps.pay.urls')),
+    # 导入 admin 子应用的路由
+    path('mall_admin/', include('apps.mall_admin.urls')),
 ]
