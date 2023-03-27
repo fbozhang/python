@@ -342,6 +342,9 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # 访问令牌有效时间
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # 刷新令牌有效时间
+
     "ALGORITHM": "HS256",  # 签名算法
     "SIGNING_KEY": SECRET_KEY,  # 用于对生成的令牌内容进行签名的签名密钥
     # 设置为自己重写的类，加上了用户名和id
