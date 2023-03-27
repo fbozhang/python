@@ -6,7 +6,14 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
+def my_default_user_authentication_rule(user):
+    """ is_staff用户登录 """
+    return user is not None and user.is_active and user.is_staff
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """ 返回响应加上 username 和 id,并把原来的字典形式修改一下 """
+
     def validate(self, attrs):
         # data = super().validate(attrs)
         # refresh = self.get_token(self.user)
