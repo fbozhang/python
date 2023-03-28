@@ -30,3 +30,11 @@ class DailyOrderCountAPIView(APIView):
         # 获取当日下单用户数量  orders__create_time 订单创建时间
         count = User.objects.filter(orderinfo__create_time__gte=today).count()
         return Response({"count": count})
+
+
+class UserCountAPIView(APIView):
+    """ 用户总量统计 """
+
+    def get(self, request):
+        count = User.objects.filter(is_staff=0).count()
+        return Response({"count": count})

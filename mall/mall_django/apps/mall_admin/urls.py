@@ -20,4 +20,6 @@ urlpatterns = [
     path('statistical/day_active/', home.DailyActiveAPIView.as_view()),
     # 日下单用户统计
     path('statistical/day_orders/', home.DailyOrderCountAPIView.as_view()),
+    # 用户总量统计
+    path('statistical/total_count/', home.UserCountAPIView.as_view()),
 ]
