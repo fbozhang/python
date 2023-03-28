@@ -5,7 +5,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.views import token_obtain_pair, token_refresh, token_verify
-from apps.mall_admin.views import home
+from apps.mall_admin.views import home, user
 
 urlpatterns = [
     # path('authorizations/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -26,4 +26,7 @@ urlpatterns = [
     path('statistical/day_increment/', home.DailyIncreaseAPIView.as_view()),
     # 月增用户统计
     path('statistical/month_increment/', home.MonthIncreaseAPIView.as_view()),
+
+    # 查询用户
+    path('users/', user.UserAPIView.as_view()),
 ]
