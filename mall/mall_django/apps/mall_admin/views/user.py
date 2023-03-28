@@ -12,6 +12,7 @@ from apps.mall_admin.serializers.user import UserModelSerializer
 
 
 class PageNum(PageNumberPagination):
+    """ 分页 """
     # 开启分页，设置默认每页多少条记录
     page_size = 5
     # 设置每页多少条记录的key
@@ -30,6 +31,15 @@ class PageNum(PageNumberPagination):
 
 
 class UserAPIView(ListAPIView):
-    queryset = User.objects.all()
+    """ 用户管理视图 """
+    # queryset = User.objects.all() # 重写属性只能设置一个查询结果集
     serializer_class = UserModelSerializer
     pagination_class = PageNum
+
+    def get_queryset(self):
+        # 重写 get_queryset 方法，根据不同业务逻辑获取不同查询结果集
+        keyword = self.request.query_params.get('keyword')
+        if keyword:
+            return User.objects.filter(username__contains=keyword)
+
+        return User.objects.all()
