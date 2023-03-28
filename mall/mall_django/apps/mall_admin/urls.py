@@ -5,7 +5,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.views import token_obtain_pair, token_refresh, token_verify
-from apps.mall_admin.views import home, user
+from apps.mall_admin.views import home, user, images
 
 urlpatterns = [
     # path('authorizations/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -30,3 +30,12 @@ urlpatterns = [
     # 查询用户
     path('users/', user.UserAPIView.as_view()),
 ]
+
+from rest_framework.routers import DefaultRouter
+
+# 创建router实例
+router = DefaultRouter()
+# 设置路由
+router.register('skus/images', images.ImageModelViewSet, basename='images')
+# 追加到urlpatterns
+urlpatterns += router.urls
