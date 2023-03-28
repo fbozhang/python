@@ -3,7 +3,7 @@
 # @Author: fbz
 # @File : user.py
 from rest_framework.response import Response
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 
@@ -30,7 +30,7 @@ class PageNum(PageNumberPagination):
         ]))
 
 
-class UserAPIView(ListAPIView):
+class UserAPIView(ListCreateAPIView):
     """ 用户管理视图 """
     # queryset = User.objects.all() # 重写属性只能设置一个查询结果集
     serializer_class = UserModelSerializer
