@@ -22,4 +22,6 @@ urlpatterns = [
     path('statistical/day_orders/', home.DailyOrderCountAPIView.as_view()),
     # 用户总量统计
     path('statistical/total_count/', home.UserCountAPIView.as_view()),
+    # 日增用户统计
+    path('statistical/day_increment/', home.DailyIncreaseAPIView.as_view()),
 ]

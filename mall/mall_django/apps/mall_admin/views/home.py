@@ -38,3 +38,14 @@ class UserCountAPIView(APIView):
     def get(self, request):
         count = User.objects.filter(is_staff=0).count()
         return Response({"count": count})
+
+
+class DailyIncreaseAPIView(APIView):
+    """ 日增用户统计 """
+
+    def get(self, request):
+        # 获取当前日期
+        today = date.today()
+        # 账号创建时间是今天，并且是普通用户
+        count = User.objects.filter(date_joined__gte=today, is_staff=0).count()
+        return Response({"count": count})

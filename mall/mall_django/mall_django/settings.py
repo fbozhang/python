@@ -245,6 +245,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
     'http://localhost:8080',
     'http://www.guiling.cn:8080',
+    'http://www.guiling.cn:9090',
     'http://www.guiling.cn:8000',
     'http://www.meiduo.site:8080'  # QQ登錄跨域
 )
