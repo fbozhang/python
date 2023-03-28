@@ -68,9 +68,12 @@ class SPU(BaseModel):
     """商品SPU"""
     name = models.CharField(max_length=50, verbose_name='名称')
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, verbose_name='品牌')
-    category1 = models.ForeignKey(GoodsCategory, on_delete=models.PROTECT, related_name='cat1_spu', verbose_name='一级类别')
-    category2 = models.ForeignKey(GoodsCategory, on_delete=models.PROTECT, related_name='cat2_spu', verbose_name='二级类别')
-    category3 = models.ForeignKey(GoodsCategory, on_delete=models.PROTECT, related_name='cat3_spu', verbose_name='三级类别')
+    category1 = models.ForeignKey(GoodsCategory, on_delete=models.PROTECT, related_name='cat1_spu',
+                                  verbose_name='一级类别')
+    category2 = models.ForeignKey(GoodsCategory, on_delete=models.PROTECT, related_name='cat2_spu',
+                                  verbose_name='二级类别')
+    category3 = models.ForeignKey(GoodsCategory, on_delete=models.PROTECT, related_name='cat3_spu',
+                                  verbose_name='三级类别')
     sales = models.IntegerField(default=0, verbose_name='销量')
     comments = models.IntegerField(default=0, verbose_name='评价数')
     desc_detail = models.TextField(default='', verbose_name='详细介绍')
@@ -114,7 +117,7 @@ class SKU(BaseModel):
 class SKUImage(BaseModel):
     """SKU图片"""
     sku = models.ForeignKey(SKU, on_delete=models.CASCADE, verbose_name='sku')
-    image = models.ImageField(verbose_name='图片')
+    image = models.ImageField(verbose_name='图片', upload_to='sku/')
 
     class Meta:
         db_table = 'tb_sku_image'
