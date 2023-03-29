@@ -5,7 +5,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.views import token_obtain_pair, token_refresh, token_verify
-from apps.mall_admin.views import home, user, images, sku, permissions, order
+from apps.mall_admin.views import home, user, images, sku, permissions, order, spu
 
 urlpatterns = [
     # path('authorizations/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -57,7 +57,10 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 # 设置路由
 router.register('skus/images', images.ImageModelViewSet, basename='images')
+# sku
 router.register('skus', sku.SKUModelViewSet, basename='skus')
+# spu
+router.register('goods', spu.SPUModelViewSet, basename='goods')
 # 订单管理
 router.register('orders', order.OrderInfoModelViewSet, basename='orders')
 # 权限
