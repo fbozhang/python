@@ -3,6 +3,7 @@
 # @Author: fbz
 # @File : sku.py
 from apps.goods.models import SKU, GoodsCategory, SPU
+from apps.goods.models import SPUSpecification, SpecificationOption
 from rest_framework import serializers
 
 
@@ -22,3 +23,20 @@ class SPUModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = SPU
         fields = ['id', 'name']
+
+
+class OptionModelSerializer(serializers.ModelSerializer):
+    """ SPU规格选项 序列化器"""
+
+    class Meta:
+        model = SpecificationOption
+        fields = ['id', 'value']
+
+
+class SpecsModelSerializer(serializers.ModelSerializer):
+    """ SPU规格 序列化器"""
+    options = OptionModelSerializer(many=True)
+
+    class Meta:
+        model = SPUSpecification
+        fields = ['id', 'name', 'options']

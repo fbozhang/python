@@ -35,6 +35,8 @@ urlpatterns = [
     path('skus/categories/', sku.GoodsCategoryAPIView.as_view()),
     # sku中获取spu数据
     path('goods/simple/', sku.SPUListAPIView.as_view()),
+    # sku中获取spu的规格和规格选项
+    path('goods/<spu_id>/specs/', sku.SPUSpecAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter

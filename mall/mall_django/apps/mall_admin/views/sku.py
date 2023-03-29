@@ -42,3 +42,20 @@ class SPUListAPIView(ListAPIView):
     """ SPU数据 """
     queryset = SPU.objects.all()
     serializer_class = SPUModelSerializer
+
+
+from rest_framework.views import APIView
+from apps.goods.models import SPUSpecification
+from apps.mall_admin.serializers.sku import SpecsModelSerializer
+from rest_framework.response import Response
+
+class SPUSpecAPIView(APIView):
+    """ SPU 规格和规格选项 数据"""
+
+    def get(self, request, spu_id):
+        # 根据spu_id 查询spu规格，根据spu规格获取对应的规格选项
+        specs = SPUSpecification.objects.filter(spu_id=spu_id)
+
+        serializer = SpecsModelSerializer(instance=specs, many=True)
+
+        return Response(serializer.data)
