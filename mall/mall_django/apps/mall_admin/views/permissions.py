@@ -16,8 +16,22 @@ from rest_framework.viewsets import ModelViewSet
 
 
 class PermissionModelViewSet(ModelViewSet):
+    """ 权限 """
     queryset = Permission.objects.all()
 
     serializer_class = PermissionModelSerializer
 
     pagination_class = PageNum
+
+
+from rest_framework.generics import ListAPIView
+from django.contrib.auth.models import ContentType
+from apps.mall_admin.serializers.permissions import ContentTypeModelSerializer
+
+
+class ConentTypeListAPIView(ListAPIView):
+    """ 获取权限类型(哪个模型) """
+
+    queryset = ContentType.objects.all().order_by('id')
+
+    serializer_class = ContentTypeModelSerializer
