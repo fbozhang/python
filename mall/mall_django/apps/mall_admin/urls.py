@@ -41,6 +41,8 @@ urlpatterns = [
     path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
     # 组中获取权限列表数据
     path('permission/simple/', permissions.GroupPermissionListAPIView.as_view()),
+    # 获取组数据
+    path('permission/groups/simple/', permissions.SimpleGroupListAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter

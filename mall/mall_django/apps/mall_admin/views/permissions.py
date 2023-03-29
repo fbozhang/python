@@ -66,3 +66,10 @@ class AdminUserModelViewSet(ModelViewSet):
     serializer_class = AdminUserModelSerializer
 
     pagination_class = PageNum
+
+
+class SimpleGroupListAPIView(ListAPIView):
+    """ 管理员管理-获取是所有组 """
+    queryset = Group.objects.all().order_by('id')
+
+    serializer_class = GroupModelSerializer
