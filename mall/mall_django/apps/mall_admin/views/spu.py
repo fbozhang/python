@@ -32,3 +32,15 @@ class SPUBrandListAPIView(ListAPIView):
     queryset = Brand.objects.all()
 
     serializer_class = SPUBrandModelSerializer
+
+
+from apps.goods.models import GoodsCategory
+from apps.mall_admin.serializers.spu import SPUCategoriesModelSerializer
+
+
+class SPUCategoriesListAPIView(ListAPIView):
+    """ 获取一级分类信息 """
+
+    queryset = GoodsCategory.objects.all()
+
+    serializer_class = SPUCategoriesModelSerializer
