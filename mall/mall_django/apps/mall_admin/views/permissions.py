@@ -3,14 +3,12 @@
 # @Author: fbz
 # @File : permissions.py
 
-# 权限
-from django.contrib.auth.models import Permission
-# 用户
-from apps.users.models import User
 from apps.mall_admin.utils import PageNum
-
 from apps.mall_admin.serializers.permissions import PermissionModelSerializer
 from rest_framework.viewsets import ModelViewSet
+
+# 权限
+from django.contrib.auth.models import Permission
 
 
 class PermissionModelViewSet(ModelViewSet):
@@ -54,3 +52,17 @@ class GroupPermissionListAPIView(ListAPIView):
     queryset = Permission.objects.all()
 
     serializer_class = PermissionModelSerializer
+
+
+# 用户
+from apps.users.models import User
+from apps.mall_admin.serializers.permissions import AdminUserModelSerializer
+
+
+class AdminUserModelViewSet(ModelViewSet):
+    """ 管理员管理 """
+    queryset = User.objects.filter(is_staff=True)
+
+    serializer_class = AdminUserModelSerializer
+
+    pagination_class = PageNum

@@ -54,5 +54,7 @@ router.register('skus', sku.SKUModelViewSet, basename='skus')
 router.register('permission/perms', permissions.PermissionModelViewSet, basename='permission')
 # 组
 router.register('permission/groups', permissions.GroupModelViewSet, basename='groups')
+# 普通管理员
+router.register('permission/admins', permissions.AdminUserModelViewSet, basename='admins')
 # 追加到urlpatterns
 urlpatterns += router.urls
