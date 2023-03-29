@@ -8,6 +8,12 @@ from rest_framework import serializers
 
 
 class SKUModelSerializer(serializers.ModelSerializer):
+    spu_id = serializers.IntegerField()
+    category_id = serializers.IntegerField()
+
+    spu = serializers.StringRelatedField(required=False)
+    category = serializers.StringRelatedField(required=False)
+
     class Meta:
         model = SKU
         fields = '__all__'

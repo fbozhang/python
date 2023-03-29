@@ -49,6 +49,7 @@ from apps.goods.models import SPUSpecification
 from apps.mall_admin.serializers.sku import SpecsModelSerializer
 from rest_framework.response import Response
 
+
 class SPUSpecAPIView(APIView):
     """ SPU 规格和规格选项 数据"""
 
