@@ -20,3 +20,15 @@ class SPUModelViewSet(ModelViewSet):
     serializer_class = SPUModelSerializer
     pagination_class = PageNum
 
+
+from rest_framework.generics import ListAPIView
+from apps.goods.models import Brand
+from apps.mall_admin.serializers.spu import SPUBrandModelSerializer
+
+
+class SPUBrandListAPIView(ListAPIView):
+    """ 获取品牌信息 """
+
+    queryset = Brand.objects.all()
+
+    serializer_class = SPUBrandModelSerializer

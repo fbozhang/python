@@ -49,6 +49,9 @@ urlpatterns = [
 
     # 更新订单状态
     path('orders/<order_id>/status/', order.OrderStatusUpdateAPIView.as_view()),
+
+    # 获取品牌信息
+    path('goods/brands/simple/', spu.SPUBrandListAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter
