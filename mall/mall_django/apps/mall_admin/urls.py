@@ -31,6 +31,8 @@ urlpatterns = [
     path('users/', user.UserAPIView.as_view()),
     # 获取图片新增中的 sku展示
     path('skus/simple/', images.ImageSKUAPIView.as_view()),
+    # 获取三级分类信息
+    path('skus/categories/', sku.GoodsCategoryAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter

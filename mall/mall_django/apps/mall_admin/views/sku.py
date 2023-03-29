@@ -4,7 +4,7 @@
 # @File : sku.py
 from rest_framework.viewsets import ModelViewSet
 from apps.goods.models import SKU
-from apps.mall_admin.serializers.sku import SKUModelSerializer
+from apps.mall_admin.serializers.sku import SKUModelSerializer, GoodsCategoryModelSerializer
 from apps.mall_admin.utils import PageNum
 
 
@@ -20,3 +20,14 @@ class SKUModelViewSet(ModelViewSet):
 
     serializer_class = SKUModelSerializer
     pagination_class = PageNum
+
+
+from apps.goods.models import GoodsCategory
+from rest_framework.generics import ListAPIView
+
+
+class GoodsCategoryAPIView(ListAPIView):
+    """ 获取三级分类信息 """
+    # subs=None 代表是三级标签，因为一级分类的 .subs.all() 是二级，同理二级的subs是三级，三级就没有subs
+    queryset = GoodsCategory.objects.filter(subs=None)
+    serializer_class = GoodsCategoryModelSerializer
