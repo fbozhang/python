@@ -3,8 +3,6 @@
 # @Author: fbz
 # @File : permissions.py
 
-# 组
-from django.contrib.auth.models import Group
 # 权限
 from django.contrib.auth.models import Permission
 # 用户
@@ -35,3 +33,17 @@ class ConentTypeListAPIView(ListAPIView):
     queryset = ContentType.objects.all().order_by('id')
 
     serializer_class = ContentTypeModelSerializer
+
+
+# 组
+from django.contrib.auth.models import Group
+from apps.mall_admin.serializers.permissions import GroupModelSerializer
+
+
+class GroupModelViewSet(ModelViewSet):
+    """ 组管理 """
+    queryset = Group.objects.all().order_by('id')
+
+    serializer_class = GroupModelSerializer
+
+    pagination_class = PageNum

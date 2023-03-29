@@ -50,5 +50,7 @@ router.register('skus/images', images.ImageModelViewSet, basename='images')
 router.register('skus', sku.SKUModelViewSet, basename='skus')
 # 权限
 router.register('permission/perms', permissions.PermissionModelViewSet, basename='permission')
+# 组
+router.register('permission/groups', permissions.GroupModelViewSet, basename='groups')
 # 追加到urlpatterns
 urlpatterns += router.urls
