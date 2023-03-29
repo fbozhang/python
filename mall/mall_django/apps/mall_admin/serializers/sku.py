@@ -5,6 +5,7 @@
 from apps.goods.models import SKU, GoodsCategory, SPU, SKUSpecification
 from apps.goods.models import SPUSpecification, SpecificationOption
 from rest_framework import serializers
+from django.db import transaction
 
 
 class SKUSpecificationModelSerializer(serializers.ModelSerializer):
@@ -34,7 +35,7 @@ class SKUModelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # 吧规格和规格选项单独获取出来
         specs = validated_data.pop('specs')
-        from django.db import transaction
+
         with transaction.atomic():
             # 事务的开始点
             save_point = transaction.savepoint()
@@ -53,6 +54,30 @@ class SKUModelSerializer(serializers.ModelSerializer):
                 transaction.savepoint_commit(save_point)
 
         return sku
+
+    def update(self, instance, validated_data):
+        # pop 规格和规格选项
+        specs = validated_data.pop('specs')
+
+        with transaction.atomic():
+            # 事务的开始点
+            save_point = transaction.savepoint()
+            try:
+                # 更新sku数据
+                super().update(instance, validated_data)
+
+                # 更新规格和规格选项
+                for spec in specs:
+                    SKUSpecification.objects.filter(sku=instance, spec_id=spec.get('spec_id')).update(
+                        option_id=spec.get('option_id'))
+            except Exception:
+                # 事务的回滚点
+                transaction.savepoint_rollback(save_point)
+            else:
+                # 事务的提交点
+                transaction.savepoint_commit(save_point)
+
+        return instance
 
 
 class GoodsCategoryModelSerializer(serializers.ModelSerializer):
