@@ -14,9 +14,9 @@ class SKUModelViewSet(ModelViewSet):
         """ 搜索功能呢 """
         keyword = self.request.query_params.get('keyword')
         if keyword:
-            return SKU.objects.filter(name__contains=keyword)
+            return SKU.objects.filter(name__contains=keyword).order_by('id')
 
-        return SKU.objects.all()
+        return SKU.objects.all().order_by('id')
 
     serializer_class = SKUModelSerializer
     pagination_class = PageNum
