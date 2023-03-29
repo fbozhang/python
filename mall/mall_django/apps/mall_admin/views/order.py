@@ -24,3 +24,15 @@ class OrderInfoModelViewSet(ModelViewSet):
     serializer_class = OrderInfoModelSerializer
 
     pagination_class = PageNum
+
+
+from rest_framework.generics import UpdateAPIView
+from apps.mall_admin.serializers.order import OrderStatusModelSerializer
+
+
+class OrderStatusUpdateAPIView(UpdateAPIView):
+    """ 更新订单状态 """
+
+    lookup_field = 'order_id'
+    queryset = OrderInfo
+    serializer_class = OrderStatusModelSerializer

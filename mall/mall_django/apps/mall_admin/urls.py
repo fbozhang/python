@@ -29,20 +29,26 @@ urlpatterns = [
 
     # 查询用户
     path('users/', user.UserAPIView.as_view()),
+
     # 获取图片新增中的 sku展示
     path('skus/simple/', images.ImageSKUAPIView.as_view()),
     # 获取三级分类信息
     path('skus/categories/', sku.GoodsCategoryAPIView.as_view()),
+
     # sku中获取spu数据
     path('goods/simple/', sku.SPUListAPIView.as_view()),
     # sku中获取spu的规格和规格选项
     path('goods/<spu_id>/specs/', sku.SPUSpecAPIView.as_view()),
+
     # 获取权限类型列表数据
     path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
     # 组中获取权限列表数据
     path('permission/simple/', permissions.GroupPermissionListAPIView.as_view()),
     # 获取组数据
     path('permission/groups/simple/', permissions.SimpleGroupListAPIView.as_view()),
+
+    # 更新订单状态
+    path('orders/<order_id>/status/', order.OrderStatusUpdateAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter

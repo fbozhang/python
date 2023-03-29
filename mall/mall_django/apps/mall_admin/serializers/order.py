@@ -15,6 +15,7 @@ class SKUModelSerializer(serializers.ModelSerializer):
 
 
 class OrderGoodsModelSerializer(serializers.ModelSerializer):
+    """ 订单商品序列化器 """
     sku = SKUModelSerializer()
 
     class Meta:
@@ -23,8 +24,17 @@ class OrderGoodsModelSerializer(serializers.ModelSerializer):
 
 
 class OrderInfoModelSerializer(serializers.ModelSerializer):
+    """ 订单信息序列化器 """
     skus = OrderGoodsModelSerializer(many=True)
 
     class Meta:
         model = OrderInfo
         fields = '__all__'
+
+
+class OrderStatusModelSerializer(serializers.ModelSerializer):
+    """ 订单状态序列化器 """
+
+    class Meta:
+        model = OrderInfo
+        fields = ['status']
