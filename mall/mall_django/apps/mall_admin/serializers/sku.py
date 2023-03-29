@@ -31,6 +31,18 @@ class SKUModelSerializer(serializers.ModelSerializer):
         model = SKU
         fields = '__all__'
 
+    def create(self, validated_data):
+        # 吧规格和规格选项单独获取出来
+        specs = validated_data.pop('specs')
+        # 先保存sku数据
+        sku = SKU.objects.create(**validated_data)
+        # 对规格和规格选项进行遍历保存
+        for spec in specs:
+            # spec = {'spec_id': '2', 'option_id': 7}
+            SKUSpecification.objects.create(sku=sku, **spec)
+
+        return sku
+
 
 class GoodsCategoryModelSerializer(serializers.ModelSerializer):
     class Meta:
