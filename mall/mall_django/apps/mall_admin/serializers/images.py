@@ -25,7 +25,7 @@ class SKUImageModelSerializer(serializers.ModelSerializer):
         return data
 
 
-class SKUModelSerializer(serializers.ModelSerializer):
+class ImageSKUModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = SKU
         fields = ['id', 'name']
