@@ -54,6 +54,8 @@ urlpatterns = [
     path('goods/brands/simple/', spu.SPUBrandListAPIView.as_view()),
     # 获取一级分类信息
     path('goods/channel/categories/', spu.SPUCategoriesListAPIView.as_view()),
+    # 获取二级和三级分类
+    path('goods/channel/categories/<pk>/', spu.SPUSonCategoriesListAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter

@@ -24,7 +24,7 @@ class SPUBrandModelSerializer(serializers.ModelSerializer):
 
 
 class SPUCategoriesModelSerializer(serializers.ModelSerializer):
-    """ 品牌信息列化器 """
+    """ 获取分类信息 """
 
     class Meta:
         model = GoodsCategory

@@ -44,3 +44,16 @@ class SPUCategoriesListAPIView(ListAPIView):
     queryset = GoodsCategory.objects.all()
 
     serializer_class = SPUCategoriesModelSerializer
+
+
+class SPUSonCategoriesListAPIView(ListAPIView):
+    """ 获取二级和三级分类 """
+
+    queryset = GoodsCategory.objects.all()
+
+    def get_queryset(self):
+        pk = self.kwargs.get(self.lookup_field)
+
+        return self.queryset.filter(parent_id=pk)
+
+    serializer_class = SPUCategoriesModelSerializer
