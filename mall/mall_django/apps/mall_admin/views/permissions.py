@@ -47,3 +47,10 @@ class GroupModelViewSet(ModelViewSet):
     serializer_class = GroupModelSerializer
 
     pagination_class = PageNum
+
+
+class GroupPermissionListAPIView(ListAPIView):
+    """ 组管理-权限列表展示 """
+    queryset = Permission.objects.all()
+
+    serializer_class = PermissionModelSerializer
