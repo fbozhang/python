@@ -58,3 +58,14 @@ class AdminUserModelSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+    def update(self, instance, validated_data):
+        # 调用父类实现数据更新
+        super().update(instance, validated_data)
+        # 获取密码,并进行判断是否用户修改了密码
+        password = validated_data.get('password')
+        if password is not None:
+            instance.set_password(password)
+            instance.save()
+
+        return instance
