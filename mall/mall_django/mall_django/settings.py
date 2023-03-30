@@ -329,9 +329,9 @@ ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/alipay_public_key.
 
 REST_FRAMEWORK = {
     # 权限
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     # 认证类
     # 先进行token的验证，如果没有携带token就进行session认证，如果没有session就就基本认证
     # 认证顺序是从上到下，需要哪个加哪个
