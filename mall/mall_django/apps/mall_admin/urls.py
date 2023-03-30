@@ -5,7 +5,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.views import token_obtain_pair, token_refresh, token_verify
-from apps.mall_admin.views import home, user, images, sku, permissions, order, spu, specs
+from apps.mall_admin.views import home, user, images, sku, permissions, order, spu, specs, options
 
 urlpatterns = [
     # path('authorizations/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -39,6 +39,13 @@ urlpatterns = [
     path('goods/simple/', sku.SPUListAPIView.as_view()),
     # sku中获取spu的规格和规格选项
     path('goods/<spu_id>/specs/', sku.SPUSpecAPIView.as_view()),
+    # 获取品牌信息
+    path('goods/brands/simple/', spu.SPUBrandListAPIView.as_view()),
+    path('goods/specs/simple/', options.SPUSimpleListAPIView.as_view()),
+    # 获取一级分类信息
+    path('goods/channel/categories/', spu.SPUCategoriesListAPIView.as_view()),
+    # 获取二级和三级分类
+    path('goods/channel/categories/<pk>/', spu.SPUSonCategoriesListAPIView.as_view()),
 
     # 获取权限类型列表数据
     path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
@@ -49,13 +56,6 @@ urlpatterns = [
 
     # 更新订单状态
     path('orders/<order_id>/status/', order.OrderStatusUpdateAPIView.as_view()),
-
-    # 获取品牌信息
-    path('goods/brands/simple/', spu.SPUBrandListAPIView.as_view()),
-    # 获取一级分类信息
-    path('goods/channel/categories/', spu.SPUCategoriesListAPIView.as_view()),
-    # 获取二级和三级分类
-    path('goods/channel/categories/<pk>/', spu.SPUSonCategoriesListAPIView.as_view()),
 ]
 
 from rest_framework.routers import DefaultRouter
@@ -70,6 +70,8 @@ router.register('skus', sku.SKUModelViewSet, basename='skus')
 router.register('goods/specs', specs.SpecsModelViewSet, basename='specs')
 # spu
 router.register('goods', spu.SPUModelViewSet, basename='goods')
+# 规格选项表管理
+router.register('specs/options', options.OptionsModelViewSet, basename='options')
 # 订单管理
 router.register('orders', order.OrderInfoModelViewSet, basename='orders')
 # 权限
