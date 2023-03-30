@@ -19,6 +19,6 @@ class UserAPIView(ListCreateAPIView):
         # 重写 get_queryset 方法，根据不同业务逻辑获取不同查询结果集
         keyword = self.request.query_params.get('keyword')
         if keyword:
-            return User.objects.filter(username__contains=keyword)
+            return User.objects.filter(username__contains=keyword).order_by('id')
 
-        return User.objects.all()
+        return User.objects.all().order_by('id')

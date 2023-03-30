@@ -5,6 +5,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.views import token_obtain_pair, token_refresh, token_verify
+
+from apps.mall_admin.user import MyTokenObtainPairView
 from apps.mall_admin.views import home, user, images, sku, permissions, order, spu, specs, options, brands
 
 urlpatterns = [
@@ -12,7 +14,7 @@ urlpatterns = [
     # path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('verify/', TokenVerifyView.as_view(), name='token_verify'),
     # 或者下面这样写，点进去看源码发现一样
-    path('authorizations/', token_obtain_pair, name='token_obtain_pair'),
+    path('authorizations/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('refresh/', token_refresh, name='token_refresh'),
     path('verify/', token_verify, name='token_verify'),
 

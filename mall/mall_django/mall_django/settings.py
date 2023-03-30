@@ -351,6 +351,9 @@ SIMPLE_JWT = {
     "ALGORITHM": "HS256",  # 签名算法
     "SIGNING_KEY": SECRET_KEY,  # 用于对生成的令牌内容进行签名的签名密钥
 
+    # 用于身份验证的授权标头名称
+    "AUTH_HEADER_TYPES": ('JWT',),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     # 原来是验证 is_active, 加上验证 is_staff
     "USER_AUTHENTICATION_RULE": "apps.mall_admin.user.my_default_user_authentication_rule",
     # 设置为自己重写的类，加上了用户名和id

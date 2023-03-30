@@ -3,6 +3,8 @@
 # @Author: fbz
 # @File : sku.py
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAdminUser, DjangoModelPermissions
+
 from apps.goods.models import SKU
 from apps.mall_admin.serializers.sku import SKUModelSerializer
 from apps.mall_admin.utils import PageNum
@@ -20,6 +22,11 @@ class SKUModelViewSet(ModelViewSet):
 
     serializer_class = SKUModelSerializer
     pagination_class = PageNum
+
+    # 添加权限
+    # IsAdminUser 登录或者查看
+    # DjangoModelPermissions 对于模型权限的验证
+    permission_classes = [IsAdminUser, DjangoModelPermissions]
 
 
 from apps.goods.models import GoodsCategory
