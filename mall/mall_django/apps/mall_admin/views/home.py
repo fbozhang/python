@@ -2,7 +2,7 @@
 # @Time : 2023/3/28 15:58
 # @Author: fbz
 # @File : home.py
-
+from apps.goods.models import GoodsVisitCount
 from apps.users.models import User
 from datetime import date, timedelta
 from rest_framework.response import Response
@@ -49,6 +49,22 @@ class DailyIncreaseAPIView(APIView):
         # 账号创建时间是今天，并且是普通用户
         count = User.objects.filter(date_joined__gte=today, is_staff=0).count()
         return Response({"count": count})
+
+
+class DailyVistCountAPIView(APIView):
+    """ 日商品访问量统计 """
+
+    def get(self, request):
+        today = date.today()
+        vist_counts = GoodsVisitCount.objects.filter(date__gte=today)
+        dataList = []
+        for vist_count in vist_counts:
+            dataList.append({
+                'category': vist_count.category.name,
+                'count': vist_count.count,
+            })
+
+        return Response(dataList)
 
 
 class MonthIncreaseAPIView(APIView):

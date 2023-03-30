@@ -26,6 +26,8 @@ urlpatterns = [
     path('statistical/total_count/', home.UserCountAPIView.as_view()),
     # 日增用户统计
     path('statistical/day_increment/', home.DailyIncreaseAPIView.as_view()),
+    # 日商品访问量统计
+    path('statistical/goods_day_views/', home.DailyVistCountAPIView.as_view()),
     # 月增用户统计
     path('statistical/month_increment/', home.MonthIncreaseAPIView.as_view()),
 
