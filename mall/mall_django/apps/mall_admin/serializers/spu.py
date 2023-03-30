@@ -10,9 +10,29 @@ from django.db import transaction
 class SPUModelSerializer(serializers.ModelSerializer):
     """ spu序列化器 """
 
+    category1_id = serializers.IntegerField()
+    category2_id = serializers.IntegerField()
+    category3_id = serializers.IntegerField()
+    brand_id = serializers.IntegerField()
+
     class Meta:
         model = SPU
         fields = '__all__'
+
+        extra_kwargs = {
+            'brand': {
+                'read_only': True
+            },
+            'category1': {
+                'read_only': True
+            },
+            'category2': {
+                'read_only': True
+            },
+            'category3': {
+                'read_only': True
+            },
+        }
 
 
 class SPUBrandModelSerializer(serializers.ModelSerializer):
