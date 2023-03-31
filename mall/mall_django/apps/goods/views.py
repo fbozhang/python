@@ -63,7 +63,7 @@ class ListView(View):
                 'id': sku.id,
                 'name': sku.name,
                 'price': sku.price,
-                'default_image_url': sku.default_image.url
+                'default_image_url': sku.default_image.name
             })
 
         # 獲取縂頁碼
@@ -101,7 +101,7 @@ class HotView(View):
                 'id': sku.id,
                 'name': sku.name,
                 'price': sku.price,
-                'default_image_url': sku.default_image.url
+                'default_image_url': sku.default_image.name
             })
             top -= 1
 

@@ -68,7 +68,7 @@ class OrderSettlementView(LoginRequiredJsonMixin, View):
                 sku_list.append({
                     'id': sku.id,
                     'name': sku.name,
-                    'default_image_url': sku.default_image.url,
+                    'default_image_url': sku.default_image.name,
                     'price': sku.price,
                     'count': count,
                 })

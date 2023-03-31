@@ -155,7 +155,7 @@ class CartVist(View):
                 'id': sku.id,
                 'price': sku.price,
                 'name': sku.name,
-                'default_image_url': sku.default_image.url,
+                'default_image_url': sku.default_image.name,
                 'selected': carts[sku.id]['selected'],  # 選中狀態
                 'count': carts[sku.id]['count'],  # 數量
                 'amount': sku.price * carts[sku.id]['count']  # 總價格
