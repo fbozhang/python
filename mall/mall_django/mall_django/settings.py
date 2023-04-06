@@ -135,11 +135,11 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'zh-hans'  # 中文
 
 # 修改时区
-TIME_ZONE = 'Asia/Shanghai' # 'UTC'
+TIME_ZONE = 'UTC'  # 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
