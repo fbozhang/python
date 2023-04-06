@@ -31,7 +31,8 @@ def generic_detail_html(sku):
     categories = get_categories()
     # 麵包屑
     breadcrumb = get_breadcrumb(sku.category)
-    # SKU信息
+    # hot_skus
+    hot_skus = SKU.objects.all().order_by('sales')[0:3]
 
     # 規格信息
     goods_spece = get_goods_specs(sku)
@@ -40,6 +41,7 @@ def generic_detail_html(sku):
         'categories': categories,
         'breadcrumb': breadcrumb,
         'sku': sku,
+        'hot_skus': hot_skus,
         'specs': goods_spece,
     }
 

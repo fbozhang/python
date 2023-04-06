@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -10,7 +11,7 @@
     <script type="text/javascript" src="http://www.guiling.cn:8080/js/axios-0.18.0.min.js"></script>
 </head>
 <body>
-    <div id="app" v-cloak>
+<div id="app" v-cloak>
     <div class="header_con">
         <div class="header">
             <div class="welcome fl">欢迎来到龜靈商城!</div>
@@ -38,21 +39,21 @@
     </div>
 
     <div class="search_bar clearfix">
-            <a href="/index.html" class="logo fl"><img src="/images/logo.png"></a>
-            <div class="search_wrap fl">
-                <form method="get" action="/search.html" class="search_con">
-                    <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
-                    <input type="submit" class="input_btn fr" name="" value="搜索">
-                </form>
-                <ul class="search_suggest fl">
-                    <li><a href="#">索尼微单</a></li>
-                    <li><a href="#">优惠15元</a></li>
-                    <li><a href="#">美妆个护</a></li>
-                    <li><a href="#">买2免1</a></li>
-                </ul>
-            </div>
+        <a href="/index.html" class="logo fl"><img src="/images/logo.png"></a>
+        <div class="search_wrap fl">
+            <form method="get" action="/search.html" class="search_con">
+                <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+                <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+            <ul class="search_suggest fl">
+                <li><a href="#">索尼微单</a></li>
+                <li><a href="#">优惠15元</a></li>
+                <li><a href="#">美妆个护</a></li>
+                <li><a href="#">买2免1</a></li>
+            </ul>
+        </div>
 
-            <div class="guest_cart fr">
+        <div class="guest_cart fr">
             <a href="#" class="cart_name fl">我的购物车</a>
             <div class="goods_count fl" id="show_count">15</div>
 
@@ -80,46 +81,46 @@
             </ul>
         </div>
 
-        </div>
+    </div>
 
-        <div class="navbar_con">
-                <div class="navbar">
-                    <div class="sub_menu_con fl">
-                        <h1 class="fl">商品分类</h1>
-                        <ul class="sub_menu">
-                            {% for group in categories.values %}
-                            <li>
-                                <div class="level1">
-                                    {% for channel in group.channels %}
+    <div class="navbar_con">
+        <div class="navbar">
+            <div class="sub_menu_con fl">
+                <h1 class="fl">商品分类</h1>
+                <ul class="sub_menu">
+                    {% for group in categories.values %}
+                        <li>
+                            <div class="level1">
+                                {% for channel in group.channels %}
                                     <a href="{{ channel.url }}">{{ channel.name }}</a>
-                                    {% endfor %}
-                                </div>
-                                <div class="level2">
-                                    {% for cat2 in group.sub_cats %}
+                                {% endfor %}
+                            </div>
+                            <div class="level2">
+                                {% for cat2 in group.sub_cats %}
                                     <div class="list_group">
-                                        <div class="group_name fl">{{cat2.name}} &gt;</div>
+                                        <div class="group_name fl">{{ cat2.name }} &gt;</div>
                                         <div class="group_detail fl">
                                             {% for cat3 in cat2.sub_cats %}
-                                            <a href="/list.html?cat={{cat3.id}}">{{cat3.name}}</a>
+                                                <a href="/list.html?cat={{ cat3.id }}">{{ cat3.name }}</a>
                                             {% endfor %}
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <ul class="navlist fl">
-                        <li><a href="">首页</a></li>
-                        <li class="interval">|</li>
-                        <li><a href="">真划算</a></li>
-                        <li class="interval">|</li>
-                        <li><a href="">抽奖</a></li>
-                    </ul>
-                </div>
+                                {% endfor %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
+
+            <ul class="navlist fl">
+                <li><a href="">首页</a></li>
+                <li class="interval">|</li>
+                <li><a href="">真划算</a></li>
+                <li class="interval">|</li>
+                <li><a href="">抽奖</a></li>
+            </ul>
+        </div>
+    </div>
 
     <div class="breadcrumb">
         <a href="#">{{ breadcrumb.cat1 }}</a>
@@ -135,7 +136,7 @@
             <h3>{{ sku.name }}</h3>
             <p>{{ sku.caption }}</p>
             <div class="prize_bar">
-                <span class="show_pirze">¥<em>{{ sku.price }}</em></span><span> 市场价￥{{sku.market_price}}</span>
+                <span class="show_pirze">¥<em>{{ sku.price }}</em></span><span> 市场价￥{{ sku.market_price }}</span>
                 <a href="javascript:;" class="goods_judge">{{ sku.comments }}人评价</a>
             </div>
             <div class="goods_num clearfix">
@@ -147,18 +148,18 @@
                 </div>
             </div>
             {% for spec in specs %}
-            <div class="type_select">
-                <label>{{ spec.name }}:</label>
-                {% for option in spec.spec_options %}
-                {% if option.sku_id == sku.id %}
-                <a href="javascript:;" class="select">{{ option.value }}</a>
-                {% elif option.sku_id %}
-                <a href="/goods/{{option.sku_id}}.html">{{ option.value }}</a>
-                {% else %}
-                <a href="javascript:;">{{ option.value }}</a>
-                {% endif %}
-                {% endfor %}
-            </div>
+                <div class="type_select">
+                    <label>{{ spec.name }}:</label>
+                    {% for option in spec.spec_options %}
+                        {% if option.sku_id == sku.id %}
+                            <a href="javascript:;" class="select">{{ option.value }}</a>
+                        {% elif option.sku_id %}
+                            <a href="/goods/{{ option.sku_id }}.html">{{ option.value }}</a>
+                        {% else %}
+                            <a href="javascript:;">{{ option.value }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% endfor %}
             <div class="total">总价：<em>[[sku_amount]]元</em></div>
             <div class="operate_btn">
@@ -172,11 +173,18 @@
             <div class="new_goods">
                 <h3>热销排行</h3>
                 <ul>
-                    <li v-for="sku in hot_skus">
-                        <a :href="sku.url"><img :src="sku.default_image_url"></a>
-                        <h4><a :href="sku.url">[[sku.name]]</a></h4>
-                        <div class="prize">￥[[sku.price]]</div>
-                    </li>
+{#                    <li v-for="sku in hot_skus">#}
+{#                        <a :href="sku.url"><img :src="sku.default_image_url"></a>#}
+{#                        <h4><a :href="sku.url">[[sku.name]]</a></h4>#}
+{#                        <div class="prize">￥[[sku.price]]</div>#}
+{#                    </li>#}
+                    {% for hot_sku in hot_skus %}
+                        <li>
+                            <a href='#'><img src={{ hot_sku.default_image }}></a>
+                            <h4><a href="#">{{ hot_sku.name }}</a></h4>
+                            <div class="prize">￥{{ hot_sku.price }}</div>
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -185,7 +193,9 @@
             <ul class="detail_tab clearfix">
                 <li @click="on_tab_content('detail')" :class="tab_content.detail?'active':''">商品详情</li>
                 <li @click="on_tab_content('pack')" :class="tab_content.pack?'active':''">规格与包装</li>
-                <li @click="on_tab_content('comment')" :class="tab_content.comment?'active':''">商品评价([[comments.length]])</li>
+                <li @click="on_tab_content('comment')" :class="tab_content.comment?'active':''">
+                    商品评价([[comments.length]])
+                </li>
                 <li @click="on_tab_content('service')" :class="tab_content.service?'active':''">售后服务</li>
             </ul>
             <div @click="on_tab_content('detail')" class="tab_content" :class="tab_content.detail?'current':''">
@@ -233,14 +243,14 @@
             <a href="#">友情链接</a>
         </div>
         <p>CopyRight © 2016 深圳龟灵商业股份有限公司 All Rights Reserved</p>
-        <p>电话：010-****888    京ICP备*******8号</p>
+        <p>电话：010-****888 京ICP备*******8号</p>
     </div>
-    </div>
-    <script type="text/javascript">
-        var price = {{sku.price}};
-        var cat = {{ sku.category.id }};
-    </script>
-    <script type="text/javascript" src="http://www.guiling.cn:8080/js/common.js"></script>
-    <script type="text/javascript" src="http://www.guiling.cn:8080/js/detail.js"></script>
+</div>
+<script type="text/javascript">
+    var price = {{sku.price}};
+    var cat = {{ sku.category.id }};
+</script>
+<script type="text/javascript" src="http://www.guiling.cn:8080/js/common.js"></script>
+<script type="text/javascript" src="http://www.guiling.cn:8080/js/detail.js"></script>
 </body>
 </html>
