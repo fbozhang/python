@@ -126,7 +126,7 @@ class SKUSearchView(SearchView):
                 'id': sku.object.id,
                 'name': sku.object.name,
                 'price': sku.object.price,
-                'default_image_url': sku.object.default_image.url,
+                'default_image_url': sku.object.default_image.name,
                 'searchkey': context.get('query'),
                 'page_size': context['page'].paginator.num_pages,
                 'count': context['page'].paginator.count
