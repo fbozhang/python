@@ -116,6 +116,7 @@ class SKUSearchView(SearchView):
 
     def create_response(self):
         """ 重寫 create_response 方法"""
+        self.results_per_page = int(self.request.GET.get('page_size'))
 
         # 獲取搜索的結果
         context = self.get_context()
