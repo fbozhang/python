@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.views.static import serve
 
-from app01.views import depart, user, account, admin, pretty, task, order, chart, upload, city
+from app01.views import depart, user, account, admin, pretty, task, order, chart, upload, city, chat
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -82,4 +82,9 @@ urlpatterns = [
     # 城市列表
     path('city/list/', city.city_list),
     path('city/add/', city.city_add),
+
+    # 聊天
+    path('chat/list/', chat.chat_list),
+    path('send/msg/', chat.send_msg),
+    path('get/msg/', chat.get_msg),
 ]
