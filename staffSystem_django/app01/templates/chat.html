@@ -21,9 +21,11 @@
 <script src="https://cdn.bootcss.com/jquery/3.6.0/jquery.min.js"></script>
 <script>
     USER_UID = "{{ uid }}";
+    const MAX_REQUESTS = 5; // 最大请求次数
+    let requestCount = 0; // 请求计数器
 
     function sendMessage() {
-        var text = $("#txt").val();
+        let text = $("#txt").val();
 
         $.ajax({
             url: '/send/msg/',
@@ -33,6 +35,7 @@
             },
             success: function (res) {
                 console.log("请求发送成功", res)
+                requestCount = 0
             }
         })
     }
@@ -46,13 +49,20 @@
             },
             dataType: "JSON",
             success: function (res) {
-                //  超时，没有数据
-                //有新数据，暂时信息数据
+                // 超时，没有数据
+                // 有新数据，暂时信息数据
                 if (res.status) {
                     //将内容拼成div标签，并添加到message区域
                     var tag = $("<div>");
                     tag.text(res.data)  //<div>啊大大</div>
                     $("#message").append(tag);
+                }
+                // 请求次数
+                requestCount++;
+                // 检查是否达到最大请求次数
+                if (requestCount === MAX_REQUESTS) {
+                    console.log('达到最大请求次数，结束长轮询');
+                    return; // 结束长轮询
                 }
                 getMessage();//JS该模式实际不是递归，不会栈溢出
             }
