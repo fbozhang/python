@@ -36,3 +36,25 @@ def get_msg(request):
         result['status'] = False
 
     return JsonResponse(result)
+
+
+from channels.generic.websocket import WebsocketConsumer
+from channels.exceptions import StopConsumer
+from asgiref.sync import async_to_sync
+
+
+class wsChat(WebsocketConsumer):
+    def websocket_connect(self, message):
+        # 有客户端来向后端发送ws连接的请求时，自动触发。
+        self.accept()  # 服务端允许和客户端创建连接
+
+    def websocket_receive(self, message):
+        # 浏览器基于ws向后端发送数据，自动触发接收消息
+        print(message)
+        self.send('asdasd')
+        # self.close()  # 服务端主动断开连接
+
+    def websocket_disconnect(self, message):
+        # 客户端与服务端端开连接时自动触发(客户端主动端开连接)
+        print('断开连接')
+        raise StopConsumer()
