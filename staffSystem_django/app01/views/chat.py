@@ -46,13 +46,14 @@ from asgiref.sync import async_to_sync
 def ws_chat(request):
     return render(request, 'ws_chat.html')
 
-
+CONN_LIST = []
 class wsChat(WebsocketConsumer):
     def websocket_connect(self, message):
         # 有客户端来向后端发送ws连接的请求时，自动触发。
         print('连接成功')
         # 服务端允许和客户端创建连接(握手)
         self.accept()  # 同时请求WebSocket HANDSHAKING和WebSocket CONNECT，分别是握手和连接
+        CONN_LIST.append(self)
 
     def websocket_receive(self, message):
         # 浏览器基于ws向后端发送数据，自动触发接收消息
@@ -63,10 +64,12 @@ class wsChat(WebsocketConsumer):
             return  # 不再执行下面的代码，如果断开连接还发送消息会报错
             # raise StopConsumer() #如果服务端断开连接时，执行raise StopConsumer()，那么不会执行websocket_disconnect()方法
 
-            # print('接收到消息：', text)
-        self.send(f'接收到消息：{text}')  # 服务端给客户端发送消息
+        for conn in CONN_LIST:
+            conn.send(f'接收到消息：{text}')
+        #self.send(f'接收到消息：{text}')  # 服务端给客户端发送消息
 
     def websocket_disconnect(self, message):
         # 客户端与服务端端开连接时自动触发(客户端主动端开连接)
         print('断开连接')
+        CONN_LIST.remove(self)
         raise StopConsumer()  # WebSocket DISCONNECT
