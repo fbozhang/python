@@ -20,7 +20,8 @@
 
 {% block js %}
     <script>
-        socket = new WebSocket('ws://127.0.0.1:8000/ws/123/');
+        // socket = new WebSocket('ws://127.0.0.1/ws/{{group_id}}/');
+        socket = new WebSocket('ws://' + window.location.host + '/ws/{{group_id}}/');
 
         // 创建好连接之后自动触发(服务端执行self.accept())
         socket.onopen = function (event) {

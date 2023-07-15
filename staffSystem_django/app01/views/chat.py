@@ -44,16 +44,22 @@ from asgiref.sync import async_to_sync
 
 
 def ws_chat(request):
-    return render(request, 'ws_chat.html')
+    group_id = request.GET.get('uid')
+    return render(request, 'ws_chat.html', {'group_id': group_id})
 
-CONN_LIST = []
+
 class wsChat(WebsocketConsumer):
     def websocket_connect(self, message):
         # 有客户端来向后端发送ws连接的请求时，自动触发。
         print('连接成功')
+        # 获取群号，获取路由匹配中的
+        group = self.scope['url_route']['kwargs'].get('group')
         # 服务端允许和客户端创建连接(握手)
         self.accept()  # 同时请求WebSocket HANDSHAKING和WebSocket CONNECT，分别是握手和连接
-        CONN_LIST.append(self)
+
+        # 将这个客户端的连接对象加入到内存或redis中，取决于setting.py中CHANNEL_LAYERS
+        # async_to_sync将异步转为同步
+        async_to_sync(self.channel_layer.group_add)(group, self.channel_name)
 
     def websocket_receive(self, message):
         # 浏览器基于ws向后端发送数据，自动触发接收消息
@@ -64,12 +70,21 @@ class wsChat(WebsocketConsumer):
             return  # 不再执行下面的代码，如果断开连接还发送消息会报错
             # raise StopConsumer() #如果服务端断开连接时，执行raise StopConsumer()，那么不会执行websocket_disconnect()方法
 
-        for conn in CONN_LIST:
-            conn.send(f'接收到消息：{text}')
-        #self.send(f'接收到消息：{text}')  # 服务端给客户端发送消息
+        # self.send(f'接收到消息：{text}')  # 服务端给客户端发送消息
+        # 获取群号，获取路由匹配中的
+        group = self.scope['url_route']['kwargs'].get('group')
+        # 通知组内的所有客户端，执行 xx_oo 方法，在此方法中自己可以去定义任意的功能
+        async_to_sync(self.channel_layer.group_send)(group, {'type': 'xx.oo', 'message': message})
+
+    def xx_oo(self, event):
+        text = event['message']['text']
+        # 这是给组内的所有人发送消息，在websocket_receive中的self.send(text)才是给当前这个人发送消息
+        self.send(text)
 
     def websocket_disconnect(self, message):
-        # 客户端与服务端端开连接时自动触发(客户端主动端开连接)
         print('断开连接')
-        CONN_LIST.remove(self)
+        # 获取群号，获取路由匹配中的
+        group = self.scope['url_route']['kwargs'].get('group')
+        async_to_sync(self.channel_layer.group_discard)(group, self.channel_name)
+        # 客户端与服务端端开连接时自动触发(客户端主动端开连接)
         raise StopConsumer()  # WebSocket DISCONNECT

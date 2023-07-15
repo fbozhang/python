@@ -71,6 +71,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'staffSystem_django.wsgi.application'
 ASGI_APPLICATION = 'staffSystem_django.asgi.application'
 
+# channels 配置存在内存中
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
+# channels 配置存在redis中
+# CHANNEL_LAYERS = {
+#    "default": {
+#        "BACKEND": "channels_redis.core.RedisChannelLayer",  # pip install channels-redis
+#        "CONFIG": {
+#            "hosts": [('127.0.0.1', 6379)]
+#            # "hosts": ["redis://127.0.0.1:6379/1"]
+#        },
+#    }
+# }
+
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
