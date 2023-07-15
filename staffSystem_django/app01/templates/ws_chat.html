@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% block css %}
+    <style>
+        .message {
+            height: 300px;
+            border: 1px solid #dddddd;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="message" id="message"></div>
+    <div>
+        <input type="text" placeholder="请输入" id="txt">
+        <input type="button" value="发送" onclick="sendMessage();">
+        <input type="button" value="关闭连接" onclick="closeConn();">
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        socket = new WebSocket('ws://127.0.0.1:8000/ws/123/');
+
+        // 创建好连接之后自动触发(服务端执行self.accept())
+        socket.onopen = function (event) {
+            let tag = document.createElement('div');
+            tag.innerText = '[连接成功]';
+            document.getElementById('message').appendChild(tag);
+        }
+
+        // 当websocket接收到服务端发来的消息时，自动会触发这个函数
+        socket.onmessage = function (event) {
+            let tag = document.createElement('div');
+            tag.innerText = event.data;
+            document.getElementById('message').appendChild(tag);
+        }
+
+        // 服务端主动断开连接时，自动会触发这个方法
+        socket.onclose = function (event) {
+            let tag = document.createElement('div');
+            tag.innerText = '[断开连接]';
+            document.getElementById('message').appendChild(tag);
+        }
+
+        function sendMessage() {
+            let tag = document.getElementById('txt');
+            socket.send(tag.value);
+        }
+
+        function closeConn() {
+            socket.close(); //向服务端发送断开连接的请求
+        }
+
+    </script>
+{% endblock %}

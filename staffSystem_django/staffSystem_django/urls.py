@@ -84,7 +84,9 @@ urlpatterns = [
     path('city/add/', city.city_add),
 
     # 聊天
-    path('chat/list/', chat.chat_list),
+    path('longPoll/chat/', chat.longPoll_chat),
     path('send/msg/', chat.send_msg),
     path('get/msg/', chat.get_msg),
+
+    path('ws/chat/', chat.ws_chat),
 ]

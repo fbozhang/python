@@ -11,10 +11,10 @@ from django.http import JsonResponse
 USER_QUEUE = {}  # {'asd':queue.Queue(),'qwe':queue.Queue()} 为每一个访客建一个队列
 
 
-def chat_list(request):
+def longPoll_chat(request):
     uid = request.GET.get('uid')
     USER_QUEUE[uid] = queue.Queue()
-    return render(request, 'chat.html', {'uid': uid})
+    return render(request, 'longPoll_chat.html', {'uid': uid})
 
 
 def send_msg(request):
@@ -43,18 +43,30 @@ from channels.exceptions import StopConsumer
 from asgiref.sync import async_to_sync
 
 
+def ws_chat(request):
+    return render(request, 'ws_chat.html')
+
+
 class wsChat(WebsocketConsumer):
     def websocket_connect(self, message):
         # 有客户端来向后端发送ws连接的请求时，自动触发。
-        self.accept()  # 服务端允许和客户端创建连接
+        print('连接成功')
+        # 服务端允许和客户端创建连接(握手)
+        self.accept()  # 同时请求WebSocket HANDSHAKING和WebSocket CONNECT，分别是握手和连接
 
     def websocket_receive(self, message):
         # 浏览器基于ws向后端发送数据，自动触发接收消息
-        print(message)
-        self.send('asdasd')
-        # self.close()  # 服务端主动断开连接
+        text = message['text']  # {'type': 'websocket.receive', 'text': 'asd'}
+        if text == 'close':
+            # 服务端主动断开连接
+            self.close()  # 同时也会执行客户端断开连接方法 WebSocket DISCONNECT(websocket_disconnect())
+            return  # 不再执行下面的代码，如果断开连接还发送消息会报错
+            # raise StopConsumer() #如果服务端断开连接时，执行raise StopConsumer()，那么不会执行websocket_disconnect()方法
+
+            # print('接收到消息：', text)
+        self.send(f'接收到消息：{text}')  # 服务端给客户端发送消息
 
     def websocket_disconnect(self, message):
         # 客户端与服务端端开连接时自动触发(客户端主动端开连接)
         print('断开连接')
-        raise StopConsumer()
+        raise StopConsumer()  # WebSocket DISCONNECT
