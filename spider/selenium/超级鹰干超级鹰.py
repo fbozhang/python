@@ -9,6 +9,13 @@ from selenium.webdriver.common.by import By
 from chaojiying import Chaojiying_Client
 
 # 可以使用ddddocr庫識別驗證碼
+import ddddocr
+ocr = ddddocr.DdddOcr()
+with open('a.jpg','rb') as f:
+    img_bytes = f.read()
+res = ocr.classification(img_bytes)
+print(res)
+
 web = Chrome()
 web.get("http://www.chaojiying.com/user/login/")
 
