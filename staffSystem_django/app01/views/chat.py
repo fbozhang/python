@@ -74,7 +74,7 @@ class wsChat(WebsocketConsumer):
         # 获取群号，获取路由匹配中的
         group = self.scope['url_route']['kwargs'].get('group')
         # 通知组内的所有客户端，执行 xx_oo 方法，在此方法中自己可以去定义任意的功能
-        async_to_sync(self.channel_layer.group_send)(group, {'type': 'xx.oo', 'message': message})
+        async_to_sync(self.channel_layer.group_send)(group, {'type': 'xx.oo', 'message': message}) # xx_oo,下划线变成点
 
     def xx_oo(self, event):
         text = event['message']['text']
