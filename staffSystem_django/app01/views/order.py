@@ -2,12 +2,14 @@
 # @Time : 2022/8/28 23:07
 # @Author: fbz
 # @File : order.py
+import json
 import random
+import time
 from datetime import datetime
 
 from django import forms
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from app01.models import *
@@ -35,6 +37,23 @@ class OrderModelForm(BootStrapModelForm):
                     # 'disabled': "disabled", # 不可编辑，不可复制，不可选择，不能接收焦点,后台也不会接收到传值
                     "readonly": "readonly",  # 只读可复制，可选择,可以接收焦点，可以选中或拷贝其文本。后台会接收到传值
                 }
+
+
+def order_streamrequest(request):
+    queryset = Order.objects.all().order_by('-id')
+
+    # 定义一个内部函数作为生成器
+    def stream_data_generator():
+        for obj in queryset:
+            # 判断是否是 AJAX 请求，如果是，则使用流式传输
+            # if request.is_ajax(): # WSGI 才有这个方法
+            # if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':# ASGI用这个判断
+            yield f"data: {json.dumps(obj.title, ensure_ascii=False)}\n\n"  # 使用 SSE 格式发送数据
+            time.sleep(1)
+
+    response = StreamingHttpResponse(stream_data_generator(),
+                                     content_type='text/event-stream')  # 设置 content_type 为 "text/event-stream"
+    return response
 
 
 def order_list(request):

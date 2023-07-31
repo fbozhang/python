@@ -38,8 +38,10 @@
                         <td>{{ obj.get_status_display }}</td>
                         <td>{{ obj.admin.username }}</td>
                         <td>
-                            <input uid="{{ obj.id }}" class="btn btn-primary btn-xs btn-edit" type="button" value="编辑">
-                            <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button" value="删除">
+                            <input uid="{{ obj.id }}" class="btn btn-primary btn-xs btn-edit" type="button"
+                                   value="编辑">
+                            <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                                   value="删除">
                         </td>
                     </tr>
                 {% endfor %}
@@ -112,6 +114,44 @@
             bindBtnConfirmDeleteEvent();
             bindBtnEditEvent();
         })
+
+        // 使用GET请求接收流式数据的类
+        class StreamDataFetcherGET {
+            constructor(endpoint) {
+                this.endpoint = endpoint;
+            }
+
+            // 初始化并监听数据
+            init() {
+                // 创建一个新的EventSource实例，连接到提供的endpoint
+                const evtSource = new EventSource(this.endpoint);
+
+                // 当从服务器收到新的数据时
+                evtSource.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    this.renderData(data);
+                };
+
+                // 当与服务器的连接发生错误时
+                evtSource.onerror = (error) => {
+                    console.error("EventSource failed:", error);
+                    evtSource.close();
+                };
+
+            }
+
+            // 渲染接收到的数据
+            renderData(data) {
+                // 这里的代码取决于如何渲染数据到你的页面上
+                console.log(data);
+            }
+
+        }
+
+        // 使用GET请求的示例
+        const fetcherGET = new StreamDataFetcherGET("/order/stream/");
+        fetcherGET.init();
+
 
         function bindBtnAddEvent() {
             $('#btnAdd').click(function () {
