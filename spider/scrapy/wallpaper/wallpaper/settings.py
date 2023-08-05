@@ -19,6 +19,7 @@ NEWSPIDER_MODULE = "wallpaper.spiders"
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 LOG_LEVEL = 'WARNING'
+IMAGES_STORE = './images'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -65,6 +66,7 @@ LOG_LEVEL = 'WARNING'
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "wallpaper.pipelines.WallpaperPipeline": 300,
+   "wallpaper.pipelines.ImgPipeline": 301,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
