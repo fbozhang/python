@@ -2,6 +2,7 @@
 # @Time : 2022/8/28 23:07
 # @Author: fbz
 # @File : order.py
+import asyncio
 import json
 import random
 import time
@@ -43,13 +44,13 @@ def order_streamrequest(request):
     queryset = Order.objects.all().order_by('-id')
 
     # 定义一个内部函数作为生成器
-    def stream_data_generator():
+    async def stream_data_generator():
         for obj in queryset:
+            await asyncio.sleep(1)  # 模拟耗时操作
             # 判断是否是 AJAX 请求，如果是，则使用流式传输
             # if request.is_ajax(): # WSGI 才有这个方法
             # if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':# ASGI用这个判断
             yield f"data: {json.dumps(obj.title, ensure_ascii=False)}\n\n"  # 使用 SSE 格式发送数据
-            time.sleep(1)
 
     response = StreamingHttpResponse(stream_data_generator(),
                                      content_type='text/event-stream')  # 设置 content_type 为 "text/event-stream"
