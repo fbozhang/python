@@ -20,6 +20,7 @@ NEWSPIDER_MODULE = "wallpaper.spiders"
 ROBOTSTXT_OBEY = False
 LOG_LEVEL = 'WARNING'
 IMAGES_STORE = './images'
+COOKIES_DEBUG = True # 可以看到cookie信息，包括服务器的Set-Cookie和已有的cookie(日志要改为INFO级别的才看得到)
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
