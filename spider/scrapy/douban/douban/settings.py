@@ -29,9 +29,15 @@ USER_AGENT_LIST = [
     'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; Acoo Browser; GTB6; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; InfoPath.1; .NET CLR 3.5.30729; .NET CLR 3.0.30618)'
 ]
 
+PROXY_LIST = [
+    # {'ip_port': '114.231.45.194:8888', 'user_password': '用户名:密码'},  # 假设买了独享ip，需要认证
+    # {'ip_port': '114.231.45.194:8888'},
+    # {'ip_port': '61.216.185.88:60808'},
+    {'ip_port': '127.0.0.1:7890'},
+]
 # Obey robots.txt rules
 # ROBOTSTXT_OBEY = True
-LOG_LEVEL = 'WARNING'
+# LOG_LEVEL = 'WARNING'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
@@ -65,7 +71,8 @@ LOG_LEVEL = 'WARNING'
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   "douban.middlewares.RandomUserAgentMiddleware": 543,
+    "douban.middlewares.RandomUserAgentMiddleware": 543,
+    "douban.middlewares.RandomProxyMiddleware": 544,
 }
 
 # Enable or disable extensions
