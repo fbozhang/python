@@ -32,3 +32,28 @@ class RandomProxyMiddleware(object):
             request.meta['proxy'] = 'http://' + proxy['ip_port']
         else:
             request.meta['proxy'] = 'http://' + proxy['ip_port']
+
+    def process_response(self, request, response, spider):
+        # 如果返回的状态码是 200，说明请求成功
+        if response.status == 200:
+            return response
+        # 如果不是 200，说明请求失败
+        else:
+            proxy = request.meta['proxy']
+            PROXY_LIST.remove(proxy)
+            request.meta['proxy'] = random.choice(PROXY_LIST)
+            print('更换代理')
+            return request
+
+    def process_exception(self, request, exception, spider):
+        print('代理请求失败')
+        if isinstance(exception, (TimeoutError, ConnectionRefusedError)):
+            # if 'proxy' in request.meta:
+            proxy = request.meta['proxy']
+            PROXY_LIST.remove(proxy)
+            request.meta['proxy'] = random.choice(PROXY_LIST)
+            print('更换代理')
+            return request
+        else:
+            # 其他异常情况，根据实际情况处理
+            pass
